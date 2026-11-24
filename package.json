@@ -3,7 +3,7 @@
   "version": "0.24.45",
   "description": "Antumnmark+ monorepo root",
   "private": true,
-  "homepage": "https://github.com/Autumn-one/autumnmark",
+  "homepage": "https://github.com/small32/Autumnmark",
   "packageManager": "pnpm@10.33.4",
   "engines": {
     "node": ">=22.12.0",

@@ -6,8 +6,8 @@ extraMetadata:
   name: autumnmark
 publish:
   provider: github
-  owner: Autumn-one
-  repo: autumnmark
+  owner: small32
+  repo: Autumnmark
   # Older releases used MarkText's install identity. Match scripts/merge-release-artifacts.py.
   channel: autumnmark
 directories:
