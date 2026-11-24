@@ -376,7 +376,8 @@
       "rename": "Rinomina",
       "moveToTrash": "Sposta nel cestino",
       "copyPath": "Copia percorso",
-      "showInFolder": "Mostra nella cartella"
+      "showInFolder": "Mostra nella cartella",
+      "hide": "Nascondi dalla barra laterale"
     },
     "tabs": {
       "close": "Chiudi",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "Prima il meno recente",
           "newestFirst": "Prima il più recente"
-        }
+        },
+        "hiddenFiles": "File nascosti",
+        "hiddenFilesNotes": "Fai clic con il pulsante destro su un file nella barra laterale e scegli «Nascondi dalla barra laterale». Rimuovi una voce qui per mostrare di nuovo il file.",
+        "hiddenFilesEmpty": "Nessun file nascosto.",
+        "restore": "Ripristina",
+        "restoreAll": "Ripristina tutto",
+        "restoreFailed": "Impossibile aggiornare l'elenco dei file nascosti. Riprova."
       },
       "language": {
         "title": "Lingua",

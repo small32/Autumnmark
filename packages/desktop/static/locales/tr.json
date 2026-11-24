@@ -376,7 +376,8 @@
       "rename": "Yeniden Adlandır",
       "moveToTrash": "Çöp Kutusuna Taşı",
       "copyPath": "Yolu Kopyala",
-      "showInFolder": "Klasörde Göster"
+      "showInFolder": "Klasörde Göster",
+      "hide": "Kenar çubuğundan gizle"
     },
     "tabs": {
       "close": "Kapat",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "Önce En Eski",
           "newestFirst": "Önce En Yeni"
-        }
+        },
+        "hiddenFiles": "Gizlenen dosyalar",
+        "hiddenFilesNotes": "Kenar çubuğundaki bir dosyaya sağ tıklayıp «Kenar çubuğundan gizle» seçeneğini seçin. Dosyayı yeniden göstermek için buradaki kaydı kaldırın.",
+        "hiddenFilesEmpty": "Gizlenen dosya yok.",
+        "restore": "Geri yükle",
+        "restoreAll": "Tümünü geri yükle",
+        "restoreFailed": "Gizlenen dosyalar listesi güncellenemedi. Lütfen tekrar deneyin."
       },
       "language": {
         "title": "Dil",

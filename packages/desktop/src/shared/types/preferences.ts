@@ -39,6 +39,7 @@ export interface UserPreferences extends RecoveryPreferences {
   wordWrapInToc: boolean
   tocPosition: 'left' | 'right'
   treePathExcludePatterns: string[]
+  hiddenSidebarPaths: string[]
   fileSortBy: 'modified' | 'created' | 'title'
   fileSortOrder: 'asc' | 'desc'
   defaultOpenMode: 'edit' | 'read'

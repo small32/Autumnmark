@@ -6,6 +6,7 @@ import {
   getCUT,
   getPASTE,
   getRENAME,
+  getHIDE,
   getDELETE,
   getCopyPath,
   getShowInFolder
@@ -29,6 +30,7 @@ export const showContextMenu = (
     getPASTE(),
     SEPARATOR,
     getRENAME(),
+    ...(target.isFile ? [getHIDE()] : []),
     getDELETE(),
     SEPARATOR,
     ...(target.isDirectory || target.isMarkdown ? [batchMediaMenuItem(target), SEPARATOR] : []),

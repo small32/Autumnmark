@@ -57,7 +57,7 @@
         @keypress.enter="handleInputEnter"
       >
       <File
-        v-for="file of folder.files"
+        v-for="file of visibleFolderFiles"
         :key="file.id"
         :file="file"
       />
@@ -72,6 +72,7 @@ import { useProjectStore } from '@/store/project'
 import { showContextMenu } from '../../contextMenu/sideBar'
 import bus from '../../bus'
 import File from './treeFile.vue'
+import { useHiddenSidebarFiles } from './useHiddenSidebarFiles'
 import { ArrowRight, Folder } from '@element-plus/icons-vue'
 import type { TreeFolderNode } from './types'
 import { useTreeRow } from './rowRegistry'
@@ -81,6 +82,8 @@ const props = defineProps<{
 }>()
 
 const projectStore = useProjectStore()
+const { visibleFiles } = useHiddenSidebarFiles()
+const visibleFolderFiles = computed(() => visibleFiles(props.folder.files))
 
 const folderEl = ref<HTMLDivElement | null>(null)
 useTreeRow(() => props.folder.pathname, folderEl)

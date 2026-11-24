@@ -376,7 +376,8 @@
       "rename": "重新命名",
       "moveToTrash": "移到垃圾桶",
       "copyPath": "複製路徑",
-      "showInFolder": "在資料夾中顯示"
+      "showInFolder": "在資料夾中顯示",
+      "hide": "在側邊欄中隱藏"
     },
     "tabs": {
       "close": "關閉",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "從舊到新",
           "newestFirst": "從新到舊"
-        }
+        },
+        "hiddenFiles": "隱藏的檔案",
+        "hiddenFilesNotes": "在側邊欄右鍵檔案並選擇「在側邊欄中隱藏」。在此移除項目即可讓檔案重新顯示。",
+        "hiddenFilesEmpty": "沒有隱藏的檔案。",
+        "restore": "還原",
+        "restoreAll": "全部還原",
+        "restoreFailed": "無法更新隱藏檔案清單，請重試。"
       },
       "language": {
         "title": "語言",

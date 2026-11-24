@@ -376,7 +376,8 @@
       "rename": "名前の変更",
       "moveToTrash": "ごみ箱に移動",
       "copyPath": "パスのコピー",
-      "showInFolder": "フォルダーの表示"
+      "showInFolder": "フォルダーの表示",
+      "hide": "サイドバーから非表示"
     },
     "tabs": {
       "close": "閉じる",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "古い順",
           "newestFirst": "新しい順"
-        }
+        },
+        "hiddenFiles": "非表示のファイル",
+        "hiddenFilesNotes": "サイドバーのファイルを右クリックし、「サイドバーから非表示」を選択します。ここで項目を削除すると、ファイルが再び表示されます。",
+        "hiddenFilesEmpty": "非表示のファイルはありません。",
+        "restore": "元に戻す",
+        "restoreAll": "すべて元に戻す",
+        "restoreFailed": "非表示ファイルの一覧を更新できませんでした。もう一度お試しください。"
       },
       "language": {
         "title": "言語",

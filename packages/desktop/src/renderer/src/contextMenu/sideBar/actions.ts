@@ -27,6 +27,10 @@ export const rename = (_menuItem?: MenuItemArg, _browserWindow?: BrowserWindowAr
   bus.emit('SIDEBAR::rename')
 }
 
+export const hide = (_menuItem?: MenuItemArg, _browserWindow?: BrowserWindowArg): void => {
+  bus.emit('SIDEBAR::hide')
+}
+
 export const remove = (_menuItem?: MenuItemArg, _browserWindow?: BrowserWindowArg): void => {
   bus.emit('SIDEBAR::remove')
 }

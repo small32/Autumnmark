@@ -154,6 +154,8 @@
           @persisted="acceptRecoveryPreferences"
         />
 
+        <hidden-files />
+
         <cur-select
           id="setting-fileSortBy"
           :description="preferenceLabel('fileSortBy')"
@@ -210,6 +212,7 @@ import { preferenceLabel, preferenceNotes } from '@/prefComponents/registry'
 import { computed, onMounted, ref } from 'vue'
 import RecoverySettings from './recoverySettings.vue'
 import ExcludePatterns from './excludePatterns.vue'
+import HiddenFiles from './hiddenFiles.vue'
 import type { UserPreferences, RecoveryPreferences } from '@shared/types/preferences'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'

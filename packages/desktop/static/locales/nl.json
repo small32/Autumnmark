@@ -376,7 +376,8 @@
       "rename": "Hernoemen",
       "moveToTrash": "Naar prullenbak",
       "copyPath": "Pad kopiëren",
-      "showInFolder": "Tonen in map"
+      "showInFolder": "Tonen in map",
+      "hide": "Verbergen in zijbalk"
     },
     "tabs": {
       "close": "Sluiten",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "Oudste eerst",
           "newestFirst": "Nieuwste eerst"
-        }
+        },
+        "hiddenFiles": "Verborgen bestanden",
+        "hiddenFilesNotes": "Klik met de rechtermuisknop op een bestand in de zijbalk en kies ‘Verbergen in zijbalk’. Verwijder hier een item om het bestand weer te tonen.",
+        "hiddenFilesEmpty": "Geen verborgen bestanden.",
+        "restore": "Herstellen",
+        "restoreAll": "Alles herstellen",
+        "restoreFailed": "Kan de lijst met verborgen bestanden niet bijwerken. Probeer het opnieuw."
       },
       "language": {
         "title": "Taal",

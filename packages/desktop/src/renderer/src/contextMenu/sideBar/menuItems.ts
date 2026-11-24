@@ -55,6 +55,14 @@ export const getRENAME = () => ({
   }
 })
 
+export const getHIDE = () => ({
+  label: t('contextMenu.sideBar.hide'),
+  id: 'hideMenuItem',
+  click(_menuItem: unknown, _browserWindow: unknown) {
+    contextMenu.hide()
+  }
+})
+
 export const getDELETE = () => ({
   label: t('contextMenu.sideBar.moveToTrash'),
   id: 'deleteMenuItem',

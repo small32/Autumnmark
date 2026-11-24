@@ -180,7 +180,7 @@
             @keypress.enter="handleInputEnter"
           >
           <file
-            v-for="file of root.tree.files"
+            v-for="file of visibleFiles(root.tree.files)"
             :key="file.id"
             :file="file"
           />
@@ -229,6 +229,7 @@ import { useLayoutStore } from '@/store/layout'
 import { usePreferencesStore } from '@/store/preferences'
 import Folder from './treeFolder.vue'
 import File from './treeFile.vue'
+import { useHiddenSidebarFiles } from './useHiddenSidebarFiles'
 import OpenedFile from './treeOpenedTab.vue'
 import { MIN_VISIBLE_ROWS, useOpenedFilesResize } from './useOpenedFilesResize'
 import { useTabReorder } from '../useTabReorder'
@@ -236,6 +237,7 @@ import { useTreeDragDrop } from './useTreeDragDrop'
 import EmptyStateButton from '@/components/emptyStateButton.vue'
 import IconTooltip from '@/components/iconTooltip/index.vue'
 import bus from '../../bus'
+import notice from '../../services/notification'
 import { showRootContextMenu } from '../../contextMenu/sideBar'
 import type { RootView } from '@/store/project'
 import { useI18n } from 'vue-i18n'
@@ -273,6 +275,7 @@ const showOpenedFiles = computed({
   set: (expanded) => layoutStore.SET_OPENED_FILES({ expanded })
 })
 const preferencesStore = usePreferencesStore()
+const { visibleFiles } = useHiddenSidebarFiles()
 
 const { roots, createCache } = storeToRefs(projectStore)
 const { clipboard } = storeToRefs(projectStore)
@@ -591,11 +594,27 @@ watch(
   { flush: 'post' }
 )
 
+const hideActiveFile = async (): Promise<void> => {
+  const target = activeItem.value as { pathname?: unknown; isDirectory?: unknown } | null
+  if (typeof target?.pathname !== 'string' || target.isDirectory) return
+  const saved = await preferencesStore.HIDE_SIDEBAR_FILE(target.pathname)
+  if (saved) {
+    projectStore.CHANGE_ACTIVE_ITEM({})
+  } else {
+    notice.notify({
+      type: 'error',
+      title: t('contextMenu.sideBar.hide'),
+      message: t('preferences.general.sidebar.restoreFailed')
+    })
+  }
+}
+
 onMounted(() => {
   bus.on('SIDEBAR::focus-root', focusRoot)
   bus.on('SIDEBAR::show-new-input', handleInputFocus)
   bus.on('SIDEBAR::focus-tree', focusTree)
   bus.on('SIDEBAR::reveal-path', handleRevealPath)
+  bus.on('SIDEBAR::hide', hideActiveFile)
   // Capture phase: several click targets (project/collapse headings, editor
   // tabs) call `@click.stop`, which would otherwise keep the click-away commit
   // from running.
@@ -609,6 +628,7 @@ onUnmounted(() => {
   bus.off('SIDEBAR::show-new-input', handleInputFocus)
   bus.off('SIDEBAR::focus-tree', focusTree)
   bus.off('SIDEBAR::reveal-path', handleRevealPath)
+  bus.off('SIDEBAR::hide', hideActiveFile)
   document.removeEventListener('click', handleDocumentClick, true)
   document.removeEventListener('contextmenu', handleDocumentContextMenu)
 })

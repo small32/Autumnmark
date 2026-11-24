@@ -376,7 +376,8 @@
       "rename": "Renommer",
       "moveToTrash": "Déplacer vers la corbeille",
       "copyPath": "Copier le chemin",
-      "showInFolder": "Afficher dans le dossier"
+      "showInFolder": "Afficher dans le dossier",
+      "hide": "Masquer de la barre latérale"
     },
     "tabs": {
       "close": "Fermer",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "Plus ancien en premier",
           "newestFirst": "Plus récent en premier"
-        }
+        },
+        "hiddenFiles": "Fichiers masqués",
+        "hiddenFilesNotes": "Cliquez avec le bouton droit sur un fichier dans la barre latérale et choisissez « Masquer de la barre latérale ». Supprimez une entrée ici pour réafficher le fichier.",
+        "hiddenFilesEmpty": "Aucun fichier masqué.",
+        "restore": "Restaurer",
+        "restoreAll": "Tout restaurer",
+        "restoreFailed": "Impossible de mettre à jour la liste des fichiers masqués. Veuillez réessayer."
       },
       "language": {
         "title": "Langue",

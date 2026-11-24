@@ -376,7 +376,8 @@
       "rename": "Umbenennen",
       "moveToTrash": "In Papierkorb verschieben",
       "copyPath": "Pfad kopieren",
-      "showInFolder": "Im Ordner anzeigen"
+      "showInFolder": "Im Ordner anzeigen",
+      "hide": "Aus Seitenleiste ausblenden"
     },
     "tabs": {
       "close": "Schließen",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "Älteste zuerst",
           "newestFirst": "Neueste zuerst"
-        }
+        },
+        "hiddenFiles": "Ausgeblendete Dateien",
+        "hiddenFilesNotes": "Klicken Sie in der Seitenleiste mit der rechten Maustaste auf eine Datei und wählen Sie „Aus Seitenleiste ausblenden“. Entfernen Sie einen Eintrag hier, um die Datei wieder anzuzeigen.",
+        "hiddenFilesEmpty": "Keine Dateien ausgeblendet.",
+        "restore": "Wiederherstellen",
+        "restoreAll": "Alle wiederherstellen",
+        "restoreFailed": "Die Liste der ausgeblendeten Dateien konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut."
       },
       "language": {
         "title": "Sprache",

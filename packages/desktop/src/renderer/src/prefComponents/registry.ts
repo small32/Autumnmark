@@ -339,6 +339,11 @@ export const preferenceDefinitions: Record<string, PreferenceDefinition> = {
     "label": "preferences.general.sidebar.excludePatterns",
     "notes": "preferences.general.sidebar.excludePatternsNotes"
   },
+  "hiddenSidebarPaths": {
+    "category": "general",
+    "label": "preferences.general.sidebar.hiddenFiles",
+    "notes": "preferences.general.sidebar.hiddenFilesNotes"
+  },
   "startUpAction": {
     "category": "files",
     "label": "preferences.general.startup.action"

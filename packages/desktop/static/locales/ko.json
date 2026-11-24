@@ -376,7 +376,8 @@
       "rename": "이름 바꾸기",
       "moveToTrash": "휴지통으로 이동",
       "copyPath": "경로 복사",
-      "showInFolder": "폴더에서 보기"
+      "showInFolder": "폴더에서 보기",
+      "hide": "사이드바에서 숨기기"
     },
     "tabs": {
       "close": "닫기",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "오래된 순",
           "newestFirst": "최신 순"
-        }
+        },
+        "hiddenFiles": "숨긴 파일",
+        "hiddenFilesNotes": "사이드바에서 파일을 마우스 오른쪽 버튼으로 클릭하고 '사이드바에서 숨기기'를 선택하세요. 여기서 항목을 제거하면 파일이 다시 표시됩니다.",
+        "hiddenFilesEmpty": "숨긴 파일이 없습니다.",
+        "restore": "복원",
+        "restoreAll": "모두 복원",
+        "restoreFailed": "숨긴 파일 목록을 업데이트하지 못했습니다. 다시 시도하세요."
       },
       "language": {
         "title": "언어",

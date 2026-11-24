@@ -55,6 +55,14 @@
     },
     "default": []
   },
+  "hiddenSidebarPaths": {
+    "description": "General--Absolute file paths hidden from the sidebar file tree.",
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "default": []
+  },
   "fileSortBy": {
     "description": "General--Sort files in opened folder by created time, modified time and title.",
     "enum": ["modified", "created", "title"],

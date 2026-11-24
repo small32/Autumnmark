@@ -376,7 +376,8 @@
       "rename": "重命名",
       "moveToTrash": "移动到废纸篓",
       "copyPath": "复制路径",
-      "showInFolder": "在文件夹中显示"
+      "showInFolder": "在文件夹中显示",
+      "hide": "在侧边栏中隐藏"
     },
     "tabs": {
       "close": "关闭",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "从旧到新",
           "newestFirst": "从新到旧"
-        }
+        },
+        "hiddenFiles": "隐藏的文件",
+        "hiddenFilesNotes": "在侧边栏右键文件并选择“在侧边栏中隐藏”。在此移除条目即可让文件重新显示。",
+        "hiddenFilesEmpty": "没有隐藏的文件。",
+        "restore": "恢复",
+        "restoreAll": "全部恢复",
+        "restoreFailed": "无法更新隐藏文件列表，请重试。"
       },
       "language": {
         "title": "语言",

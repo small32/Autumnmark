@@ -2,6 +2,7 @@ import type { UserPreferences } from '@shared/types/preferences'
 import type { LocalTheme } from '@shared/localTheme'
 import { defineStore } from 'pinia'
 import { getCurrentLanguage, setLanguage } from '../i18n'
+import { withHiddenSidebarPath, withoutHiddenSidebarPath } from '../util/hiddenSidebarFiles'
 
 export type EndOfLine = 'default' | 'lf' | 'crlf'
 export type TitleBarStyle = 'custom' | 'native'
@@ -35,6 +36,7 @@ export interface PreferencesState {
   restoreViewState: boolean
   defaultDirectoryToOpen: string
   treePathExcludePatterns: string[]
+  hiddenSidebarPaths: string[]
   language: string
   showPandocConvert: boolean
 
@@ -168,6 +170,7 @@ export const usePreferencesStore = defineStore('preferences', {
     restoreViewState: true,
     defaultDirectoryToOpen: '',
     treePathExcludePatterns: [],
+    hiddenSidebarPaths: [],
     language: 'en',
     showPandocConvert: false,
 
@@ -313,6 +316,27 @@ export const usePreferencesStore = defineStore('preferences', {
       }
 
       window.electron.ipcRenderer.send('mt::set-user-preference', { [type as string]: value })
+    },
+
+    async SET_HIDDEN_SIDEBAR_PATHS(pathnames: string[]): Promise<boolean> {
+      const result = await window.electron.ipcRenderer.invoke('mt::preferences::update', {
+        hiddenSidebarPaths: pathnames
+      }) as { status?: string } | undefined
+      if (result?.status !== 'persisted') return false
+      this.hiddenSidebarPaths = pathnames
+      return true
+    },
+
+    async HIDE_SIDEBAR_FILE(pathname: string): Promise<boolean> {
+      return this.SET_HIDDEN_SIDEBAR_PATHS(withHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
+    },
+
+    async RESTORE_SIDEBAR_FILE(pathname: string): Promise<boolean> {
+      return this.SET_HIDDEN_SIDEBAR_PATHS(withoutHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
+    },
+
+    async RESTORE_ALL_SIDEBAR_FILES(): Promise<boolean> {
+      return this.SET_HIDDEN_SIDEBAR_PATHS([])
     },
 
     SET_USER_DATA({ type, value }: SetUserDataPayload): void {

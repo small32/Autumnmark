@@ -17,6 +17,7 @@
   "restoreViewState": true,
   "defaultDirectoryToOpen": "",
   "treePathExcludePatterns": [],
+  "hiddenSidebarPaths": [],
   "language": "en",
   "editorFontFamily": "Open Sans",
   "fontSize": 16,

@@ -376,7 +376,8 @@
       "rename": "Rename",
       "moveToTrash": "Move To Trash",
       "copyPath": "Copy Path",
-      "showInFolder": "Show In Folder"
+      "showInFolder": "Show In Folder",
+      "hide": "Hide from Sidebar"
     },
     "tabs": {
       "close": "Close",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "Oldest First",
           "newestFirst": "Newest First"
-        }
+        },
+        "hiddenFiles": "Hidden files",
+        "hiddenFilesNotes": "Right-click a file in the sidebar and choose “Hide from Sidebar”. Remove an entry here to show the file again.",
+        "hiddenFilesEmpty": "No files are hidden.",
+        "restore": "Restore",
+        "restoreAll": "Restore all",
+        "restoreFailed": "Could not update the hidden files list. Please try again."
       },
       "language": {
         "title": "Language",

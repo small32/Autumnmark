@@ -376,7 +376,8 @@
       "rename": "Renomear",
       "moveToTrash": "Mover para Lixeira",
       "copyPath": "Copiar Caminho",
-      "showInFolder": "Mostrar na Pasta"
+      "showInFolder": "Mostrar na Pasta",
+      "hide": "Ocultar da barra lateral"
     },
     "tabs": {
       "close": "Fechar",
@@ -674,7 +675,13 @@
           "zToA": "Z → A",
           "oldestFirst": "Mais antigo primeiro",
           "newestFirst": "Mais recente primeiro"
-        }
+        },
+        "hiddenFiles": "Arquivos ocultos",
+        "hiddenFilesNotes": "Clique com o botão direito em um arquivo na barra lateral e escolha “Ocultar da barra lateral”. Remova uma entrada aqui para mostrar o arquivo novamente.",
+        "hiddenFilesEmpty": "Nenhum arquivo oculto.",
+        "restore": "Restaurar",
+        "restoreAll": "Restaurar tudo",
+        "restoreFailed": "Não foi possível atualizar a lista de arquivos ocultos. Tente novamente."
       },
       "language": {
         "title": "Idioma",
