@@ -1,3 +1,9 @@
+## Antumnmark+ 0.1.0
+
+- Rebranded the application as Antumnmark+ across the window title, menus, installers, themes and documentation.
+- Removed the title-bar announcement bell and its remote announcement feed.
+- Right-click a file in the sidebar to hide it; restore hidden files individually or all at once from Settings → General → Sidebar.
+
 ## AutumnMark 0.24.45
 
 - Themes have their own Settings page. Browse the official online catalog, install themes for offline use, and remove custom or downloaded themes from the local library.

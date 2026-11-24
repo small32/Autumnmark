@@ -302,10 +302,10 @@ jobs:
             if [[ -n "$highlights" ]]; then
               printf '## What’s new\n%s\n\n' "$highlights"
             fi
-            echo "## First installation of the independent version"
-            echo "If you use Antumnmark+ 0.24.8 or earlier, download the new installer below. On Windows, uninstall the old Antumnmark+ first and keep its settings when prompted. The current version uses its own settings directory and can coexist with MarkText."
+            echo "## First installation"
+            echo "Download the installer for your platform below. Antumnmark+ keeps using the existing AutumnMark profile directory, so settings and recent files from an earlier installation are preserved."
             echo ""
-            echo "从 0.24.8 或更早版本升级时，请在下方下载安装包。Windows 用户请先卸载旧版 Antumnmark+，并在提示时保留设置。新版使用独立的设置目录，可以与 MarkText 共存。"
+            echo "首次安装请下载对应平台的安装包。Antumnmark+ 继续使用原有 AutumnMark 设置目录，已有配置和最近文件会保留。"
             echo ""
             echo "## ⚠️ Note for macOS users"
             echo "Builds are unsigned (no Apple Developer ID). After dragging Antumnmark+ into Applications, clear the quarantine flag once:"
