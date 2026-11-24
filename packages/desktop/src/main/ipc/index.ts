@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, net } from 'electron'
+import { app, ipcMain, net } from 'electron'
 import { registerBootInfo } from './bootInfo'
 import { registerFsHandlers, type FileOperations } from './fs'
 import { registerPathHandlers } from './paths'
@@ -32,18 +32,11 @@ export const registerSandboxIpcHandlers = (fileOperations?: FileOperations): voi
   registerLinkHtmlHandler()
   registerImageClipboardHandlers()
   registerEmbeddedImageDrag()
-  const remoteContent = new RemoteContentCache(net.fetch, snapshot => {
-    for (const win of BrowserWindow.getAllWindows()) {
-      win.webContents.send('mt::announcement-changed', snapshot)
-    }
-  })
+  const remoteContent = new RemoteContentCache(net.fetch)
   ipcMain.handle('mt::remote-content::fetch', (_event, kind: unknown, refresh: unknown) =>
     remoteContent.load(kind, refresh === true)
   )
   void app.whenReady().then(() => {
-    void remoteContent.load('announcement')
     void remoteContent.load('about')
-    const timer = setInterval(() => { void remoteContent.load('announcement', true) }, 15 * 60_000)
-    app.once('will-quit', () => clearInterval(timer))
   })
 }

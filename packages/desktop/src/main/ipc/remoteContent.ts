@@ -1,15 +1,13 @@
-import { createHash } from 'node:crypto'
 import type { RemoteContent, RemoteContentKind, RemoteContentSnapshot } from '@shared/types/ipc'
 
 const REPOSITORY = 'Autumn-one/notify'
 const BRANCH = 'main'
 const RAW_BASE = `https://raw.githubusercontent.com/${REPOSITORY}/${BRANCH}`
 const FILES: Record<RemoteContentKind, string> = {
-  announcement: 'README.md',
   about: 'info.md'
 }
 
-// KeyDoing's announcementSources and personalInfoSources share this priority order.
+// KeyDoing's personalInfoSources share this priority order.
 const MIRROR_PREFIXES = [
   'https://proxy.gitwarp.top/',
   'https://ghfast.top/',
@@ -47,8 +45,7 @@ const readBody = async(response: Response, limit: number): Promise<string | null
 
 const downloadMarkdown = async(
   url: URL,
-  fetchSource: FetchSource,
-  verified: boolean
+  fetchSource: FetchSource
 ): Promise<string | null> => {
   try {
     const response = await fetchSource(url.href, {
@@ -57,7 +54,7 @@ const downloadMarkdown = async(
       credentials: 'omit',
       redirect: 'error',
       headers: {
-        Accept: verified ? 'application/vnd.github+json' : 'text/plain, text/markdown',
+        Accept: 'text/plain, text/markdown',
         'User-Agent': 'AutumnMark'
       }
     })
@@ -66,18 +63,8 @@ const downloadMarkdown = async(
       return null
     }
 
-    let markdown = await readBody(response, verified ? MAX_MARKDOWN_BYTES * 2 : MAX_MARKDOWN_BYTES)
+    const markdown = await readBody(response, MAX_MARKDOWN_BYTES)
     if (markdown === null) return null
-
-    if (verified) {
-      const file = JSON.parse(markdown)
-      if (file?.type !== 'file' || file.encoding !== 'base64' || typeof file.content !== 'string') {
-        return null
-      }
-      const bytes = Buffer.from(file.content, 'base64')
-      if (bytes.length > MAX_MARKDOWN_BYTES) return null
-      markdown = new TextDecoder('utf-8', { fatal: true }).decode(bytes)
-    }
 
     return markdown.trim() && !/^\s*<(?:!doctype\b|html[\s>])/i.test(markdown) ? markdown : null
   } catch {
@@ -91,20 +78,12 @@ export const fetchRemoteContent = async(
 ): Promise<RemoteContent | null> => {
   const filename = FILES[kind]
   const cacheBuster = Date.now().toString()
-  if (kind === 'announcement') {
-    // A mirror can serve an older revision even when the request bypasses the HTTP cache.
-    const origin = new URL(`https://api.github.com/repos/${REPOSITORY}/contents/${filename}`)
-    origin.searchParams.set('ref', BRANCH)
-    origin.searchParams.set('_', cacheBuster)
-    const markdown = await downloadMarkdown(origin, fetchSource, true)
-    if (markdown) return { markdown, verified: true }
-  }
 
   for (const prefix of MIRROR_PREFIXES) {
     const url = new URL(`${prefix}${RAW_BASE}/${filename}`)
     url.searchParams.set('_', cacheBuster)
-    const markdown = await downloadMarkdown(url, fetchSource, false)
-    if (markdown) return { markdown, verified: false }
+    const markdown = await downloadMarkdown(url, fetchSource)
+    if (markdown) return { markdown }
   }
 
   return null
@@ -114,13 +93,10 @@ export class RemoteContentCache {
   private readonly cached = new Map<RemoteContentKind, RemoteContentSnapshot>()
   private readonly inFlight = new Map<RemoteContentKind, Promise<RemoteContentSnapshot>>()
 
-  constructor(
-    private readonly fetchSource: FetchSource,
-    private readonly onAnnouncementChanged?: (snapshot: RemoteContentSnapshot) => void
-  ) {}
+  constructor(private readonly fetchSource: FetchSource) {}
 
   async load(kind: unknown, refresh = false): Promise<RemoteContentSnapshot> {
-    if (kind !== 'announcement' && kind !== 'about') {
+    if (kind !== 'about') {
       return { content: null, status: 'failed' }
     }
 
@@ -144,23 +120,13 @@ export class RemoteContentCache {
     previous: RemoteContent | null
   ): Promise<RemoteContentSnapshot> {
     const fetched = await fetchRemoteContent(kind, this.fetchSource)
-    // An older mirror revision must not replace an announcement verified by GitHub.
-    const content = fetched && (!previous?.verified || fetched.verified) ? fetched : previous
+    const content = fetched ?? previous
     const snapshot: RemoteContentSnapshot = {
       content,
-      status: !fetched ? 'failed' : kind === 'announcement' && !fetched.verified ? 'unverified' : 'ready'
+      status: fetched ? 'ready' : 'failed'
     }
     if (content) {
-      const last = this.cached.get(kind)
-      if (kind === 'announcement') {
-        snapshot.announcementRevision = createHash('sha256').update(content.markdown).digest('hex')
-      }
       this.cached.set(kind, snapshot)
-      if (kind === 'announcement' && (
-        snapshot.announcementRevision !== last?.announcementRevision || content.verified !== last?.content?.verified
-      )) {
-        this.onAnnouncementChanged?.(snapshot)
-      }
     }
     return snapshot
   }

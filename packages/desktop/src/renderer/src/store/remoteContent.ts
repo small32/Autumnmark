@@ -4,7 +4,7 @@ import type { RemoteContentKind, RemoteContentSnapshot } from '@shared/types/ipc
 
 export const useRemoteContentStore = defineStore('remoteContent', () => {
   const snapshots = reactive<Partial<Record<RemoteContentKind, RemoteContentSnapshot>>>({})
-  const loading = reactive({ announcement: false, about: false })
+  const loading = reactive({ about: false })
 
   const refresh = async(kind: RemoteContentKind, force: boolean): Promise<void> => {
     if (loading[kind]) return

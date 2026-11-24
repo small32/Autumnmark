@@ -1009,22 +1009,12 @@
     "copyrightContributors": "Made with <3 by Github Contributors"
   },
   "remoteContent": {
-    "announcement": "Announcements",
-    "unreadAnnouncement": "Unread announcement",
     "about": "Live information",
     "loading": "Fetching the latest content…",
     "loadFailed": "Could not load the content.",
     "refreshFailed": "Refresh failed. Showing the last fetched content.",
-    "unverified": "GitHub is unavailable. The latest announcement could not be verified.",
     "refresh": "Refresh",
-    "retry": "Retry",
-    "donation": {
-      "title": "Support AutumnMark",
-      "description": "Scan with the matching app to support AutumnMark’s development.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "{method} donation QR code"
-    }
+    "retry": "Retry"
   },
   "commands": {
     "mt": {

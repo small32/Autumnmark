@@ -36,7 +36,6 @@ class DataCenter extends TypedEmitter<DataCenterEvents> {
       imageFolderPath: path.join(userDataPath, 'images'),
       screenshotFolderPath: path.join(userDataPath, 'screenshot'),
       webImages: [],
-      lastReadAnnouncement: '',
       cloudImages: [],
       currentUploader: 'picgo'
     }

@@ -1021,22 +1021,12 @@
     "copyrightContributors": "Creato con <3 dai Collaboratori di GitHub"
   },
   "remoteContent": {
-    "announcement": "Annunci",
-    "unreadAnnouncement": "Annuncio da leggere",
     "about": "Informazioni aggiornate",
     "loading": "Caricamento dei contenuti più recenti…",
     "loadFailed": "Impossibile caricare il contenuto.",
     "refreshFailed": "Aggiornamento non riuscito. È visualizzato l’ultimo contenuto ricevuto.",
-    "unverified": "GitHub non è disponibile. Impossibile verificare che l’annuncio sia aggiornato.",
     "refresh": "Aggiorna",
-    "retry": "Riprova",
-    "donation": {
-      "title": "Sostieni AutumnMark",
-      "description": "Scansiona il codice con l’app corrispondente per sostenere lo sviluppo di AutumnMark.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "Codice QR per donare con {method}"
-    }
+    "retry": "Riprova"
   },
   "commands": {
     "mt": {

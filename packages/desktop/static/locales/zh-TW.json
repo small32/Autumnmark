@@ -1021,22 +1021,12 @@
     "copyrightContributors": "版權貢獻者"
   },
   "remoteContent": {
-    "announcement": "公告",
-    "unreadAnnouncement": "公告有更新",
     "about": "動態資訊",
     "loading": "正在取得最新內容…",
     "loadFailed": "無法取得內容。",
     "refreshFailed": "重新整理失敗，正在顯示上次取得的內容。",
-    "unverified": "暫時無法連線至 GitHub，無法確認公告是否為最新版本。",
     "refresh": "重新整理",
-    "retry": "重試",
-    "donation": {
-      "title": "支持秋箋",
-      "description": "歡迎使用支付寶或微信掃描 QR 碼，支持秋箋的持續開發。",
-      "alipay": "支付寶",
-      "wechatPay": "微信支付",
-      "qrCode": "{method}捐贈收款 QR 碼"
-    }
+    "retry": "重試"
   },
   "commands": {
     "mt": {

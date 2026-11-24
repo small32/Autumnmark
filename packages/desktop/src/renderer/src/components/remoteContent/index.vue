@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, watchPostEffect } from 'vue'
+import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { renderToStaticHTML } from '@muyajs/core'
 import type { RemoteContentKind } from '@shared/types/ipc'
@@ -42,7 +42,6 @@ import { useRemoteContentStore } from '@/store/remoteContent'
 import { sanitize } from '@/util/dompurify'
 
 const props = defineProps<{ active: boolean; kind: RemoteContentKind; panel?: boolean }>()
-const emit = defineEmits<{ displayed: [revision: string] }>()
 const { t } = useI18n()
 const feed = useRemoteContentStore()
 const snapshot = computed(() => feed.snapshots[props.kind])
@@ -70,7 +69,6 @@ const html = computed(() => {
 const status = computed(() => {
   if (loading.value) return t('remoteContent.loading')
   if (failed.value) return t(content.value ? 'remoteContent.refreshFailed' : 'remoteContent.loadFailed')
-  if (snapshot.value?.status === 'unverified') return t('remoteContent.unverified')
   return ''
 })
 
@@ -93,11 +91,6 @@ watch(() => props.active, (active) => {
     previouslyOpened = true
   }
 }, { immediate: true })
-
-watchPostEffect(() => {
-  const revision = snapshot.value?.announcementRevision
-  if (props.active && revision && html.value) emit('displayed', revision)
-})
 </script>
 
 <style scoped>

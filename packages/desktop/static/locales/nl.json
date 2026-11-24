@@ -1021,22 +1021,12 @@
     "copyrightContributors": "Gemaakt met <3 door GitHub-bijdragers"
   },
   "remoteContent": {
-    "announcement": "Aankondigingen",
-    "unreadAnnouncement": "Ongelezen aankondiging",
     "about": "Actuele informatie",
     "loading": "Nieuwste inhoud wordt opgehaald…",
     "loadFailed": "De inhoud kon niet worden geladen.",
     "refreshFailed": "Vernieuwen is mislukt. De laatst opgehaalde inhoud wordt getoond.",
-    "unverified": "GitHub is niet bereikbaar. Er kon niet worden gecontroleerd of de aankondiging actueel is.",
     "refresh": "Vernieuwen",
-    "retry": "Opnieuw proberen",
-    "donation": {
-      "title": "Steun AutumnMark",
-      "description": "Scan de code met de bijbehorende app om de ontwikkeling van AutumnMark te steunen.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "QR-code voor donaties via {method}"
-    }
+    "retry": "Opnieuw proberen"
   },
   "commands": {
     "mt": {

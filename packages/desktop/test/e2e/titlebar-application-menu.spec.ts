@@ -44,7 +44,7 @@ test.describe('Persistent title bar menus', () => {
     const title = page.locator('.title-bar .title')
     await expect(title.locator('.title-brand, .filename')).toHaveText(['AutumnMark', 'note.md'])
     await expect(title.locator('.title-brand img')).toBeVisible()
-    await expect(page.locator('.announcement-trigger')).toBeVisible()
+    await expect(page.locator('.announcement-trigger')).toHaveCount(0)
     await expect(page.locator('.document-status .word-count')).toBeVisible()
   })
 

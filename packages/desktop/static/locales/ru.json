@@ -1021,22 +1021,12 @@
     "copyrightContributors": "Сделано с <3 участниками GitHub"
   },
   "remoteContent": {
-    "announcement": "Объявления",
-    "unreadAnnouncement": "Непрочитанное объявление",
     "about": "Актуальная информация",
     "loading": "Загрузка последних данных…",
     "loadFailed": "Не удалось загрузить содержимое.",
     "refreshFailed": "Не удалось обновить данные. Показано последнее загруженное содержимое.",
-    "unverified": "GitHub недоступен. Не удалось проверить актуальность объявления.",
     "refresh": "Обновить",
-    "retry": "Повторить",
-    "donation": {
-      "title": "Поддержать AutumnMark",
-      "description": "Отсканируйте код в соответствующем приложении, чтобы поддержать разработку AutumnMark.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "QR-код для пожертвования через {method}"
-    }
+    "retry": "Повторить"
   },
   "commands": {
     "mt": {

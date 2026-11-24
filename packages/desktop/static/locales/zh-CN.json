@@ -1009,22 +1009,12 @@
     "copyrightContributors": "版权贡献者"
   },
   "remoteContent": {
-    "announcement": "公告",
-    "unreadAnnouncement": "公告有更新",
     "about": "动态信息",
     "loading": "正在获取最新内容…",
     "loadFailed": "内容获取失败。",
     "refreshFailed": "刷新失败，正在显示上次获取的内容。",
-    "unverified": "暂时无法连接 GitHub 源站，无法确认公告是否为最新版本。",
     "refresh": "刷新",
-    "retry": "重试",
-    "donation": {
-      "title": "支持秋笺",
-      "description": "欢迎使用支付宝或微信扫码，支持秋笺的持续开发。",
-      "alipay": "支付宝",
-      "wechatPay": "微信支付",
-      "qrCode": "{method}捐赠收款二维码"
-    }
+    "retry": "重试"
   },
   "commands": {
     "mt": {

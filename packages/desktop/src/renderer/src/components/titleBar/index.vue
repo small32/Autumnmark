@@ -49,7 +49,6 @@
             </el-icon>
             <span>{{ updates.percent === null ? t('updates.title') : `${updates.percent}%` }}</span>
           </button>
-          <announcement-bell />
         </div>
         <div
           v-if="titleBarStyle === 'custom' && !isFullScreen && !isOsx"
@@ -137,7 +136,6 @@ import { useAutoUpdatesStore } from '@/store/autoUpdates'
 import { CircleCheck, Download, Warning } from '@element-plus/icons-vue'
 import IconTooltip from '@/components/iconTooltip/index.vue'
 import ApplicationMenu from './applicationMenu.vue'
-import AnnouncementBell from './announcementBell.vue'
 import AppLogo from '@/assets/images/logo.png'
 import { APP_NAME } from '@shared/brand'
 

@@ -128,7 +128,6 @@ export interface PreferencesState {
 
   imageFolderPath: string
   webImages: unknown[]
-  lastReadAnnouncement: string | null
   cloudImages: unknown[]
   currentUploader: string
   cliScript: string
@@ -263,7 +262,6 @@ export const usePreferencesStore = defineStore('preferences', {
 
     imageFolderPath: '',
     webImages: [],
-    lastReadAnnouncement: null,
     cloudImages: [],
     currentUploader: 'picgo',
     cliScript: ''

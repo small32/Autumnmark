@@ -33,17 +33,15 @@ export type ClipboardImageInput = string | { mime: string; data: Uint8Array } | 
 export type PlantumlFetchResult =
   { ok: true; mime: string; data: Uint8Array } | { ok: false; error: string }
 
-export type RemoteContentKind = 'announcement' | 'about'
+export type RemoteContentKind = 'about'
 
 export interface RemoteContent {
   markdown: string
-  verified: boolean
 }
 
 export interface RemoteContentSnapshot {
   content: RemoteContent | null
-  status: 'ready' | 'unverified' | 'failed'
-  announcementRevision?: string
+  status: 'ready' | 'failed'
 }
 
 export interface UpdateProgress {
@@ -301,7 +299,6 @@ export interface IpcMainEventChannels extends StateIpcMainEvents {
   'mt::theme::inspector-changed': [open: boolean]
   'mt::theme::collaboration-state': [id: string, state: ThemeCollaborationState]
   'mt::theme::collaboration-capture': [id: string, event: ThemeCollaborationCapture]
-  'mt::announcement-changed': [snapshot: RemoteContentSnapshot]
   'mt::menu::application-categories-changed': []
   'mt::toggle-read-only': []
   'language-changed': [language: string]
