@@ -89,7 +89,7 @@ test('AI settings explain an older main process in the selected language', async
     const settings = await opened
     const table = settings.getByRole('table', { name: 'AI 模型' })
     await expect(table.getByRole('columnheader', { name: '操作' })).toBeVisible()
-    await expect(table.getByRole('alert')).toHaveText('请重新启动 AutumnMark 以加载新版模型设置。')
+    await expect(table.getByRole('alert')).toHaveText('请重新启动 Antumnmark+ 以加载新版模型设置。')
   } finally { await app.close() }
 })
 

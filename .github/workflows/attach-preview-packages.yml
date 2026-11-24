@@ -1,4 +1,4 @@
-name: Attach AutumnMark Preview Packages
+name: Attach Antumnmark+ Preview Packages
 
 on:
   workflow_dispatch:

@@ -1,7 +1,7 @@
 {
   "name": "autumnmark-monorepo",
   "version": "0.24.45",
-  "description": "AutumnMark monorepo root",
+  "description": "Antumnmark+ monorepo root",
   "private": true,
   "homepage": "https://github.com/Autumn-one/autumnmark",
   "packageManager": "pnpm@10.33.4",

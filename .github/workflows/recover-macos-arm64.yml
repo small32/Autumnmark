@@ -178,12 +178,12 @@ jobs:
           const { existsSync } = require('node:fs')
           const { join } = require('node:path')
           const { execFileSync } = require('node:child_process')
-          const contents = 'dist/mac-arm64/AutumnMark.app/Contents'
+          const contents = 'dist/mac-arm64/Antumnmark+.app/Contents'
           const verify = path => {
             execFileSync('lipo', [path, '-verify_arch', 'arm64'], { stdio: 'inherit' })
             console.log('Verified ARM64: ' + path)
           }
-          verify(join(contents, 'MacOS/AutumnMark'))
+          verify(join(contents, 'MacOS/Antumnmark+'))
           const modules = join(contents, 'Resources/app.asar.unpacked/node_modules')
           for (const path of [
             'ced/build/Release/ced.node',

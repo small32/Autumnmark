@@ -1,6 +1,6 @@
 {
   "ai": {
-    "restartTools": "Modelin ekran görüntüsü isteyebilmesi için AutumnMark’ı yeniden başlatın.",
+    "restartTools": "Modelin ekran görüntüsü isteyebilmesi için Antumnmark+’ı yeniden başlatın.",
     "inputTypes": "Desteklenen girdi türleri",
     "image": "Görsel",
     "systemPrompt": "Tema asistanı sistem istemi",
@@ -16,7 +16,7 @@
     "requestType": "İstek türü",
     "classic": "Chat Completions (klasik)",
     "loadFailed": "Kaydedilen model ayarları okunamadı.",
-    "restartRequired": "Güncellenen model ayarlarını yüklemek için AutumnMark uygulamasını yeniden başlatın.",
+    "restartRequired": "Güncellenen model ayarlarını yüklemek için Antumnmark+ uygulamasını yeniden başlatın.",
     "contextTooSmall": "Tema ve son mesaj tahmini bağlam bütçesini aşıyor. Bağlamı büyütün veya çıktı sınırını azaltın.",
     "add": "Model ekle",
     "edit": "Modeli düzenle",
@@ -44,9 +44,9 @@
     "copy": "Copy folder path",
     "stop": "Stop collaboration",
     "install": "Install Skill",
-    "installed": "AutumnMark Skill installed in the shared skills folder.",
+    "installed": "Antumnmark+ Skill installed in the shared skills folder.",
     "skillConflict": "A different autumnmark-theme Skill already exists in the shared skills folder.",
-    "skillError": "The AutumnMark Skill could not be installed.",
+    "skillError": "The Antumnmark+ Skill could not be installed.",
     "openError": "The collaboration folder could not be opened.",
     "copied": "Folder path copied.",
     "copyError": "The folder path could not be copied.",
@@ -74,7 +74,7 @@
     "deleteTheme": "Delete theme",
     "cancel": "Cancel",
     "confirmDelete": "Permanently delete “{name}”, along with its draft changes, example Markdown, and AI chats?",
-    "deleteApplied": "AutumnMark will switch to this theme’s built-in base theme.",
+    "deleteApplied": "Antumnmark+ will switch to this theme’s built-in base theme.",
     "deleteFailed": "Could not complete theme deletion. Check the library and try again."
   },
   "studio": {
@@ -271,15 +271,15 @@
       "checkUpdates": "Güncellemeleri Denetle"
     },
     "marktext": {
-      "title": "AutumnMark",
-      "about": "AutumnMark Hakkında",
+      "title": "Antumnmark+",
+      "about": "Antumnmark+ Hakkında",
       "checkUpdates": "Güncellemeleri Denetle...",
       "preferences": "Tercihler",
       "services": "Hizmetler",
-      "hide": "AutumnMark'i Gizle",
+      "hide": "Antumnmark+'i Gizle",
       "hideOthers": "Diğerlerini Gizle",
       "showAll": "Tümünü Göster",
-      "quit": "AutumnMark'ten Çık"
+      "quit": "Antumnmark+'ten Çık"
     },
     "view": {
       "view": "Görünüm",
@@ -464,7 +464,7 @@
       "conflict": "The destination already contains an item with this name. Rename it before trying again.",
       "missing": "The source or destination no longer exists. Refresh the folder and try again.",
       "permission": "The item could not be moved. Check folder permissions and whether another application is using it.",
-      "openElsewhere": "Close this file and any documents inside this folder in other AutumnMark windows before moving it.",
+      "openElsewhere": "Close this file and any documents inside this folder in other Antumnmark+ windows before moving it.",
       "destinationOpen": "A document is already open at the destination path. Close it before trying again."
     }
   },
@@ -582,7 +582,7 @@
   },
   "import": {
     "title": "İçe Aktar veya Aç",
-    "description": "İçeriklerinizi AutumnMark'e almak için buraya bırakın"
+    "description": "İçeriklerinizi Antumnmark+'e almak için buraya bırakın"
   },
   "preferences": {
     "title": "Tercihler",
@@ -819,7 +819,7 @@
         "scriptPath": "Betik yolu",
         "invalidScript": "Var olan ve çalıştırılabilir bir betiğin yolunu girin."
       },
-      "defaultBehavior": "Görseli AutumnMark'e yapıştırdıktan veya sürükledikten sonraki varsayılan davranış"
+      "defaultBehavior": "Görseli Antumnmark+'e yapıştırdıktan veya sürükledikten sonraki varsayılan davranış"
     },
     "markdown": {
       "title": "Markdown",
@@ -850,10 +850,10 @@
           "simple": "Basit"
         },
         "mermaidLightTheme": {
-          "title": "AutumnMark açık temaları için Mermaid teması"
+          "title": "Antumnmark+ açık temaları için Mermaid teması"
         },
         "mermaidDarkTheme": {
-          "title": "AutumnMark koyu temaları için Mermaid teması"
+          "title": "Antumnmark+ koyu temaları için Mermaid teması"
         },
         "plantumlServer": {
           "title": "PlantUML Sunucu URL'si"
@@ -927,7 +927,7 @@
       "applied": "{name} uygulandı.",
       "installedNotice": "{name} yüklendi. Yerel temalar bölümünde bulabilirsiniz.",
       "updated": "{name} güncellendi.",
-      "incompatible": "AutumnMark {version} gerekir",
+      "incompatible": "Antumnmark+ {version} gerekir",
       "changeFailed": "Tema ayarı kaydedilemedi.",
       "installFailed": "Bu tema indirilemedi veya kaydedilemedi.",
       "deleteTheme": "Temayı sil",
@@ -1037,7 +1037,7 @@
   },
   "commands": {
     "mt": {
-      "hide": "AutumnMark'i Gizle",
+      "hide": "Antumnmark+'i Gizle",
       "hideOthers": "Diğerlerini Gizle"
     },
     "file": {
@@ -1272,7 +1272,7 @@
     "fileExists": "Dosya zaten var: {filename}",
     "files": "Dosyalar",
     "importWarning": "İçe aktarma uyarısı",
-    "installPandoc": "Pandoc bulunamadı. Yükleyin veya MARKTEXT_PANDOC ortam değişkenini pandoc çalıştırılabilir dosyasının yolu olarak ayarlayıp AutumnMark'i yeniden başlatın.",
+    "installPandoc": "Pandoc bulunamadı. Yükleyin veya MARKTEXT_PANDOC ortam değişkenini pandoc çalıştırılabilir dosyasının yolu olarak ayarlayıp Antumnmark+'i yeniden başlatın.",
     "exportWarning": "Dışa aktarma uyarısı",
     "exportWarningMore": "…ve {count} tane daha",
     "keepOpen": "Açık tut",
@@ -1289,7 +1289,7 @@
     "configSchemaViolation": "Yapılandırma şeması ihlali",
     "copyError": "Kopyalama hatası",
     "initializationFailed": "Başlatma başarısız {hint}",
-    "otherInstanceDetected": "Başka bir AutumnMark penceresi zaten açık",
+    "otherInstanceDetected": "Başka bir Antumnmark+ penceresi zaten açık",
     "report": "Bildir",
     "startupError": "Başlangıç hatası",
     "terminatedDueToError": "Hata nedeniyle sonlandırıldı",

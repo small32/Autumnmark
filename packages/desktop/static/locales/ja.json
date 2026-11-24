@@ -1,6 +1,6 @@
 {
   "ai": {
-    "restartTools": "AutumnMark を再起動してモデルによるスクリーンショット取得を有効にしてください。",
+    "restartTools": "Antumnmark+ を再起動してモデルによるスクリーンショット取得を有効にしてください。",
     "inputTypes": "対応する入力形式",
     "image": "画像",
     "systemPrompt": "テーマアシスタントのシステムプロンプト",
@@ -16,7 +16,7 @@
     "requestType": "リクエスト形式",
     "classic": "Chat Completions（従来形式）",
     "loadFailed": "保存したモデル設定を読み込めませんでした。",
-    "restartRequired": "AutumnMark を再起動して新しいモデル設定を読み込んでください。",
+    "restartRequired": "Antumnmark+ を再起動して新しいモデル設定を読み込んでください。",
     "contextTooSmall": "テーマと最新のメッセージが推定コンテキスト長を超えています。コンテキスト長を増やすか、出力上限を下げてください。",
     "add": "モデルを追加",
     "edit": "モデルを編集",
@@ -44,9 +44,9 @@
     "copy": "Copy folder path",
     "stop": "Stop collaboration",
     "install": "Install Skill",
-    "installed": "AutumnMark Skill installed in the shared skills folder.",
+    "installed": "Antumnmark+ Skill installed in the shared skills folder.",
     "skillConflict": "A different autumnmark-theme Skill already exists in the shared skills folder.",
-    "skillError": "The AutumnMark Skill could not be installed.",
+    "skillError": "The Antumnmark+ Skill could not be installed.",
     "openError": "The collaboration folder could not be opened.",
     "copied": "Folder path copied.",
     "copyError": "The folder path could not be copied.",
@@ -74,7 +74,7 @@
     "deleteTheme": "Delete theme",
     "cancel": "Cancel",
     "confirmDelete": "Permanently delete “{name}”, along with its draft changes, example Markdown, and AI chats?",
-    "deleteApplied": "AutumnMark will switch to this theme’s built-in base theme.",
+    "deleteApplied": "Antumnmark+ will switch to this theme’s built-in base theme.",
     "deleteFailed": "Could not complete theme deletion. Check the library and try again."
   },
   "studio": {
@@ -271,15 +271,15 @@
       "checkUpdates": "更新の確認"
     },
     "marktext": {
-      "title": "AutumnMark",
-      "about": "AutumnMark について",
+      "title": "Antumnmark+",
+      "about": "Antumnmark+ について",
       "checkUpdates": "更新の確認...",
       "preferences": "環境設定",
       "services": "サービス",
-      "hide": "AutumnMark を隠す",
+      "hide": "Antumnmark+ を隠す",
       "hideOthers": "他を隠す",
       "showAll": "すべて表示",
-      "quit": "AutumnMark を終了"
+      "quit": "Antumnmark+ を終了"
     },
     "view": {
       "view": "表示",
@@ -464,7 +464,7 @@
       "conflict": "The destination already contains an item with this name. Rename it before trying again.",
       "missing": "The source or destination no longer exists. Refresh the folder and try again.",
       "permission": "The item could not be moved. Check folder permissions and whether another application is using it.",
-      "openElsewhere": "Close this file and any documents inside this folder in other AutumnMark windows before moving it.",
+      "openElsewhere": "Close this file and any documents inside this folder in other Antumnmark+ windows before moving it.",
       "destinationOpen": "A document is already open at the destination path. Close it before trying again."
     }
   },
@@ -582,7 +582,7 @@
   },
   "import": {
     "title": "インポートまたは開く",
-    "description": "ここにドラッグして AutumnMark にコンテンツをインポート"
+    "description": "ここにドラッグして Antumnmark+ にコンテンツをインポート"
   },
   "preferences": {
     "title": "環境設定",
@@ -819,7 +819,7 @@
         "lastSuccessTime": "最後の成功時刻",
         "invalidScript": "存在する実行可能なスクリプトのパスを入力してください。"
       },
-      "defaultBehavior": "AutumnMark に画像を貼り付けまたはドラッグした後のデフォルト動作"
+      "defaultBehavior": "Antumnmark+ に画像を貼り付けまたはドラッグした後のデフォルト動作"
     },
     "markdown": {
       "title": "Markdown",
@@ -850,10 +850,10 @@
           "simple": "シンプル"
         },
         "mermaidLightTheme": {
-          "title": "AutumnMark のライトテーマ用 Mermaid テーマ"
+          "title": "Antumnmark+ のライトテーマ用 Mermaid テーマ"
         },
         "mermaidDarkTheme": {
-          "title": "AutumnMark のダークテーマ用 Mermaid テーマ"
+          "title": "Antumnmark+ のダークテーマ用 Mermaid テーマ"
         },
         "plantumlServer": {
           "title": "PlantUML サーバーの URL"
@@ -927,7 +927,7 @@
       "applied": "「{name}」を適用しました。",
       "installedNotice": "「{name}」をインストールしました。ローカルテーマから選択できます。",
       "updated": "「{name}」を更新しました。",
-      "incompatible": "AutumnMark {version} が必要です",
+      "incompatible": "Antumnmark+ {version} が必要です",
       "changeFailed": "テーマ設定を保存できませんでした。",
       "installFailed": "このテーマをダウンロードまたは保存できませんでした。",
       "deleteTheme": "テーマを削除",
@@ -1037,7 +1037,7 @@
   },
   "commands": {
     "mt": {
-      "hide": "AutumnMark を隠す",
+      "hide": "Antumnmark+ を隠す",
       "hideOthers": "他を隠す"
     },
     "file": {
@@ -1272,7 +1272,7 @@
     "fileExists": "ファイルが既に存在します: {filename}",
     "files": "ファイル",
     "importWarning": "インポート警告",
-    "installPandoc": "Pandoc が見つかりません。インストールするか、環境変数 MARKTEXT_PANDOC に pandoc の実行ファイルのパスを設定して AutumnMark を再起動してください。",
+    "installPandoc": "Pandoc が見つかりません。インストールするか、環境変数 MARKTEXT_PANDOC に pandoc の実行ファイルのパスを設定して Antumnmark+ を再起動してください。",
     "exportWarning": "エクスポートの警告",
     "exportWarningMore": "…ほか {count} 件",
     "keepOpen": "開いたままにする",
@@ -1289,7 +1289,7 @@
     "configSchemaViolation": "設定スキーマ違反",
     "copyError": "コピーエラー",
     "initializationFailed": "初期化に失敗しました {hint}",
-    "otherInstanceDetected": "AutumnMark の別のインスタンスが既に実行中です",
+    "otherInstanceDetected": "Antumnmark+ の別のインスタンスが既に実行中です",
     "report": "報告",
     "startupError": "起動エラー",
     "terminatedDueToError": "エラーにより終了",

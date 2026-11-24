@@ -42,7 +42,7 @@ test.describe('Persistent title bar menus', () => {
     await expect(page.getByRole('menuitem', { name: '文件', exact: true })).toBeVisible()
     await expect(page.locator('.frameless-titlebar-menu')).toHaveCount(0)
     const title = page.locator('.title-bar .title')
-    await expect(title.locator('.title-brand, .filename')).toHaveText(['AutumnMark', 'note.md'])
+    await expect(title.locator('.title-brand, .filename')).toHaveText(['Antumnmark+', 'note.md'])
     await expect(title.locator('.title-brand img')).toBeVisible()
     await expect(page.locator('.announcement-trigger')).toHaveCount(0)
     await expect(page.locator('.document-status .word-count')).toBeVisible()

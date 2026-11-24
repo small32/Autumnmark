@@ -1,6 +1,6 @@
 {
   "ai": {
-    "restartTools": "Перезапустите AutumnMark, чтобы модель могла запрашивать снимки.",
+    "restartTools": "Перезапустите Antumnmark+, чтобы модель могла запрашивать снимки.",
     "inputTypes": "Поддерживаемые типы ввода",
     "image": "Изображение",
     "systemPrompt": "Системная инструкция помощника по темам",
@@ -16,7 +16,7 @@
     "requestType": "Тип запроса",
     "classic": "Chat Completions (классический)",
     "loadFailed": "Не удалось прочитать сохранённые настройки моделей.",
-    "restartRequired": "Перезапустите AutumnMark, чтобы загрузить обновлённые настройки моделей.",
+    "restartRequired": "Перезапустите Antumnmark+, чтобы загрузить обновлённые настройки моделей.",
     "contextTooSmall": "Тема и последнее сообщение превышают оценочный размер контекста. Увеличьте контекст или уменьшите предел вывода.",
     "add": "Добавить модель",
     "edit": "Изменить модель",
@@ -44,9 +44,9 @@
     "copy": "Copy folder path",
     "stop": "Stop collaboration",
     "install": "Install Skill",
-    "installed": "AutumnMark Skill installed in the shared skills folder.",
+    "installed": "Antumnmark+ Skill installed in the shared skills folder.",
     "skillConflict": "A different autumnmark-theme Skill already exists in the shared skills folder.",
-    "skillError": "The AutumnMark Skill could not be installed.",
+    "skillError": "The Antumnmark+ Skill could not be installed.",
     "openError": "The collaboration folder could not be opened.",
     "copied": "Folder path copied.",
     "copyError": "The folder path could not be copied.",
@@ -74,7 +74,7 @@
     "deleteTheme": "Delete theme",
     "cancel": "Cancel",
     "confirmDelete": "Permanently delete “{name}”, along with its draft changes, example Markdown, and AI chats?",
-    "deleteApplied": "AutumnMark will switch to this theme’s built-in base theme.",
+    "deleteApplied": "Antumnmark+ will switch to this theme’s built-in base theme.",
     "deleteFailed": "Could not complete theme deletion. Check the library and try again."
   },
   "studio": {
@@ -271,15 +271,15 @@
       "checkUpdates": "Проверить обновления"
     },
     "marktext": {
-      "title": "AutumnMark",
-      "about": "О AutumnMark",
+      "title": "Antumnmark+",
+      "about": "О Antumnmark+",
       "checkUpdates": "Проверить обновления...",
       "preferences": "Настройки",
       "services": "Службы",
-      "hide": "Скрыть AutumnMark",
+      "hide": "Скрыть Antumnmark+",
       "hideOthers": "Скрыть остальные",
       "showAll": "Показать все",
-      "quit": "Выйти из AutumnMark"
+      "quit": "Выйти из Antumnmark+"
     },
     "view": {
       "view": "Вид",
@@ -464,7 +464,7 @@
       "conflict": "The destination already contains an item with this name. Rename it before trying again.",
       "missing": "The source or destination no longer exists. Refresh the folder and try again.",
       "permission": "The item could not be moved. Check folder permissions and whether another application is using it.",
-      "openElsewhere": "Close this file and any documents inside this folder in other AutumnMark windows before moving it.",
+      "openElsewhere": "Close this file and any documents inside this folder in other Antumnmark+ windows before moving it.",
       "destinationOpen": "A document is already open at the destination path. Close it before trying again."
     }
   },
@@ -582,7 +582,7 @@
   },
   "import": {
     "title": "Импорт или открытие",
-    "description": "Перетащите сюда, чтобы добавить файлы в AutumnMark"
+    "description": "Перетащите сюда, чтобы добавить файлы в Antumnmark+"
   },
   "preferences": {
     "title": "Настройки",
@@ -819,7 +819,7 @@
         "scriptPath": "Путь к скрипту",
         "invalidScript": "Укажите путь к существующему исполняемому скрипту."
       },
-      "defaultBehavior": "Поведение по умолчанию после вставки или перетаскивания изображения в AutumnMark"
+      "defaultBehavior": "Поведение по умолчанию после вставки или перетаскивания изображения в Antumnmark+"
     },
     "markdown": {
       "title": "Markdown",
@@ -850,10 +850,10 @@
           "simple": "Простая"
         },
         "mermaidLightTheme": {
-          "title": "Тема Mermaid для светлых тем AutumnMark"
+          "title": "Тема Mermaid для светлых тем Antumnmark+"
         },
         "mermaidDarkTheme": {
-          "title": "Тема Mermaid для тёмных тем AutumnMark"
+          "title": "Тема Mermaid для тёмных тем Antumnmark+"
         },
         "plantumlServer": {
           "title": "URL сервера PlantUML"
@@ -927,7 +927,7 @@
       "applied": "Тема «{name}» применена.",
       "installedNotice": "Тема «{name}» установлена и доступна в локальных темах.",
       "updated": "Тема «{name}» обновлена.",
-      "incompatible": "Требуется AutumnMark {version}",
+      "incompatible": "Требуется Antumnmark+ {version}",
       "changeFailed": "Не удалось сохранить настройку темы.",
       "installFailed": "Не удалось скачать или сохранить эту тему.",
       "deleteTheme": "Удалить тему",
@@ -1037,7 +1037,7 @@
   },
   "commands": {
     "mt": {
-      "hide": "Скрыть AutumnMark",
+      "hide": "Скрыть Antumnmark+",
       "hideOthers": "Скрыть остальные"
     },
     "file": {
@@ -1272,7 +1272,7 @@
     "fileExists": "Файл существует {filename}",
     "files": "Файлы",
     "importWarning": "Предупреждение импорта",
-    "installPandoc": "Pandoc не найден. Установите его или задайте переменную окружения MARKTEXT_PANDOC с путём к бинарнику pandoc и перезапустите AutumnMark.",
+    "installPandoc": "Pandoc не найден. Установите его или задайте переменную окружения MARKTEXT_PANDOC с путём к бинарнику pandoc и перезапустите Antumnmark+.",
     "exportWarning": "Предупреждение экспорта",
     "exportWarningMore": "…и ещё {count}",
     "keepOpen": "Оставить открытым",
@@ -1289,7 +1289,7 @@
     "configSchemaViolation": "Нарушение схемы конфигурации",
     "copyError": "Ошибка копирования",
     "initializationFailed": "Ошибка инициализации {hint}",
-    "otherInstanceDetected": "Другой экземпляр AutumnMark уже запущен",
+    "otherInstanceDetected": "Другой экземпляр Antumnmark+ уже запущен",
     "report": "Сообщить",
     "startupError": "Ошибка запуска",
     "terminatedDueToError": "Завершено из-за ошибки",

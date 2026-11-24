@@ -9,7 +9,7 @@ const prefs = await window.electron.ipcRenderer.invoke('mt::preferences::get')
 const params = new URLSearchParams(location.search)
 const initial = params.get('initial') ?? prefs.theme
 await setLanguage(prefs.language || navigator.language)
-document.title = t('studio.title') + ' · AutumnMark'
+document.title = t('studio.title') + ' · Antumnmark+'
 addThemeStyle(themeBaseId(prefs.theme))
 createApp(ThemeWorkspace, { initial, editing: params.get('editing') === 'true', initialPreferences: prefs })
   .use(i18n).mount('#app')

@@ -1,6 +1,6 @@
 # NSIS derives the Windows uninstall key from appId. Keep it in sync with APP_ID in src/shared/brand.ts.
 appId: io.github.autumn-one.autumnmark
-productName: AutumnMark
+productName: Antumnmark+
 # The packaged name determines the updater cache and Linux package name.
 extraMetadata:
   name: autumnmark
@@ -152,7 +152,7 @@ linux:
   icon: 'static/icon.png'
   desktop:
     entry:
-      StartupWMClass: 'AutumnMark'
+      StartupWMClass: 'Antumnmark+'
       Keywords: 'autumnmark;markdown;'
   target:
     - target: AppImage

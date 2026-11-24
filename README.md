@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/assets/logo-small.png" alt="" width="80" height="80"></p>
 
-<h1 align="center">AutumnMark · 秋笺</h1>
+<h1 align="center">Antumnmark+ · 秋笺</h1>
 
 秋笺是一款开源桌面 Markdown 编辑器。写教程时，可以让读者切换不同平台的步骤，把补充说明折起来，在代码里点出关键几行。插图也能直接存进同一份 `.md`，离线打开或发给别人都不需要图床。
 

@@ -55,7 +55,7 @@ const downloadMarkdown = async(
       redirect: 'error',
       headers: {
         Accept: 'text/plain, text/markdown',
-        'User-Agent': 'AutumnMark'
+        'User-Agent': 'Antumnmark+'
       }
     })
     if (!response.ok || response.headers.get('content-type')?.includes('text/html')) {

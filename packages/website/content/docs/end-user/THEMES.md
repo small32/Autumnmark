@@ -1,6 +1,6 @@
 # Themes
 
-AutumnMark includes 33 built-in themes organized into Light and Dark categories. Each theme provides a color scheme for the editor interface.
+Antumnmark+ includes 33 built-in themes organized into Light and Dark categories. Each theme provides a color scheme for the editor interface.
 
 The names below match the labels shown in the **Theme** menu. The default light theme, _GitBook Teal_, uses the id `light` in `preferences.json`. The full list of theme names and ids lives in `packages/desktop/src/main/menu/templates/theme.ts`.
 

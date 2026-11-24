@@ -1,4 +1,4 @@
-name: Release AutumnMark
+name: Release Antumnmark+
 
 on:
   push:
@@ -192,12 +192,12 @@ jobs:
           const { existsSync } = require('node:fs')
           const { join } = require('node:path')
           const { execFileSync } = require('node:child_process')
-          const contents = 'dist/mac-arm64/AutumnMark.app/Contents'
+          const contents = 'dist/mac-arm64/Antumnmark+.app/Contents'
           const verify = path => {
             execFileSync('lipo', [path, '-verify_arch', 'arm64'], { stdio: 'inherit' })
             console.log('Verified ARM64: ' + path)
           }
-          verify(join(contents, 'MacOS/AutumnMark'))
+          verify(join(contents, 'MacOS/Antumnmark+'))
           const modules = join(contents, 'Resources/app.asar.unpacked/node_modules')
           for (const path of [
             'ced/build/Release/ced.node',
@@ -288,7 +288,7 @@ jobs:
         env:
           IS_PRERELEASE: ${{ contains(github.ref_name, '-') }}
         run: |
-          highlights=$(awk -v heading="## AutumnMark ${GITHUB_REF_NAME#v}" '
+          highlights=$(awk -v heading="## Antumnmark+ ${GITHUB_REF_NAME#v}" '
             $0 == heading { found = 1; next }
             found && /^## / { exit }
             found { print }
@@ -303,14 +303,14 @@ jobs:
               printf '## What’s new\n%s\n\n' "$highlights"
             fi
             echo "## First installation of the independent version"
-            echo "If you use AutumnMark 0.24.8 or earlier, download the new installer below. On Windows, uninstall the old AutumnMark first and keep its settings when prompted. The current version uses its own settings directory and can coexist with MarkText."
+            echo "If you use Antumnmark+ 0.24.8 or earlier, download the new installer below. On Windows, uninstall the old Antumnmark+ first and keep its settings when prompted. The current version uses its own settings directory and can coexist with MarkText."
             echo ""
-            echo "从 0.24.8 或更早版本升级时，请在下方下载安装包。Windows 用户请先卸载旧版 AutumnMark，并在提示时保留设置。新版使用独立的设置目录，可以与 MarkText 共存。"
+            echo "从 0.24.8 或更早版本升级时，请在下方下载安装包。Windows 用户请先卸载旧版 Antumnmark+，并在提示时保留设置。新版使用独立的设置目录，可以与 MarkText 共存。"
             echo ""
             echo "## ⚠️ Note for macOS users"
-            echo "Builds are unsigned (no Apple Developer ID). After dragging AutumnMark into Applications, clear the quarantine flag once:"
+            echo "Builds are unsigned (no Apple Developer ID). After dragging Antumnmark+ into Applications, clear the quarantine flag once:"
             echo '```'
-            echo 'xattr -d com.apple.quarantine /Applications/AutumnMark.app'
+            echo 'xattr -d com.apple.quarantine /Applications/Antumnmark+.app'
             echo '```'
             echo ""
             echo "## Verifying downloads"
