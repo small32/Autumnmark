@@ -2,7 +2,25 @@ import type { UserPreferences } from '@shared/types/preferences'
 import type { LocalTheme } from '@shared/localTheme'
 import { defineStore } from 'pinia'
 import { getCurrentLanguage, setLanguage } from '../i18n'
-import { withHiddenSidebarPath, withoutHiddenSidebarPath } from '../util/hiddenSidebarFiles'
+import {
+  renameHiddenSidebarPaths,
+  sameHiddenSidebarPaths,
+  withHiddenSidebarPath,
+  withoutHiddenSidebarPath,
+  withoutHiddenSidebarSubtree
+} from '../util/hiddenSidebarFiles'
+
+// Serialize hidden-sidebar mutations so that rapid or overlapping hide/restore
+// calls always compute from the latest state. Without this queue, two actions
+// can both read the same stale `hiddenSidebarPaths` snapshot before their IPC
+// writes settle, and the later write silently drops the earlier one.
+let hiddenSidebarMutation: Promise<unknown> = Promise.resolve()
+
+const enqueueHiddenSidebarMutation = (task: () => Promise<boolean>): Promise<boolean> => {
+  const result = hiddenSidebarMutation.then(task, task)
+  hiddenSidebarMutation = result.catch(() => undefined)
+  return result
+}
 
 export type EndOfLine = 'default' | 'lf' | 'crlf'
 export type TitleBarStyle = 'custom' | 'native'
@@ -328,15 +346,39 @@ export const usePreferencesStore = defineStore('preferences', {
     },
 
     async HIDE_SIDEBAR_ITEM(pathname: string): Promise<boolean> {
-      return this.SET_HIDDEN_SIDEBAR_PATHS(withHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
+      // Compute from the freshest state inside the queue, not before it.
+      return enqueueHiddenSidebarMutation(() =>
+        this.SET_HIDDEN_SIDEBAR_PATHS(withHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
+      )
     },
 
     async RESTORE_SIDEBAR_ITEM(pathname: string): Promise<boolean> {
-      return this.SET_HIDDEN_SIDEBAR_PATHS(withoutHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
+      return enqueueHiddenSidebarMutation(() =>
+        this.SET_HIDDEN_SIDEBAR_PATHS(withoutHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
+      )
     },
 
     async RESTORE_ALL_SIDEBAR_ITEMS(): Promise<boolean> {
-      return this.SET_HIDDEN_SIDEBAR_PATHS([])
+      return enqueueHiddenSidebarMutation(() => this.SET_HIDDEN_SIDEBAR_PATHS([]))
+    },
+
+    // Called after a successful rename/move so a hidden item keeps its hidden
+    // state under the new path instead of reappearing with a stale entry left behind.
+    async RENAME_HIDDEN_SIDEBAR_ITEM(src: string, dest: string): Promise<boolean> {
+      return enqueueHiddenSidebarMutation(() => {
+        const next = renameHiddenSidebarPaths(this.hiddenSidebarPaths, src, dest)
+        if (sameHiddenSidebarPaths(next, this.hiddenSidebarPaths)) return Promise.resolve(true)
+        return this.SET_HIDDEN_SIDEBAR_PATHS(next)
+      })
+    },
+
+    // Called after an item is trashed to drop its (and its descendants') hidden entries.
+    async REMOVE_HIDDEN_SIDEBAR_ITEM(pathname: string): Promise<boolean> {
+      return enqueueHiddenSidebarMutation(() => {
+        const next = withoutHiddenSidebarSubtree(this.hiddenSidebarPaths, pathname)
+        if (next.length === this.hiddenSidebarPaths.length) return Promise.resolve(true)
+        return this.SET_HIDDEN_SIDEBAR_PATHS(next)
+      })
     },
 
     SET_USER_DATA({ type, value }: SetUserDataPayload): void {

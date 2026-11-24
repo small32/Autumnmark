@@ -288,7 +288,11 @@ jobs:
         env:
           IS_PRERELEASE: ${{ contains(github.ref_name, '-') }}
         run: |
-          highlights=$(awk -v heading="## Antumnmark+ ${GITHUB_REF_NAME#v}" '
+          # RC tags (e.g. v0.1.2-rc.1) use the stable version as the CHANGELOG
+          # heading (## Antumnmark+ 0.1.2), so strip any -/+ prerelease suffix.
+          release_version="${GITHUB_REF_NAME#v}"
+          stable_version="${release_version%%[-+]*}"
+          highlights=$(awk -v heading="## Antumnmark+ ${stable_version}" '
             $0 == heading { found = 1; next }
             found && /^## / { exit }
             found { print }

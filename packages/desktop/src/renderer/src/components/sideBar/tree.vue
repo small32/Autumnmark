@@ -597,16 +597,21 @@ watch(
 const hideActiveItem = async (): Promise<void> => {
   const target = activeItem.value as { pathname?: unknown } | null
   if (typeof target?.pathname !== 'string') return
-  const saved = await preferencesStore.HIDE_SIDEBAR_ITEM(target.pathname)
-  if (saved) {
-    projectStore.CHANGE_ACTIVE_ITEM({})
-  } else {
-    notice.notify({
-      type: 'error',
-      title: t('contextMenu.sideBar.hide'),
-      message: t('preferences.general.sidebar.restoreFailed')
-    })
+  try {
+    const saved = await preferencesStore.HIDE_SIDEBAR_ITEM(target.pathname)
+    if (saved) {
+      projectStore.CHANGE_ACTIVE_ITEM({})
+      return
+    }
+  } catch {
+    // IPC failure is handled below together with a rejected write.
   }
+  // Keep the selection intact on failure so the action can be retried.
+  notice.notify({
+    type: 'error',
+    title: t('contextMenu.sideBar.hide'),
+    message: t('preferences.general.sidebar.restoreFailed')
+  })
 }
 
 onMounted(() => {

@@ -1,3 +1,9 @@
+## Antumnmark+ 0.1.2
+
+- Fixed rapid hide/restore actions dropping each other's updates in the sidebar.
+- Hidden files and folders now follow their item when it is renamed, moved or deleted.
+- Hide failures now show an error instead of failing silently.
+
 ## Antumnmark+ 0.1.1
 
 - Right-click a folder in the sidebar to hide the folder and its contents. Restore hidden folders and files from Settings → General → Sidebar.

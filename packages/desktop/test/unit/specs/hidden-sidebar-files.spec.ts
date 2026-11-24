@@ -71,6 +71,20 @@ describe('sidebar hidden files', () => {
     expect(store.hiddenSidebarPaths).toEqual([])
   })
 
+  it('serializes overlapping hide calls without losing an update', async() => {
+    const store = usePreferencesStore()
+
+    // Fire both hides before the first IPC settles; both must survive.
+    await Promise.all([
+      store.HIDE_SIDEBAR_ITEM('C:\\Notes\\A.md'),
+      store.HIDE_SIDEBAR_ITEM('C:\\Notes\\B.md')
+    ])
+    expect(store.hiddenSidebarPaths).toEqual(['C:/Notes/A.md', 'C:/Notes/B.md'])
+    expect(invoke()).toHaveBeenLastCalledWith('mt::preferences::update', {
+      hiddenSidebarPaths: ['C:/Notes/A.md', 'C:/Notes/B.md']
+    })
+  })
+
   it('restores every hidden file at once', async() => {
     const store = usePreferencesStore()
     await store.HIDE_SIDEBAR_ITEM('C:\\Notes\\A.md')
@@ -106,6 +120,47 @@ describe('sidebar hidden files', () => {
 
     expect(visibleFolders([folder('Archive'), folder('Work')]).map(item => item.name)).toEqual(['Work'])
     expect(visibleFiles([file('draft.md'), file('keep.md')]).map(item => item.name)).toEqual(['keep.md'])
+  })
+
+  it('carries hidden state over when a hidden item is renamed', async() => {
+    const store = usePreferencesStore()
+    store.hiddenSidebarPaths = ['C:/Notes/Draft.md', 'C:/Notes/Keep.md']
+
+    await expect(store.RENAME_HIDDEN_SIDEBAR_ITEM('C:\\Notes\\Draft.md', 'C:\\Notes\\Final.md')).resolves.toBe(true)
+    expect(store.hiddenSidebarPaths).toEqual(['C:/Notes/Final.md', 'C:/Notes/Keep.md'])
+    expect(invoke()).toHaveBeenLastCalledWith('mt::preferences::update', {
+      hiddenSidebarPaths: ['C:/Notes/Final.md', 'C:/Notes/Keep.md']
+    })
+  })
+
+  it('rewrites descendants when a hidden folder is renamed', async() => {
+    const store = usePreferencesStore()
+    store.hiddenSidebarPaths = ['C:/Notes/Archive', 'C:/Notes/Archive/a.md', 'C:/Notes/Other/b.md']
+
+    await store.RENAME_HIDDEN_SIDEBAR_ITEM('C:\\Notes\\Archive', 'C:\\Notes\\Backup')
+    expect(store.hiddenSidebarPaths).toEqual([
+      'C:/Notes/Backup',
+      'C:/Notes/Backup/a.md',
+      'C:/Notes/Other/b.md'
+    ])
+  })
+
+  it('drops hidden entries for a trashed item and its descendants', async() => {
+    const store = usePreferencesStore()
+    store.hiddenSidebarPaths = ['C:/Notes/Archive', 'C:/Notes/Archive/a.md', 'C:/Notes/Keep.md']
+
+    await expect(store.REMOVE_HIDDEN_SIDEBAR_ITEM('C:\\Notes\\Archive')).resolves.toBe(true)
+    expect(store.hiddenSidebarPaths).toEqual(['C:/Notes/Keep.md'])
+  })
+
+  it('does not write when a rename leaves the hidden list unchanged', async() => {
+    const store = usePreferencesStore()
+    store.hiddenSidebarPaths = ['C:/Notes/Keep.md']
+    invoke().mockClear()
+
+    await store.RENAME_HIDDEN_SIDEBAR_ITEM('C:\\Notes\\Unrelated.md', 'C:\\Notes\\Other.md')
+    expect(invoke()).not.toHaveBeenCalled()
+    expect(store.hiddenSidebarPaths).toEqual(['C:/Notes/Keep.md'])
   })
 
   it('lists hidden items in settings and restores the selected one', async() => {

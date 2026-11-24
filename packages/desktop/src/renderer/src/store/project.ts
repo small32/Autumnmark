@@ -498,9 +498,11 @@ export const useProjectStore = defineStore('project', () => {
       if (typeof pathname !== 'string' || !pathname) return
       try {
         const trashed = await window.electron.ipcRenderer.invoke('mt::fs-trash-item', pathname)
-        // The node is gone; drop the selection so Delete cannot retarget it.
-        if (trashed && activeItem.value?.pathname === pathname) {
-          activeItem.value = {}
+        if (trashed) {
+          // A trashed item must not linger in the hidden-files settings list.
+          void usePreferencesStore().REMOVE_HIDDEN_SIDEBAR_ITEM(pathname)
+          // The node is gone; drop the selection so Delete cannot retarget it.
+          if (activeItem.value?.pathname === pathname) activeItem.value = {}
         }
       } catch (err) {
         notice.notify({
@@ -553,7 +555,10 @@ export const useProjectStore = defineStore('project', () => {
         cb.dest = dest
 
         paste(cb as PasteOptions)
-          .then(() => {
+          .then(async() => {
+            // A cut is a move: carry hidden state to the new location.
+            if (cb.type === 'cut' && cb.src)
+              await usePreferencesStore().RENAME_HIDDEN_SIDEBAR_ITEM(cb.src, dest)
             clipboard.value = null
           })
           .catch((err) => {
@@ -631,7 +636,7 @@ export const useProjectStore = defineStore('project', () => {
     const dest = dirname + PATH_SEPARATOR + name
     if (window.path.normalize(dest) === window.path.normalize(src)) return
     rename(src, dest)
-      .then(() => {
+      .then(async() => {
         // Keep the selection on the new path so a following F2 / Delete acts on
         // the renamed node instead of the one that no longer exists.
         if (activeItem.value?.pathname === src) {
@@ -641,6 +646,9 @@ export const useProjectStore = defineStore('project', () => {
             name: window.path.basename(dest)
           }
         }
+        // Carry hidden state over to the new path (including descendants when
+        // a hidden folder is renamed), otherwise it silently reappears.
+        await usePreferencesStore().RENAME_HIDDEN_SIDEBAR_ITEM(src, dest)
         editorStore.RENAME_IF_NEEDED({ src, dest })
       })
       .catch((err) => {
