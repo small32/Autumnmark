@@ -676,9 +676,9 @@
           "oldestFirst": "Älteste zuerst",
           "newestFirst": "Neueste zuerst"
         },
-        "hiddenFiles": "Ausgeblendete Dateien",
-        "hiddenFilesNotes": "Klicken Sie in der Seitenleiste mit der rechten Maustaste auf eine Datei und wählen Sie „Aus Seitenleiste ausblenden“. Entfernen Sie einen Eintrag hier, um die Datei wieder anzuzeigen.",
-        "hiddenFilesEmpty": "Keine Dateien ausgeblendet.",
+        "hiddenFiles": "Ausgeblendete Dateien und Ordner",
+        "hiddenFilesNotes": "Klicken Sie in der Seitenleiste mit der rechten Maustaste auf eine Datei oder einen Ordner und wählen Sie „Aus Seitenleiste ausblenden“. Entfernen Sie einen Eintrag hier, um ihn wieder anzuzeigen.",
+        "hiddenFilesEmpty": "Keine Dateien oder Ordner ausgeblendet.",
         "restore": "Wiederherstellen",
         "restoreAll": "Alle wiederherstellen",
         "restoreFailed": "Die Liste der ausgeblendeten Dateien konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut."

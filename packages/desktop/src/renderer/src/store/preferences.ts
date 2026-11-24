@@ -327,15 +327,15 @@ export const usePreferencesStore = defineStore('preferences', {
       return true
     },
 
-    async HIDE_SIDEBAR_FILE(pathname: string): Promise<boolean> {
+    async HIDE_SIDEBAR_ITEM(pathname: string): Promise<boolean> {
       return this.SET_HIDDEN_SIDEBAR_PATHS(withHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
     },
 
-    async RESTORE_SIDEBAR_FILE(pathname: string): Promise<boolean> {
+    async RESTORE_SIDEBAR_ITEM(pathname: string): Promise<boolean> {
       return this.SET_HIDDEN_SIDEBAR_PATHS(withoutHiddenSidebarPath(this.hiddenSidebarPaths, pathname))
     },
 
-    async RESTORE_ALL_SIDEBAR_FILES(): Promise<boolean> {
+    async RESTORE_ALL_SIDEBAR_ITEMS(): Promise<boolean> {
       return this.SET_HIDDEN_SIDEBAR_PATHS([])
     },
 

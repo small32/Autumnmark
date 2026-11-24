@@ -676,9 +676,9 @@
           "oldestFirst": "Prima il meno recente",
           "newestFirst": "Prima il più recente"
         },
-        "hiddenFiles": "File nascosti",
-        "hiddenFilesNotes": "Fai clic con il pulsante destro su un file nella barra laterale e scegli «Nascondi dalla barra laterale». Rimuovi una voce qui per mostrare di nuovo il file.",
-        "hiddenFilesEmpty": "Nessun file nascosto.",
+        "hiddenFiles": "File e cartelle nascosti",
+        "hiddenFilesNotes": "Fai clic con il pulsante destro su un file o una cartella nella barra laterale e scegli «Nascondi dalla barra laterale». Rimuovi una voce qui per mostrarlo di nuovo.",
+        "hiddenFilesEmpty": "Nessun file o cartella nascosti.",
         "restore": "Ripristina",
         "restoreAll": "Ripristina tutto",
         "restoreFailed": "Impossibile aggiornare l'elenco dei file nascosti. Riprova."

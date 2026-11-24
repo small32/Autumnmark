@@ -23,6 +23,8 @@ vi.hoisted(() => {
 })
 
 import { usePreferencesStore } from '@/store/preferences'
+import { useHiddenSidebarFiles } from '@/components/sideBar/useHiddenSidebarFiles'
+import type { TreeFileNode, TreeFolderNode } from '@/components/sideBar/types'
 
 const invoke = (): ReturnType<typeof vi.fn> =>
   window.electron.ipcRenderer.invoke as unknown as ReturnType<typeof vi.fn>
@@ -43,21 +45,21 @@ describe('sidebar hidden files', () => {
   it('hides a file once and persists the normalized path', async() => {
     const store = usePreferencesStore()
 
-    await expect(store.HIDE_SIDEBAR_FILE('C:\\Notes\\Draft.md')).resolves.toBe(true)
+    await expect(store.HIDE_SIDEBAR_ITEM('C:\\Notes\\Draft.md')).resolves.toBe(true)
     expect(store.hiddenSidebarPaths).toEqual(['C:/Notes/Draft.md'])
     expect(invoke()).toHaveBeenLastCalledWith('mt::preferences::update', {
       hiddenSidebarPaths: ['C:/Notes/Draft.md']
     })
 
-    await expect(store.HIDE_SIDEBAR_FILE('c:/notes/draft.md')).resolves.toBe(true)
+    await expect(store.HIDE_SIDEBAR_ITEM('c:/notes/draft.md')).resolves.toBe(true)
     expect(store.hiddenSidebarPaths).toEqual(['C:/Notes/Draft.md'])
   })
 
   it('restores a path case-insensitively on Windows', async() => {
     const store = usePreferencesStore()
-    await store.HIDE_SIDEBAR_FILE('C:\\Notes\\Draft.md')
+    await store.HIDE_SIDEBAR_ITEM('C:\\Notes\\Draft.md')
 
-    await expect(store.RESTORE_SIDEBAR_FILE('c:/NOTES/DRAFT.MD')).resolves.toBe(true)
+    await expect(store.RESTORE_SIDEBAR_ITEM('c:/NOTES/DRAFT.MD')).resolves.toBe(true)
     expect(store.hiddenSidebarPaths).toEqual([])
   })
 
@@ -65,23 +67,48 @@ describe('sidebar hidden files', () => {
     const store = usePreferencesStore()
     invoke().mockResolvedValueOnce({ status: 'failed', reason: 'storage-unavailable' })
 
-    await expect(store.HIDE_SIDEBAR_FILE('C:\\Notes\\Draft.md')).resolves.toBe(false)
+    await expect(store.HIDE_SIDEBAR_ITEM('C:\\Notes\\Draft.md')).resolves.toBe(false)
     expect(store.hiddenSidebarPaths).toEqual([])
   })
 
   it('restores every hidden file at once', async() => {
     const store = usePreferencesStore()
-    await store.HIDE_SIDEBAR_FILE('C:\\Notes\\A.md')
-    await store.HIDE_SIDEBAR_FILE('C:\\Notes\\B.md')
+    await store.HIDE_SIDEBAR_ITEM('C:\\Notes\\A.md')
+    await store.HIDE_SIDEBAR_ITEM('C:\\Notes\\B.md')
 
-    await expect(store.RESTORE_ALL_SIDEBAR_FILES()).resolves.toBe(true)
+    await expect(store.RESTORE_ALL_SIDEBAR_ITEMS()).resolves.toBe(true)
     expect(store.hiddenSidebarPaths).toEqual([])
     expect(invoke()).toHaveBeenLastCalledWith('mt::preferences::update', {
       hiddenSidebarPaths: []
     })
   })
 
-  it('lists hidden files in settings and restores the selected one', async() => {
+  it('filters both hidden folders and hidden files from the sidebar', () => {
+    const store = usePreferencesStore()
+    store.hiddenSidebarPaths = ['C:\\Notes\\Archive', 'C:\\Notes\\draft.md']
+    const { visibleFiles, visibleFolders } = useHiddenSidebarFiles()
+    const folder = (name: string): TreeFolderNode => ({
+      pathname: `C:\\Notes\\${name}`,
+      name,
+      folders: [],
+      files: [],
+      isDirectory: true,
+      isFile: false,
+      isMarkdown: false
+    })
+    const file = (name: string): TreeFileNode => ({
+      pathname: `C:\\Notes\\${name}`,
+      name,
+      isDirectory: false,
+      isFile: true,
+      isMarkdown: true
+    })
+
+    expect(visibleFolders([folder('Archive'), folder('Work')]).map(item => item.name)).toEqual(['Work'])
+    expect(visibleFiles([file('draft.md'), file('keep.md')]).map(item => item.name)).toEqual(['keep.md'])
+  })
+
+  it('lists hidden items in settings and restores the selected one', async() => {
     const store = usePreferencesStore()
     store.hiddenSidebarPaths = ['C:\\Notes\\A.md', 'C:\\Notes\\B.md']
     const root = document.createElement('div')

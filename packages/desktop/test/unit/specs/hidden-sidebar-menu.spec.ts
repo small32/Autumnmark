@@ -28,7 +28,7 @@ const folder: TreeFolderNode = {
 
 const menuItems = (): ContextMenuItem[] => popup.mock.lastCall?.[0] as ContextMenuItem[]
 
-describe('sidebar file context menu hiding', () => {
+describe('sidebar context menu hiding', () => {
   it('offers hiding for files and emits the sidebar action', () => {
     showContextMenu({ clientX: 1, clientY: 2 }, false, file)
     const hide = menuItems().find(item => item.id === 'hideMenuItem')
@@ -40,8 +40,14 @@ describe('sidebar file context menu hiding', () => {
     emit.mockRestore()
   })
 
-  it('does not offer hiding for folders', () => {
+  it('offers hiding for folders too', () => {
     showContextMenu({ clientX: 1, clientY: 2 }, false, folder)
-    expect(menuItems().some(item => item.id === 'hideMenuItem')).toBe(false)
+    const hide = menuItems().find(item => item.id === 'hideMenuItem')
+    expect(hide?.label).toBe('Hide from Sidebar')
+
+    const emit = vi.spyOn(bus, 'emit')
+    hide?.click?.()
+    expect(emit).toHaveBeenCalledWith('SIDEBAR::hide')
+    emit.mockRestore()
   })
 })

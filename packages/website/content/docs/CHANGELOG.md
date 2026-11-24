@@ -1,3 +1,7 @@
+## Antumnmark+ 0.1.1
+
+- Right-click a folder in the sidebar to hide the folder and its contents. Restore hidden folders and files from Settings → General → Sidebar.
+
 ## Antumnmark+ 0.1.0
 
 - Rebranded the application as Antumnmark+ across the window title, menus, installers, themes and documentation.

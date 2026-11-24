@@ -676,9 +676,9 @@
           "oldestFirst": "從舊到新",
           "newestFirst": "從新到舊"
         },
-        "hiddenFiles": "隱藏的檔案",
-        "hiddenFilesNotes": "在側邊欄右鍵檔案並選擇「在側邊欄中隱藏」。在此移除項目即可讓檔案重新顯示。",
-        "hiddenFilesEmpty": "沒有隱藏的檔案。",
+        "hiddenFiles": "隱藏的檔案與資料夾",
+        "hiddenFilesNotes": "在側邊欄右鍵檔案或資料夾並選擇「在側邊欄中隱藏」。在此移除項目即可讓其重新顯示。",
+        "hiddenFilesEmpty": "沒有隱藏的檔案或資料夾。",
         "restore": "還原",
         "restoreAll": "全部還原",
         "restoreFailed": "無法更新隱藏檔案清單，請重試。"

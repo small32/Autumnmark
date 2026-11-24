@@ -163,7 +163,7 @@
             }}
           </div>
           <folder
-            v-for="folder of root.tree.folders"
+            v-for="folder of visibleFolders(root.tree.folders)"
             :key="folder.id"
             :folder="folder"
           />
@@ -275,7 +275,7 @@ const showOpenedFiles = computed({
   set: (expanded) => layoutStore.SET_OPENED_FILES({ expanded })
 })
 const preferencesStore = usePreferencesStore()
-const { visibleFiles } = useHiddenSidebarFiles()
+const { visibleFiles, visibleFolders } = useHiddenSidebarFiles()
 
 const { roots, createCache } = storeToRefs(projectStore)
 const { clipboard } = storeToRefs(projectStore)
@@ -594,10 +594,10 @@ watch(
   { flush: 'post' }
 )
 
-const hideActiveFile = async (): Promise<void> => {
-  const target = activeItem.value as { pathname?: unknown; isDirectory?: unknown } | null
-  if (typeof target?.pathname !== 'string' || target.isDirectory) return
-  const saved = await preferencesStore.HIDE_SIDEBAR_FILE(target.pathname)
+const hideActiveItem = async (): Promise<void> => {
+  const target = activeItem.value as { pathname?: unknown } | null
+  if (typeof target?.pathname !== 'string') return
+  const saved = await preferencesStore.HIDE_SIDEBAR_ITEM(target.pathname)
   if (saved) {
     projectStore.CHANGE_ACTIVE_ITEM({})
   } else {
@@ -614,7 +614,7 @@ onMounted(() => {
   bus.on('SIDEBAR::show-new-input', handleInputFocus)
   bus.on('SIDEBAR::focus-tree', focusTree)
   bus.on('SIDEBAR::reveal-path', handleRevealPath)
-  bus.on('SIDEBAR::hide', hideActiveFile)
+  bus.on('SIDEBAR::hide', hideActiveItem)
   // Capture phase: several click targets (project/collapse headings, editor
   // tabs) call `@click.stop`, which would otherwise keep the click-away commit
   // from running.
@@ -628,7 +628,7 @@ onUnmounted(() => {
   bus.off('SIDEBAR::show-new-input', handleInputFocus)
   bus.off('SIDEBAR::focus-tree', focusTree)
   bus.off('SIDEBAR::reveal-path', handleRevealPath)
-  bus.off('SIDEBAR::hide', hideActiveFile)
+  bus.off('SIDEBAR::hide', hideActiveItem)
   document.removeEventListener('click', handleDocumentClick, true)
   document.removeEventListener('contextmenu', handleDocumentContextMenu)
 })

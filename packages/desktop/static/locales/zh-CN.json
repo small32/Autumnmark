@@ -676,9 +676,9 @@
           "oldestFirst": "从旧到新",
           "newestFirst": "从新到旧"
         },
-        "hiddenFiles": "隐藏的文件",
-        "hiddenFilesNotes": "在侧边栏右键文件并选择“在侧边栏中隐藏”。在此移除条目即可让文件重新显示。",
-        "hiddenFilesEmpty": "没有隐藏的文件。",
+        "hiddenFiles": "隐藏的文件和文件夹",
+        "hiddenFilesNotes": "在侧边栏右键文件或文件夹并选择“在侧边栏中隐藏”。在此移除条目即可让其重新显示。",
+        "hiddenFilesEmpty": "没有隐藏的文件或文件夹。",
         "restore": "恢复",
         "restoreAll": "全部恢复",
         "restoreFailed": "无法更新隐藏文件列表，请重试。"

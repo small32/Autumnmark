@@ -676,9 +676,9 @@
           "oldestFirst": "Más antiguo primero",
           "newestFirst": "Más reciente primero"
         },
-        "hiddenFiles": "Archivos ocultos",
-        "hiddenFilesNotes": "Haz clic derecho en un archivo de la barra lateral y elige «Ocultar de la barra lateral». Elimina una entrada aquí para volver a mostrarlo.",
-        "hiddenFilesEmpty": "No hay archivos ocultos.",
+        "hiddenFiles": "Archivos y carpetas ocultos",
+        "hiddenFilesNotes": "Haz clic derecho en un archivo o carpeta de la barra lateral y elige «Ocultar de la barra lateral». Elimina una entrada aquí para volver a mostrarla.",
+        "hiddenFilesEmpty": "No hay archivos ni carpetas ocultos.",
         "restore": "Restaurar",
         "restoreAll": "Restaurar todo",
         "restoreFailed": "No se pudo actualizar la lista de archivos ocultos. Inténtalo de nuevo."

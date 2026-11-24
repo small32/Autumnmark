@@ -676,9 +676,9 @@
           "oldestFirst": "Önce En Eski",
           "newestFirst": "Önce En Yeni"
         },
-        "hiddenFiles": "Gizlenen dosyalar",
-        "hiddenFilesNotes": "Kenar çubuğundaki bir dosyaya sağ tıklayıp «Kenar çubuğundan gizle» seçeneğini seçin. Dosyayı yeniden göstermek için buradaki kaydı kaldırın.",
-        "hiddenFilesEmpty": "Gizlenen dosya yok.",
+        "hiddenFiles": "Gizlenen dosyalar ve klasörler",
+        "hiddenFilesNotes": "Kenar çubuğundaki bir dosyaya veya klasöre sağ tıklayıp «Kenar çubuğundan gizle» seçeneğini seçin. Yeniden göstermek için buradaki kaydı kaldırın.",
+        "hiddenFilesEmpty": "Gizlenen dosya veya klasör yok.",
         "restore": "Geri yükle",
         "restoreAll": "Tümünü geri yükle",
         "restoreFailed": "Gizlenen dosyalar listesi güncellenemedi. Lütfen tekrar deneyin."

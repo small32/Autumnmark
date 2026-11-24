@@ -4,7 +4,7 @@ import {
   createHiddenSidebarPathSet,
   normalizeHiddenSidebarPath
 } from '@/util/hiddenSidebarFiles'
-import type { TreeFileNode } from './types'
+import type { TreeFileNode, TreeFolderNode } from './types'
 
 export const useHiddenSidebarFiles = () => {
   const preferences = usePreferencesStore()
@@ -16,5 +16,8 @@ export const useHiddenSidebarFiles = () => {
   const visibleFiles = (files: readonly TreeFileNode[]): TreeFileNode[] =>
     files.filter(file => !isHidden(file.pathname))
 
-  return { isHidden, visibleFiles }
+  const visibleFolders = (folders: readonly TreeFolderNode[]): TreeFolderNode[] =>
+    folders.filter(folder => !isHidden(folder.pathname))
+
+  return { isHidden, visibleFiles, visibleFolders }
 }

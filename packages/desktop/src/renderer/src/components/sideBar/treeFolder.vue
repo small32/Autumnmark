@@ -44,7 +44,7 @@
       class="folder-contents"
     >
       <tree-folder
-        v-for="childFolder of folder.folders"
+        v-for="childFolder of visibleChildFolders"
         :key="childFolder.id"
         :folder="childFolder"
       />
@@ -82,8 +82,9 @@ const props = defineProps<{
 }>()
 
 const projectStore = useProjectStore()
-const { visibleFiles } = useHiddenSidebarFiles()
+const { visibleFiles, visibleFolders } = useHiddenSidebarFiles()
 const visibleFolderFiles = computed(() => visibleFiles(props.folder.files))
+const visibleChildFolders = computed(() => visibleFolders(props.folder.folders))
 
 const folderEl = ref<HTMLDivElement | null>(null)
 useTreeRow(() => props.folder.pathname, folderEl)

@@ -676,9 +676,9 @@
           "oldestFirst": "Oudste eerst",
           "newestFirst": "Nieuwste eerst"
         },
-        "hiddenFiles": "Verborgen bestanden",
-        "hiddenFilesNotes": "Klik met de rechtermuisknop op een bestand in de zijbalk en kies ‘Verbergen in zijbalk’. Verwijder hier een item om het bestand weer te tonen.",
-        "hiddenFilesEmpty": "Geen verborgen bestanden.",
+        "hiddenFiles": "Verborgen bestanden en mappen",
+        "hiddenFilesNotes": "Klik met de rechtermuisknop op een bestand of map in de zijbalk en kies ‘Verbergen in zijbalk’. Verwijder hier een item om het weer te tonen.",
+        "hiddenFilesEmpty": "Geen verborgen bestanden of mappen.",
         "restore": "Herstellen",
         "restoreAll": "Alles herstellen",
         "restoreFailed": "Kan de lijst met verborgen bestanden niet bijwerken. Probeer het opnieuw."

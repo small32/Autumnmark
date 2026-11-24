@@ -93,10 +93,10 @@ const run = async(action: () => Promise<boolean>): Promise<void> => {
 }
 
 const restore = (pathname: string): Promise<void> =>
-  run(() => preferences.RESTORE_SIDEBAR_FILE(pathname))
+  run(() => preferences.RESTORE_SIDEBAR_ITEM(pathname))
 
 const restoreAll = (): Promise<void> =>
-  run(() => preferences.RESTORE_ALL_SIDEBAR_FILES())
+  run(() => preferences.RESTORE_ALL_SIDEBAR_ITEMS())
 </script>
 
 <style scoped>

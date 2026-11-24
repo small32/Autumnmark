@@ -676,9 +676,9 @@
           "oldestFirst": "Oldest First",
           "newestFirst": "Newest First"
         },
-        "hiddenFiles": "Hidden files",
-        "hiddenFilesNotes": "Right-click a file in the sidebar and choose “Hide from Sidebar”. Remove an entry here to show the file again.",
-        "hiddenFilesEmpty": "No files are hidden.",
+        "hiddenFiles": "Hidden files and folders",
+        "hiddenFilesNotes": "Right-click a file or folder in the sidebar and choose “Hide from Sidebar”. Remove an entry here to show it again.",
+        "hiddenFilesEmpty": "No files or folders are hidden.",
         "restore": "Restore",
         "restoreAll": "Restore all",
         "restoreFailed": "Could not update the hidden files list. Please try again."

@@ -30,7 +30,7 @@ export const showContextMenu = (
     getPASTE(),
     SEPARATOR,
     getRENAME(),
-    ...(target.isFile ? [getHIDE()] : []),
+    getHIDE(),
     getDELETE(),
     SEPARATOR,
     ...(target.isDirectory || target.isMarkdown ? [batchMediaMenuItem(target), SEPARATOR] : []),
