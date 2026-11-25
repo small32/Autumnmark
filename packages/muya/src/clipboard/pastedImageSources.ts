@@ -10,6 +10,7 @@ export interface IPastedImageSource {
     end: number;
     unquotedAttribute?: boolean;
     referenceTitle?: string;
+    markup?: { start: number; end: number };
 }
 
 export function embeddedImageDestination(image: IPastedImageSource, dataUrl: string) {
@@ -55,7 +56,7 @@ function referenceKey(value: string) {
     return value.trim().replace(/\s+/g, ' ').toLowerCase().toUpperCase();
 }
 
-function compactImagePayloads(markdown: string) {
+export function compactImagePayloads(markdown: string) {
     // Keep multi-megabyte media payloads out of the tokenizer while retaining offsets in the editor's text.
     const cuts: { end: number; removed: number }[] = [];
     let removed = 0;

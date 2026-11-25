@@ -296,7 +296,6 @@ onBeforeUnmount(() => {
   cursor: pointer;
   color: var(--editorColor60);
   opacity: 0;
-  &.always-visible,
   &:focus-visible {
     opacity: 1;
   }

@@ -45,11 +45,10 @@ function loadTranslations(language: string): Translations | null {
   }
 
   try {
-    // Prefer the minified file, which every packaged build ships, but fall back
-    // to the raw .json so a checkout works without running minify-locales.
+    // A checkout also contains minified files left over from previous builds.
     const minPath = path.join(localesDirectory, `${language}.min.json`)
     const rawPath = path.join(localesDirectory, `${language}.json`)
-    const localePath = fs.existsSync(minPath) ? minPath : rawPath
+    const localePath = fs.existsSync(rawPath) ? rawPath : minPath
 
     if (!fs.existsSync(localePath)) {
       throw new Error(`Translation file not found for language: ${language}`)

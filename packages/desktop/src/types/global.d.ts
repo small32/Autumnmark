@@ -60,6 +60,7 @@ declare global {
 
   interface ElectronDialogAPI {
     showSave(request: SaveDialogRequest): Promise<string | null>
+    showOpenFile(request: SaveDialogRequest): Promise<string | null>
   }
 
   interface ElectronWebFrameAPI {

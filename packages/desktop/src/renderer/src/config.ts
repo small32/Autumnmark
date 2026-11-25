@@ -1,3 +1,5 @@
+import { pineInkTheme } from '../../common/theme'
+
 export const PATH_SEPARATOR: string = window.path.sep
 
 export const THEME_STYLE_ID = 'ag-theme'
@@ -11,7 +13,7 @@ export const DEFAULT_STYLE = Object.freeze({
   codeFontFamily: DEFAULT_CODE_FONT_FAMILY,
   codeFontSize: '14px',
   hideScrollbar: false,
-  theme: 'light'
+  theme: pineInkTheme.id
 })
 
 export { railscastsThemes, oneDarkThemes } from '../../common/theme'

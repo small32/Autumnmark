@@ -463,7 +463,7 @@ const open = async (
   rootRef.value?.focus()
 }
 
-const openImage = (url: string) =>
+const openImage = (url: string, name = t('editor.mediaViewer.title')) =>
   open((stage) => {
     const img = document.createElement('img')
     imageSource.value = url
@@ -482,7 +482,7 @@ const openImage = (url: string) =>
     img.draggable = false
     stage.appendChild(img)
     return img
-  }, t('editor.mediaViewer.title'))
+  }, name)
 
 const openDiagram = (source: DiagramSource, name: string | null) =>
   open(

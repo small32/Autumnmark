@@ -1,4 +1,5 @@
 const COMMANDS = Object.freeze({
+  DRAWING_INSERT: 'drawing.insert',
   VIEW_READ_ONLY_MODE: 'view.read-only-mode',
   EDIT_COPY: 'edit.copy',
   EDIT_COPY_AS_HTML: 'edit.copy-as-html',

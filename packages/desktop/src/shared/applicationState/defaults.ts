@@ -1,5 +1,12 @@
+import { blankDrawing, isDrawingPath } from '../drawing'
 import { SessionLifecycle } from '../types/applicationState'
-import type { ApplicationState, WindowLayoutState } from '../types/applicationState'
+import type { ApplicationState, DocumentSnapshot, WindowLayoutState } from '../types/applicationState'
+
+export const emptyDocumentBody = ({
+  resource,
+  title
+}: Pick<DocumentSnapshot, 'resource' | 'title'>): string =>
+  resource.kind === 'untitled' && isDrawingPath(title) ? blankDrawing : ''
 
 export const createDefaultLayout = (
   preferences: { sourceCodeModeEnabled: boolean } = { sourceCodeModeEnabled: false }

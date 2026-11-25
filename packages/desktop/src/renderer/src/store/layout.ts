@@ -54,7 +54,7 @@ export const useLayoutStore = defineStore('layout', () => {
   ): void {
     if (layout.rightColumn !== undefined) {
       const view = layout.rightColumn
-      rightColumn.value = view === 'search' || view === 'outline' ? view : 'files'
+      rightColumn.value = view === 'search' || view === 'outline' || view === 'documentChat' ? view : 'files'
     }
     if (layout.showSideBar !== undefined) showSideBar.value = !!layout.showSideBar
     if (layout.showTabBar !== undefined) showTabBar.value = !!layout.showTabBar

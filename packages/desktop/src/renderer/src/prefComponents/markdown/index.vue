@@ -172,6 +172,23 @@
         </h6>
       </template>
       <template #children>
+        <bool
+          id="setting-embedDrawings"
+          :description="preferenceLabel('embedDrawings')"
+          :notes="preferenceNotes('embedDrawings')"
+          :bool="embedDrawings"
+          :on-change="(value) => onSelectChange('embedDrawings', value)"
+        />
+        <cur-select
+          id="setting-newDrawingView"
+          :description="preferenceLabel('newDrawingView')"
+          :value="newDrawingView"
+          :options="[
+            { label: t('preferences.markdown.diagrams.newDrawingView.dialog'), value: 'dialog' },
+            { label: t('preferences.markdown.diagrams.newDrawingView.tab'), value: 'tab' }
+          ]"
+          :on-change="(value) => onSelectChange('newDrawingView', value)"
+        />
         <cur-select
           id="setting-mermaidLightTheme"
           :description="preferenceLabel('mermaidLightTheme')"
@@ -272,6 +289,8 @@ const {
   githubAlerts,
   isHtmlEnabled,
   softNewlineAsSpace,
+  embedDrawings,
+  newDrawingView,
   mermaidLightTheme,
   mermaidDarkTheme,
   sequenceTheme,

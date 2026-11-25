@@ -3,6 +3,17 @@ import log from 'electron-log'
 import type { SaveDialogRequest } from '@shared/types/ipc'
 
 export const registerDialogHandlers = (): void => {
+  ipcMain.handle('mt::dialog::show-open-file', async(event, request: SaveDialogRequest) => {
+    const options: Electron.OpenDialogOptions = {
+      title: request?.title,
+      defaultPath: request?.defaultPath,
+      filters: request?.filters,
+      properties: ['openFile']
+    }
+    const win = BrowserWindow.fromWebContents(event.sender)
+    const result = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options)
+    return result.canceled ? null : (result.filePaths[0] ?? null)
+  })
   ipcMain.handle('mt::dialog::show-save', async(event, request: SaveDialogRequest) => {
     try {
       const options = {

@@ -6,6 +6,12 @@ export enum ChangeSource {
     Api = 'api',
 }
 
+export interface IDrawingInsertion {
+    markdown: string;
+    embeddedIndex: number;
+    replace: (markup: string) => string;
+}
+
 export interface IMuyaOptions {
     readOnly: boolean;
     fontSize: number;

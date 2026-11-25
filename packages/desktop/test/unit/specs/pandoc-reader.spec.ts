@@ -19,7 +19,7 @@ describe.skipIf(!HAS_PANDOC)('pandoc export reader, run by the installed pandoc'
     const reader = getPandocReader(options, await getReaderExtensions())
     const output = path.join(dir, 'out.html')
     await pandoc.toFile('html', output, markdown, { reader })
-    const html = readFileSync(output, 'utf8')
+    const html = readFileSync(output, 'utf8').replace(/\r\n/g, '\n')
     return html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>')).trim()
   }
 

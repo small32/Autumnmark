@@ -1,0 +1,268 @@
+/* Pine ridgelines and warm brass on ivory paper. */
+:root {
+  --editorBgColor: #faf7ef;
+  --editorColor: #303c35;
+  --themeColor: #396953;
+  --themeColor20: rgb(57 105 83 / 20%);
+  --themeColor10: rgb(57 105 83 / 10%);
+  --proseAccent: #325f4e;
+  --link-color: var(--proseAccent);
+  --blockquote-border-color: var(--proseAccent);
+  --codeBgColor: #edf0e9;
+  --buttonPrimaryBgColor: #396953;
+  --buttonPrimaryBgColorHover: #2b5140;
+  --sideBarBgColor: #e8eee5;
+  --sideBarBorderColor: #dce2d8;
+  --sideBarColor: #3c4940;
+  --sideBarTitleColor: #263a31;
+  --sideBarTextColor: #56665d;
+  --sideBarIconColor: #56665d;
+  --sideBarItemHoverBgColor: #e7ece3;
+  --itemBgColor: #faf7ef;
+
+  --paper-ink: #29372f;
+  --pine-ink: #213e32;
+  --paper-rule: #d3ded1;
+  --paper-tint: #e3ecdf;
+  --brass: #ab7941;
+  --brass-light: #e8c27e;
+}
+
+.side-bar,
+.title-bar-editor-bg {
+  --editorColor: var(--sideBarColor);
+}
+
+.side-bar .side-bar-file.active,
+.side-bar .side-bar-toc .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+  background: var(--itemBgColor);
+}
+
+.use-theme-font .mu-container {
+  --proseFont: system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC",
+    "Noto Music", "Noto Sans Math", sans-serif;
+  --proseHeadingFont: Georgia, "Noto Serif SC", "Songti SC", "STSong", SimSun, serif;
+}
+
+/* Match the base theme's scope boundary so embedded blocks keep their sizing. */
+@scope (.mu-container) to (pre, figure, table, :is(.mu-paragraph, .mu-atx-heading, .mu-setext-heading):has(.mu-inline-image, .mu-embedded-image, .mu-embedded-video, video)) {
+  :scope .mu-paragraph {
+    margin-block: 0.6em 0.8em;
+    color: var(--paper-ink);
+    font-size: 1.075em;
+    line-height: max(1.7, var(--mu-line-height, 1.7));
+    --link-color: var(--proseAccent);
+  }
+
+  :scope .mu-tight-list > li > .mu-paragraph {
+    margin: 0;
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading) {
+    margin-block: 1.35em 0.44em;
+    padding: 0;
+    color: var(--pine-ink);
+    font-weight: 650;
+    line-height: 1.35;
+    --link-color: var(--proseAccent);
+    --strong-color: var(--pine-ink);
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading):where(h1, h2) {
+    font-family: var(--proseHeadingFont, var(--proseFont, var(--mu-font-family)));
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading):where(h1) {
+    margin-block: 2.4rem 1.65rem;
+    padding-block-end: 0.55em;
+    border-block-end: 1px solid var(--paper-rule);
+    font-size: clamp(1.85em, 8cqi, 2.7em);
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    text-align: start;
+  }
+
+  :scope > :is(.mu-atx-heading, .mu-setext-heading):where(h1):first-child {
+    isolation: isolate;
+    margin-block: 1.65rem 1.55rem;
+    padding: clamp(24px, 6cqi, 48px) clamp(18px, 5cqi, 38px);
+    color: #fff5dc;
+    font-size: clamp(1.75em, 7.7cqi, 2.9em);
+    letter-spacing: 0.055em;
+    background:
+      radial-gradient(circle at 77% 29%, var(--brass-light) 0 9px, #d8b47780 10px, transparent 11px),
+      radial-gradient(ellipse at 76% 22%, #89a28252, transparent 42%),
+      linear-gradient(110deg, #112e29 24%, #245045 73%, #346353);
+    border: 1px solid #3c6251;
+    border-radius: 13px;
+    box-shadow: inset 0 1px rgb(255 255 255 / 12%), 0 8px 23px rgb(39 62 49 / 16%);
+    --link-color: #f4d697;
+    --strong-color: #fff5dc;
+  }
+
+  :scope > :is(.mu-atx-heading, .mu-setext-heading):where(h1):first-child::before,
+  :scope > :is(.mu-atx-heading, .mu-setext-heading):where(h1):first-child::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    content: "";
+    pointer-events: none;
+  }
+
+  :scope > :is(.mu-atx-heading, .mu-setext-heading):where(h1):first-child::before {
+    background: linear-gradient(100deg, transparent 25%, #416e5b 61%, #587c64);
+    clip-path: polygon(20% 100%, 40% 81%, 55% 44%, 61% 56%, 69% 36%, 77% 51%, 93% 38%, 100% 45%, 100% 100%);
+  }
+
+  :scope > :is(.mu-atx-heading, .mu-setext-heading):where(h1):first-child::after {
+    background:
+      linear-gradient(95deg, #132f29 28%, transparent 83%),
+      repeating-radial-gradient(ellipse 85% 200% at 101% 122%,
+        transparent 0 11px, rgb(186 211 174 / 27%) 12px, transparent 13px 19px),
+      linear-gradient(135deg, #376c59 58%, #244d41);
+    clip-path: polygon(11% 100%, 38% 89%, 52% 71%, 64% 80%, 76% 57%, 83% 64%, 100% 48%, 100% 100%);
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading):where(h2) {
+    margin-block: 1.15em 0.45em;
+    padding: 0.23em 0.59em;
+    background: linear-gradient(95deg, var(--paper-tint) 5%, #edf0e4 49%, transparent 100%);
+    border-inline-start: 3px solid var(--brass);
+    border-radius: 3px;
+    box-shadow: none;
+    font-size: 1.6em;
+    text-shadow: none;
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading):where(h3) {
+    width: auto;
+    padding-inline-start: 0.86em;
+    color: var(--proseAccent);
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 1.19em;
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading):where(h3)::before {
+    position: absolute;
+    inset-block-start: 0.55em;
+    inset-inline-start: 0.09em;
+    width: 0.29em;
+    height: 0.29em;
+    background: var(--brass);
+    transform: rotate(45deg);
+    content: "";
+    pointer-events: none;
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading):where(h4, h5, h6) {
+    color: var(--paper-ink);
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading):not(.mu-active) > .mu-content {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  :scope .mu-block-quote:not(.mu-github-alert) {
+    margin-block: 1rem 1.25rem;
+    background: linear-gradient(105deg, #f1e6d1, #f8f1e4);
+    border-radius: 7px;
+    box-shadow: inset 0 0 0 1px #e9ddc5;
+  }
+
+  :scope .mu-block-quote:not(.mu-github-alert):not(:has(pre, figure, table, .mu-inline-image, .mu-embedded-image, .mu-embedded-video, video)) {
+    padding: 0.45rem 1.1rem 0.45rem 1.3rem;
+  }
+
+  :scope .mu-block-quote:not(.mu-github-alert)::before {
+    width: 3px;
+    background: var(--brass);
+    border-radius: 7px 0 0 7px;
+  }
+
+  :scope .mu-block-quote:not(.mu-github-alert) > .mu-paragraph {
+    color: #55442c;
+    font-family: var(--proseHeadingFont, var(--proseFont, var(--mu-font-family)));
+  }
+
+  :scope .mu-thematic-break:not(.mu-active)::before {
+    background: var(--paper-rule);
+  }
+
+  :scope :is(.mu-bullet-list, .mu-order-list) > li::marker {
+    font-size: 1em;
+  }
+
+  :scope a.mu-inline-rule,
+  :scope .mu-link:not(does-not-exist) {
+    text-decoration: underline;
+    text-decoration-color: #90ac9c;
+    text-underline-offset: 0.2em;
+  }
+
+  :scope mark {
+    padding: 0.06em 0.25em;
+    color: #523b20;
+    background: #f3e5cd;
+  }
+
+  :scope code.mu-inline-rule {
+    padding: 0.1em 0.3em;
+    color: var(--pine-ink);
+    background: var(--codeBgColor);
+  }
+
+  :scope :is(.mu-atx-heading, .mu-setext-heading) code.mu-inline-rule {
+    padding: 0;
+    color: inherit;
+    background: transparent;
+  }
+}
+
+.mu-container .mu-code-block {
+  --code-block-bg-color: #1b352f;
+  --code-block-color: #f3efdd;
+  --editor-color: #f3efdd;
+  --editor-color-80: #d6e3d7;
+  --editor-color-50: #a7c2b5;
+  --editor-color-10: #b4d2bf33;
+  --float-hover-color: #29493e;
+  --mu-code-line-highlight: #d4b27426;
+  --selection-color: #e8c27e55;
+  border-color: #315347;
+  border-radius: 9px;
+}
+
+.mu-container .mu-code-block :is(.token.comment, .token.prolog, .token.doctype, .token.cdata, .token.punctuation) {
+  color: #b4c6bb;
+}
+
+.mu-container .mu-code-block :is(.token.atrule, .token.attr-value, .token.keyword, .token.selector, .token.attr-name, .token.string, .token.char, .token.builtin) {
+  color: #a4e3cb;
+}
+
+.mu-container .mu-code-block :is(.token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol, .token.operator, .token.entity, .token.url, .token.regex, .token.important, .token.variable) {
+  color: #edc683;
+}
+
+.mu-container .mu-code-block :is(.token.function, .token.class-name) {
+  color: #f1bdad;
+}
+
+.mu-container .mu-table-inner {
+  --table-border-color: var(--paper-rule);
+  color: var(--paper-ink);
+  background: #fcfaf3;
+  font-variant-numeric: tabular-nums;
+}
+
+.mu-container .mu-table-inner tr:first-child > :is(th, td) {
+  color: #254638;
+  background: #dce8d9;
+}
+
+.mu-container .mu-table-inner :is(th, td):where(:not(.mu-table-cell-selected))::before {
+  border-inline-width: 0;
+}

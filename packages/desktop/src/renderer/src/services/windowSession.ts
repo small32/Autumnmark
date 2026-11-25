@@ -13,6 +13,7 @@ import type {
 import type { IFileState } from '@shared/types/files'
 import type { SaveDocumentResult } from '@shared/types/ipc'
 import { setSessionActions, useEditorStore } from '@/store/editor'
+import { drawingDialog, drawingEditorTabs } from './drawingEditors'
 import { useLayoutStore } from '@/store/layout'
 import { usePreferencesStore } from '@/store/preferences'
 import { useProjectStore } from '@/store/project'
@@ -40,6 +41,7 @@ interface ObservedContent {
 }
 
 class WindowSession {
+  private _lastManagedDocumentId: string | null = null
   private readonly _editor = useEditorStore()
   private readonly _layout = useLayoutStore()
   private readonly _preferences = usePreferencesStore()
@@ -128,7 +130,11 @@ class WindowSession {
     this._stops.push(
       ipc.on('mt::state::prepare-close', (_event, request) => {
         if (request.contextToken !== this._context?.contextToken) return
-        void requestWindowCheckpoint(request.transactionId).catch((error) => this._failure(error))
+        if (!request.closingWindow) {
+          void requestWindowCheckpoint(request.transactionId).catch((error) => this._failure(error))
+          return
+        }
+        void this._prepareWindowClose(request.transactionId).catch(error => this._failure(error))
       })
     )
     setSessionActions({
@@ -138,11 +144,11 @@ class WindowSession {
         void this._captureActiveView().catch((error) => this._failure(error))
       },
       save: (id, saveAs = false) => this._save(id, saveAs),
-      create: async(markdown, selected) => {
+      create: async(markdown, selected, title = '') => {
         if (!this._context) return
         const result = await ipc.invoke('mt::state::register-untitled', {
           contextToken: this._context.contextToken,
-          title: '',
+          title,
           markdown,
           selected
         })
@@ -415,20 +421,35 @@ class WindowSession {
     if (isCurrent() && !pending.capture) file.tocCollapsedKeys = keys
   }
 
-  private _flush(transactionId: string | null = null): Promise<PersistResult> {
+  private async _prepareWindowClose(transactionId: string): Promise<void> {
+    const drawings = [...drawingEditorTabs.values(), drawingDialog.value]
+    for (const drawing of drawings) {
+      const close = await drawing?.beforeClose?.(transactionId)
+      if (close === false) {
+        await this._flush(transactionId, true)
+        return
+      }
+    }
+    await this._flush(transactionId)
+  }
+
+  private _flush(transactionId: string | null = null, cancelClose = false): Promise<PersistResult> {
     this._schedule.cancel()
-    const result = this._queue.catch(() => {}).then(() => this._checkpoint(transactionId))
+    const result = this._queue.catch(() => {}).then(() => this._checkpoint(transactionId, cancelClose))
     this._queue = result
     return result
   }
 
-  private async _checkpoint(transactionId: string | null): Promise<PersistResult> {
+  private async _checkpoint(transactionId: string | null, cancelClose: boolean): Promise<PersistResult> {
     if (this._initializing || !this._context) return { status: 'failed', reason: 'stale-context' }
     this._editor.flushActiveEditor()
     await this._captureActiveView()
     const contents: WindowCheckpointRequest['dirtyContents'] = []
     const captured = new Map<string, { markdown: string; format: string; revision: number }>()
-    const documents = this._editor.tabs.map((file) => {
+    const managedTabs = this._editor.tabs.filter(file => !drawingEditorTabs.has(file.id))
+    const activeId = this._editor.currentFile?.id
+    if (managedTabs.some(file => file.id === activeId)) this._lastManagedDocumentId = activeId ?? null
+    const documents = managedTabs.map((file) => {
       const saveFormat = getOptionsFromState(file)
       const formatKey = JSON.stringify(saveFormat)
       const observed = this._observed.get(file.id)
@@ -466,19 +487,20 @@ class WindowSession {
       contextToken: this._context.contextToken,
       sequence: ++this._sequence,
       closeTransactionId: transactionId,
+      ...(cancelClose ? { cancelClose } : {}),
       layout: this._layout.CAPTURE_WINDOW_LAYOUT(),
       projectView: this._project.CAPTURE_PROJECT_VIEW(
         this._workspace
       ),
       documents,
-      activeDocumentId: this._editor.currentFile?.id ?? null,
+      activeDocumentId: managedTabs.find(file => file.id === this._lastManagedDocumentId)?.id ?? managedTabs[0]?.id ?? null,
       dirtyContents: contents,
       previewDocumentId: this._editor.tabs.find((file) => file.isPreview)?.id ?? null
     }
     const result = await window.electron.ipcRenderer.invoke('mt::state::checkpoint', request)
     if (result.status !== 'persisted') {
       const sameDocuments =
-        documents.length === this._editor.tabs.length &&
+        documents.length === this._editor.tabs.filter(file => !drawingEditorTabs.has(file.id)).length &&
         documents.every((document) => this._editor.tabs.some((file) => file.id === document.id))
       if (
         sameDocuments &&
@@ -532,6 +554,13 @@ class WindowSession {
   }
 
   private async _save(id: string, saveAs = false): Promise<SaveDocumentResult> {
+    const drawing = drawingEditorTabs.get(id)
+    if (drawing) {
+      const saved = await drawing.save?.()
+      return saved
+        ? { status: 'saved', pathname: drawing.pathname ?? '', filename: drawing.title, savedMarkdown: drawing.source }
+        : { status: 'canceled' }
+    }
     const checkpoint = await this._flush()
     if (
       !this._context ||
@@ -557,11 +586,28 @@ class WindowSession {
 
   private async _close(ids: string[]): Promise<void> {
     if (!ids.length || !this._context) return
-    await window.electron.ipcRenderer.invoke(
-      'mt::state::close-documents',
-      this._context.contextToken,
-      ids
-    )
+    const managed = ids.filter(id => !drawingEditorTabs.has(id))
+    const drawings = [...drawingEditorTabs].filter(([id, drawing]) => ids.includes(id) || (drawing.noteId && managed.includes(drawing.noteId)))
+    const popup = drawingDialog.value
+    const closesPopup = popup?.noteId && managed.includes(popup.noteId)
+    if (closesPopup) {
+      const close = await popup.beforeClose?.()
+      if (close === false) return
+    }
+    for (const [, drawing] of drawings) {
+      const close = await drawing.beforeClose?.()
+      if (close === false) return
+    }
+    if (managed.length) {
+      const result = await window.electron.ipcRenderer.invoke('mt::state::close-documents', this._context.contextToken, managed)
+      if (result.status !== 'closed') return
+    }
+    if (closesPopup && drawingDialog.value === popup) drawingDialog.value = null
+    for (const [id] of drawings) {
+      const tab = this._editor.tabs.find(file => file.id === id)
+      if (tab) this._editor.FORCE_CLOSE_TAB(tab)
+      drawingEditorTabs.delete(id)
+    }
   }
 
   private _failure(error: unknown): void {

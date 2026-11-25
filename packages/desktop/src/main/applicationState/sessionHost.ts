@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, screen, type WebContents } from 'electron'
-import { stat, rename, readdir } from 'node:fs/promises'
+import { stat, rename, readdir, writeFile } from 'node:fs/promises'
 import { createReadStream } from 'node:fs'
 import { createHash } from 'node:crypto'
 import path from 'node:path'
@@ -13,7 +13,8 @@ import type { FileOpenOptions } from '../windows/editor'
 import { loadMarkdownFile, loadCliMarkdownFile, writeMarkdownFile } from '../filesystem/markdown'
 import { t } from '../i18n'
 import { documentWrites } from '../filesystem/documentWrites'
-import { createDefaultLayout } from '@shared/applicationState/defaults'
+import { drawingFilename, isDrawingPath } from '@shared/drawing'
+import { createDefaultLayout, emptyDocumentBody } from '@shared/applicationState/defaults'
 import { RecoveryStatus, SessionLifecycle } from '@shared/types/applicationState'
 import { StartupAction } from '@shared/types/preferences'
 import { activateSessionWindow } from '@shared/applicationState/session'
@@ -41,7 +42,7 @@ import type {
 import type { DiskBaseline, SaveFormatState } from '@shared/types/files'
 import { ApplicationStateStore, RecoveryStore } from './storage'
 import { CheckpointService } from './checkpointService'
-import { CloseCoordinator } from './closeCoordinator'
+import { CloseCoordinator, WindowCloseCanceled } from './closeCoordinator'
 import { createStateId, createFileLocation, createWorkspaceDescriptor } from './identity'
 import { applyWindowGeometry, captureWindowGeometry } from './windowGeometry'
 import type { SidebarMoveRequest, SidebarMoveResult } from '@shared/types/project'
@@ -56,6 +57,7 @@ export interface StartupPath extends FileOpenOptions {
 /** One native request awaiting a renderer checkpoint with the same transaction identity. */
 interface PendingCheckpoint {
   transactionId: string
+  closingWindow: boolean
   resolve(snapshot: WindowSnapshot): void
   reject(error: Error): void
   timeout: ReturnType<typeof setTimeout>
@@ -68,6 +70,11 @@ const findFileTab = (snapshot: WindowSnapshot, location: FileLocation): Document
   snapshot.documents.find(document =>
     document.resource.kind === 'file' && document.resource.location.key === location.key
   )
+
+const isBlankMarkdownTab = (document: DocumentSnapshot): boolean =>
+  document.resource.kind === 'untitled' &&
+  document.content.kind === 'empty' &&
+  !isDrawingPath(document.title)
 
 /** Owns native editor lifetimes and checkpoints within the current application session. */
 export class SessionHost {
@@ -88,7 +95,7 @@ export class SessionHost {
   private _startupWarning: string | undefined
   private _startupActiveId: string | null = null
   private readonly _startupWindowIds = new Set<string>()
-  private readonly _tabClosePending = new Set<string>()
+  private _tabClosePending = false
   private _startQueue: Promise<void> = Promise.resolve()
   private readonly _windowOperations = new Map<string, Promise<unknown>>()
   private readonly _checkpointQueues = new Map<string, Promise<WindowSnapshot>>()
@@ -106,7 +113,7 @@ export class SessionHost {
     this._loaded = this._metadata.load().then((result) => result.value)
     this._coordinator = new CloseCoordinator({
       getSession: () => this._owner().getState().session,
-      checkpoint: (id, transactionId) => this._requestCheckpoint(id, transactionId),
+      checkpoint: (id, transactionId) => this._requestCheckpoint(id, transactionId, true),
       choose: (snapshot) => this._choose(snapshot),
       save: async(snapshot) => {
         for (const document of snapshot.documents.filter(
@@ -174,13 +181,18 @@ export class SessionHost {
   }
 
   private _blankDocument(markdown = '', title = 'Untitled-1'): DocumentSnapshot {
+    const resource = { kind: 'untitled' } as const
     return {
       id: createStateId(),
       title,
-      resource: { kind: 'untitled' },
-      content: markdown ? { kind: 'recovery', contentRevision: 1 } : { kind: 'empty' },
+      resource,
+      content: markdown === emptyDocumentBody({ resource, title })
+        ? { kind: 'empty' }
+        : { kind: 'recovery', contentRevision: 1 },
       readOnly: false,
-      saveFormat: this._defaultFormat(),
+      saveFormat: isDrawingPath(title)
+        ? { encoding: { encoding: 'utf8', isBom: false }, lineEnding: 'lf', adjustLineEndingOnSave: false, trimTrailingNewline: 0 }
+        : this._defaultFormat(),
       view: null
     }
   }
@@ -210,20 +222,21 @@ export class SessionHost {
     id = createStateId()
   ): Promise<{ document: DocumentSnapshot; content: RegisteredDocumentContent }> {
     const preferences = this._accessor.preferences.getAll()
+    const drawing = isDrawingPath(pathname)
     const raw =
       options.allowMissing && !options.readOnly
         ? await loadCliMarkdownFile(
           pathname,
           preferences.defaultEncoding,
           this._accessor.preferences.getPreferredEol(),
-          preferences.autoGuessEncoding,
+          !drawing && preferences.autoGuessEncoding,
           preferences.trimTrailingNewline,
           preferences.autoNormalizeLineEndings
         )
         : await loadMarkdownFile(
           pathname,
           this._accessor.preferences.getPreferredEol(),
-          preferences.autoGuessEncoding,
+          !drawing && preferences.autoGuessEncoding,
           preferences.trimTrailingNewline,
           preferences.autoNormalizeLineEndings
         )
@@ -239,7 +252,7 @@ export class SessionHost {
         ? { kind: 'empty' }
         : { kind: 'disk', baseline: raw.rawBaseline },
       readOnly:
-        options.readOnly ?? (!raw.isPendingCreation && preferences.defaultOpenMode === 'read'),
+        options.readOnly ?? (!drawing && !raw.isPendingCreation && preferences.defaultOpenMode === 'read'),
       saveFormat: {
         encoding: { encoding: raw.encoding.encoding, isBom: !!raw.encoding.isBom },
         lineEnding: raw.lineEnding,
@@ -453,7 +466,7 @@ export class SessionHost {
         statuses.push({ documentId: document.id, diskMissing, diskConflict })
       } else if (document.content.kind === 'empty') {
         documents.push(document)
-        contents.push({ documentId: document.id, markdown: '' })
+        contents.push({ documentId: document.id, markdown: emptyDocumentBody(document) })
       } else if (document.resource.kind === 'file') {
         try {
           const loaded = await this._readDocument(
@@ -572,7 +585,7 @@ export class SessionHost {
       try {
         const loaded = await this._readDocument(location.path, options)
         const [placeholder] = snapshot.documents
-        if (snapshot.documents.length === 1 && placeholder.resource.kind === 'untitled' && placeholder.content.kind === 'empty') {
+        if (snapshot.documents.length === 1 && isBlankMarkdownTab(placeholder)) {
           snapshot.documents = []
           prepared.contents = []
         }
@@ -707,9 +720,9 @@ export class SessionHost {
     pathname: string,
     options: FileOpenOptions,
     selected: boolean
-  ): Promise<void> {
+  ): Promise<string | undefined> {
     const id = editor.sessionStateId
-    if (!id) return Promise.resolve()
+    if (!id) return Promise.resolve(undefined)
     if (typeof options.requestId === 'number') this._previewRequests.set(id, options.requestId)
     return this._enqueueWindowOperation(id, async() => {
       await editor.sessionReady
@@ -733,7 +746,7 @@ export class SessionHost {
           existing.resource.kind === 'file' ? existing.resource.location.path : pathname,
           options
         )
-        return
+        return existing.id
       }
       const loaded = await this._readDocument(pathname, options)
       if (obsolete()) return
@@ -748,8 +761,7 @@ export class SessionHost {
               document.content.kind === 'disk') ||
             (selected &&
               document.id === snapshot.activeDocumentId &&
-              document.resource.kind === 'untitled' &&
-              document.content.kind === 'empty')
+              isBlankMarkdownTab(document))
       )
       if (retire.length > 0) {
         const ended = await this._endDocuments(id, retire, false, false)
@@ -771,6 +783,32 @@ export class SessionHost {
         replacedDocumentIds: retire.map((document) => document.id)
       }
       this._native(id).webContents.send('mt::state::document-opened', payload)
+      return loaded.document.id
+    })
+  }
+
+  private async createDrawing(editor: EditorWindow, documentId: string, content: string, filename?: string): Promise<string> {
+    const id = editor.sessionStateId
+    if (!id || typeof content !== 'string') throw new Error(t('drawing.documentUnavailable'))
+    return this._enqueueWindowOperation(id, async() => {
+      const note = this._owner().getWindow(id)?.documents.find(document => document.id === documentId)
+      if (!note || note.readOnly || note.resource.kind !== 'file' || note.resource.pendingCreation || isDrawingPath(note.title))
+        throw new Error(t('drawing.documentUnavailable'))
+
+      const directory = path.dirname(note.resource.location.path)
+      const stem = t('drawing.untitled')
+      const customName = filename === undefined ? undefined : drawingFilename(filename)
+      if (filename !== undefined && !customName) throw new Error(t('drawing.invalidName'))
+      for (let number = 1; ; number++) {
+        const suffix = number === 1 ? '' : ` ${number}`
+        const candidate = path.join(directory, customName ?? `${stem}${suffix}.excalidraw`)
+        try {
+          await writeFile(candidate, content, { flag: 'wx' })
+          return candidate
+        } catch (error) {
+          if (customName || (error as NodeJS.ErrnoException).code !== 'EEXIST') throw error
+        }
+      }
     })
   }
 
@@ -904,11 +942,12 @@ export class SessionHost {
 
   private _requestCheckpoint(
     windowId: string,
-    transactionId = createStateId()
+    transactionId = createStateId(),
+    closingWindow = false
   ): Promise<WindowSnapshot> {
     const result = (this._checkpointQueues.get(windowId) ?? Promise.resolve())
       .catch(() => {})
-      .then(() => this._checkpointNow(windowId, transactionId))
+      .then(() => this._checkpointNow(windowId, transactionId, closingWindow))
     this._checkpointQueues.set(windowId, result)
     return result
   }
@@ -916,6 +955,7 @@ export class SessionHost {
   private async _checkpointNow(
     windowId: string,
     transactionId: string,
+    closingWindow: boolean
   ): Promise<WindowSnapshot> {
     this._geometryWriters.get(windowId)?.flush()
     if (!this.isRendererInitialized(windowId)) {
@@ -935,12 +975,13 @@ export class SessionHost {
       const timeout = setTimeout(() => {
         this._waiting.delete(windowId)
         void this._owner().cancelCloseCheckpoint(windowId, transactionId)
-        reject(new Error('The editor did not finish its recovery checkpoint'))
-      }, 10000)
-      this._waiting.set(windowId, { transactionId, resolve, reject, timeout })
+        reject(closingWindow ? new WindowCloseCanceled() : new Error('The editor did not finish its recovery checkpoint'))
+      }, closingWindow ? 60000 : 10000)
+      this._waiting.set(windowId, { transactionId, closingWindow, resolve, reject, timeout })
       this._native(windowId).webContents.send('mt::state::prepare-close', {
         contextToken: context.contextToken,
-        transactionId
+        transactionId,
+        closingWindow
       })
     })
   }
@@ -1031,16 +1072,19 @@ export class SessionHost {
         if (epoch === null) throw new Error('Document is read-only')
         const native = this._native(windowId)
         const resource = capture.snapshot.resource
+        const drawing = isDrawingPath(capture.snapshot.title)
         // A preceding queued Save As may have rebound the resource since the request arrived.
         previousPath = resource.kind === 'file' ? resource.location.path : ''
         let destination = resource.kind === 'file' ? resource.location.path : ''
         if (saveAs || !destination) {
           const choice = await dialog.showSaveDialog(native, {
             defaultPath:
-              destination || path.join(app.getPath('documents'), `${capture.snapshot.title}.md`)
+              destination || path.join(app.getPath('documents'), drawing ? capture.snapshot.title : `${capture.snapshot.title}.md`),
+            ...(drawing ? { filters: [{ name: 'Excalidraw', extensions: ['excalidraw'] }] } : {})
           })
           if (choice.canceled || !choice.filePath) return null
           destination = choice.filePath
+          if (drawing && !isDrawingPath(destination)) throw new Error(t('drawing.invalidFile'))
         } else {
           const current = await this._diskBaseline(destination)
           const baseline = capture.baseline
@@ -1197,20 +1241,6 @@ export class SessionHost {
           const destination = relocateResourcePath(document.resource.location.canonicalPath, relocation)
           return destination === null ? [] : [{ document, destination }]
         }) ?? []
-    // A move must not strand the same file in another window: that window would
-    // keep the old path and silently recreate it on its next save (a "ghost"
-    // copy). Mirror the `moveSidebarItem` guard here, since cut/rename also
-    // route through this entry point.
-    for (const win of this._owner().getState().session.windows) {
-      for (const document of win.documents) {
-        if (document.resource.kind !== 'file') continue
-        const pathname = document.resource.location.canonicalPath
-        if (win.id !== windowId && containsPath(relocation.source.canonicalPath, pathname))
-          throw new Error(t('sideBar.move.openElsewhere'))
-        if (containsPath(relocation.destination.canonicalPath, pathname))
-          throw new Error(t('sideBar.move.destinationOpen'))
-      }
-    }
     if (!affected.length) {
       await move()
       this._accessor.menu.relocateRecentlyUsedDocuments(relocation)
@@ -1376,9 +1406,8 @@ export class SessionHost {
     windowId: string,
     ids: string[]
   ): Promise<{ status: 'closed' | 'canceled' | 'failed' }> {
-    // Per-window: one window's save dialog must not cancel another window's close.
-    if (this._tabClosePending.has(windowId)) return { status: 'canceled' }
-    this._tabClosePending.add(windowId)
+    if (this._tabClosePending) return { status: 'canceled' }
+    this._tabClosePending = true
     try {
       const initial = await this._requestCheckpoint(windowId)
       const selected = initial.documents.filter((document) => ids.includes(document.id))
@@ -1415,7 +1444,7 @@ export class SessionHost {
       this.report(error, windowId)
       return { status: 'failed' }
     } finally {
-      this._tabClosePending.delete(windowId)
+      this._tabClosePending = false
     }
   }
 
@@ -1467,6 +1496,9 @@ export class SessionHost {
     })
     ipcMain.handle('mt::project-open-containing-folder', (event, documentId: string) => {
       return this._openContainingFolder(editorFor(event.sender), documentId)
+    })
+    ipcMain.handle('mt::drawing::create', (event, documentId: string, content: string, filename?: string) => {
+      return this.createDrawing(editorFor(event.sender), documentId, content, filename)
     })
     ipcMain.handle('mt::preferences::get', () => this._accessor.preferences.getAll())
     ipcMain.handle('mt::preferences::update', (_event, patch) => {
@@ -1528,7 +1560,8 @@ export class SessionHost {
           this._waiting.delete(id)
           await this._owner().cancelCloseCheckpoint(id, pending.transactionId)
           const snapshot = this._owner().getWindow(id)
-          if (result.status === 'persisted' && snapshot) pending.resolve(snapshot)
+          if (pending.closingWindow && request.cancelClose) pending.reject(new WindowCloseCanceled())
+          else if (result.status === 'persisted' && snapshot) pending.resolve(snapshot)
           else pending.reject(new Error('Final checkpoint was not persisted'))
         }
         return result

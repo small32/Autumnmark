@@ -1,3 +1,5 @@
+export const pineInkTheme = { id: 'pine-ink', name: '松墨（Pine Ink）' } as const
+
 export const railscastsThemes: readonly string[] = Object.freeze([
   'dark',
   'material-dark',
@@ -63,6 +65,7 @@ const themeBackgroundColors: ReadonlyMap<string, string> = new Map([
   ['one-dark', '#282c34'],
   ['oxocarbon-dark', '#161616'],
   ['palenight', '#292d3e'],
+  [pineInkTheme.id, '#faf7ef'],
   ['rose-pine', '#191724'],
   ['rose-pine-dawn', '#faf4ed'],
   ['rose-pine-moon', '#232136'],

@@ -96,6 +96,7 @@ export const launchElectron = async(
   const env: Record<string, string> = {}
   for (const [k, v] of Object.entries(process.env)) if (v !== undefined) env[k] = v
   if (options.suppressErrorDialog) env.MARKTEXT_ERROR_INTERACTION = '1'
+  env.MARKTEXT_TEST_SKILL_HOME = path.join(userDataDir, 'skill-home')
   Object.assign(env, options.env)
   const app = await _electron.launch({
     executablePath,

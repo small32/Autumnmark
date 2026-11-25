@@ -1,5 +1,8 @@
 <template>
-  <div class="chat-chooser">
+  <div
+    class="chat-chooser"
+    :style="{ '--chat-picker-anchor': anchor }"
+  >
     <button
       class="trigger"
       :disabled="disabled || !items.length"
@@ -50,7 +53,7 @@
           </button>
           <button
             class="remove"
-            :disabled="disabled || (selectionLocked && item.id === current?.id)"
+            :disabled="disabled || (selectionLocked && item.id === current?.id) || removeDisabled?.(item)"
             :aria-label="t('studio.deleteChat') + ' · ' + title(item)"
             :title="t('studio.deleteChat')"
             @click="emit('remove', item)"
@@ -63,22 +66,23 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends { id: string }">
 import { ref, useId, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ArrowDown, ChatDotRound, Check, Delete } from '@element-plus/icons-vue'
-import type { ThemeChat } from './chatHistory'
 
 const props = defineProps<{
-  items: ThemeChat[]
-  current?: ThemeChat
+  items: T[]
+  current?: T
   disabled: boolean
   selectionLocked: boolean
-  title: (item: ThemeChat) => string
+  title: (item: T) => string
+  removeDisabled?: (item: T) => boolean
 }>()
-const emit = defineEmits<{ select: [id: string]; remove: [item: ThemeChat] }>()
+const emit = defineEmits<{ select: [id: string]; remove: [item: T] }>()
 const { t } = useI18n()
 const popupId = useId()
+const anchor = `--chat-picker-${popupId}`
 const selectionId = useId()
 const popup = ref<HTMLElement>()
 const open = ref(false)
@@ -110,8 +114,10 @@ watch(() => props.items.length, count => { if (!count) popup.value?.hidePopover(
 
 <style scoped>
 .chat-chooser { flex: 1 1 10ch; min-width: 0; }
+.chat-chooser button { font: inherit; color: inherit; border-radius: 5px; }
+.chat-chooser button:enabled { cursor: pointer; }
 .chat-chooser .trigger {
-  anchor-name: --theme-chat-picker;
+  anchor-name: var(--chat-picker-anchor);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -132,7 +138,7 @@ svg { width: 14px; height: 14px; flex-shrink: 0; }
 .options {
   inset: auto;
   position: fixed;
-  position-anchor: --theme-chat-picker;
+  position-anchor: var(--chat-picker-anchor);
   top: anchor(bottom);
   left: anchor(left);
   width: anchor-size(width);

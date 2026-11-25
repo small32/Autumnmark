@@ -68,8 +68,9 @@ const layout = (value: unknown): WindowLayoutState => {
   if (object(value.sidebar)) {
     const sidebar = value.sidebar
     if (typeof sidebar.visible === 'boolean') result.sidebar.visible = sidebar.visible
-    if (sidebar.activeView === 'files' || sidebar.activeView === 'outline' || sidebar.activeView === 'search')
-      result.sidebar.activeView = sidebar.activeView
+    const activeView = sidebar.activeView === 'themeAi' ? 'documentChat' : sidebar.activeView
+    if (activeView === 'files' || activeView === 'outline' || activeView === 'search' || activeView === 'documentChat')
+      result.sidebar.activeView = activeView
     if (finite(sidebar.preferredWidthPx))
       result.sidebar.preferredWidthPx = Math.max(220, sidebar.preferredWidthPx)
     if (object(sidebar.openedFiles)) {

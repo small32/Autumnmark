@@ -53,7 +53,7 @@ export interface WindowGeometryState {
 export interface WindowLayoutState {
   sidebar: {
     visible: boolean
-    activeView: 'files' | 'outline' | 'search'
+    activeView: 'files' | 'outline' | 'search' | 'documentChat'
     // Remembered CSS-pixel width, including while the sidebar is hidden.
     preferredWidthPx: number
     openedFiles: { expanded: boolean; preferredHeightPx: number }
@@ -244,6 +244,7 @@ export interface WindowCheckpointRequest {
   sequence: number
   // Null for normal checkpoints; otherwise matches the pending native close request.
   closeTransactionId: string | null
+  cancelClose?: boolean
   layout: WindowLayoutState
   projectView: ProjectViewState
   documents: RendererDocumentCheckpoint[]
@@ -335,7 +336,7 @@ export interface StateIpcMainEvents {
   'mt::state::documents-ended': [documentIds: string[]]
   'mt::state::document-saved': [result: Extract<ManagedSaveResult, { status: 'saved' }>]
   'mt::preferences::changed': [preferences: UserPreferences]
-  'mt::state::prepare-close': [request: { contextToken: string; transactionId: string }]
+  'mt::state::prepare-close': [request: { contextToken: string; transactionId: string; closingWindow?: boolean }]
   'mt::state::context-changed': [initialization: WindowInitialization]
 }
 

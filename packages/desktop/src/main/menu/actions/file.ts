@@ -516,7 +516,7 @@ export const openFile = async(win: BrowserWindow | null): Promise<void> => {
     filters: [
       {
         name: 'Markdown document',
-        extensions: [...MARKDOWN_EXTENSIONS]
+        extensions: [...MARKDOWN_EXTENSIONS, 'excalidraw']
       }
     ]
   })
