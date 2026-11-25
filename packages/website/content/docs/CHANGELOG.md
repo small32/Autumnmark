@@ -1,3 +1,11 @@
+## Antumnmark+ 0.1.3
+
+- Multi-select in the sidebar: Ctrl/Cmd-click files, folders and project roots to add or remove single items, and Shift-click to extend the selection across a range. A plain click on a folder still expands or collapses it and reduces the selection to that folder.
+- Ranges follow the rows currently on screen, so collapsed and hidden rows are skipped, and Windows paths keep working when their letter case differs.
+- Right-click hide now writes the whole selection in one go instead of one item at a time.
+- Antumnmark+ checks GitHub Releases for new versions and can download and install them from inside the app. Turn the startup check or the in-app update off separately in Settings → General → Updates.
+- Fixed assorted bugs across the editor, file handling, sidebar drag and drop, and update flow.
+
 ## Antumnmark+ 0.1.2
 
 - Fixed rapid hide/restore actions dropping each other's updates in the sidebar.
