@@ -1312,7 +1312,7 @@
     "later": "稍後",
     "upToDate": "目前已是最新版本。",
     "downloaded": "更新已下載，應用程式即將結束並安裝。",
-    "checkFailed": "無法檢查更新，請稍後再試。",
+    "checkFailed": "無法連線到 GitHub，請檢查網路或代理設定後重試。",
     "installFailed": "無法安裝更新，請稍後再試。",
     "checking": "正在檢查更新…",
     "preparing": "正在準備 {version} 版本的安裝檔…",

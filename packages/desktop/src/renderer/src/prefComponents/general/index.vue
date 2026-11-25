@@ -272,7 +272,29 @@
           >
             {{ t('updates.retry') }}
           </el-button>
-          <span v-if="updateStatus">{{ updateStatus }}</span>
+        </div>
+        <div
+          v-if="updateDownloading"
+          class="update-progress"
+        >
+          <div
+            class="update-progress-bar"
+            :class="{ indeterminate: updatePercent === null }"
+            role="progressbar"
+            :aria-valuenow="updatePercent ?? undefined"
+            :aria-label="t('updates.title')"
+          >
+            <span :style="{ width: (updatePercent ?? 100) + '%' }" />
+          </div>
+          <div class="update-progress-meta">
+            <span role="status">{{ updateStatus }}</span>
+            <span v-if="updatePercent !== null">{{ updatePercent }}%</span>
+            <span v-if="updateProgress">
+              {{ sizeText }}
+              <template v-if="updateProgress.total > 0"> / {{ totalText }}</template>
+            </span>
+            <span v-if="speedText">{{ speedText }}</span>
+          </div>
         </div>
         <p
           v-if="checkable && !installable"
@@ -322,7 +344,7 @@ const props = withDefaults(defineProps<{ groups?: readonly string[]; embedded?: 
 })
 const show = (group: string): boolean => props.groups.includes('all') || props.groups.includes(group)
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const preferenceStore = usePreferencesStore()
 const acceptRecoveryPreferences = (preferences: UserPreferences): void => {
   preferenceStore.SET_USER_PREFERENCE({ ...preferences })
@@ -368,6 +390,24 @@ const updateInstallable = computed(() =>
   installable && updates.state.phase === 'ready' && updates.onlineEnabled)
 const updateReleaseAvailable = computed(() => updates.state.phase === 'available')
 const updateRetryable = computed(() => updates.state.phase === 'error')
+const updateDownloading = computed(() => updates.state.phase === 'downloading')
+const updatePercent = computed(() => updates.percent)
+const updateProgress = computed(() => updates.progress)
+const sizeFormatter = computed(() => new Intl.NumberFormat(locale.value, {
+  style: 'unit', unit: 'megabyte', maximumFractionDigits: 1
+}))
+const speedFormatter = computed(() => new Intl.NumberFormat(locale.value, {
+  style: 'unit', unit: 'megabyte-per-second', maximumFractionDigits: 2
+}))
+const sizeText = computed(() => updateProgress.value
+  ? sizeFormatter.value.format(updateProgress.value.transferred / 1e6)
+  : '')
+const totalText = computed(() => updateProgress.value && updateProgress.value.total > 0
+  ? sizeFormatter.value.format(updateProgress.value.total / 1e6)
+  : '')
+const speedText = computed(() => updateProgress.value && updateProgress.value.bytesPerSecond > 0
+  ? speedFormatter.value.format(updateProgress.value.bytesPerSecond / 1e6)
+  : '')
 const checkForUpdates = (): void => {
   window.electron.ipcRenderer.send('mt::check-for-update')
 }
@@ -422,6 +462,42 @@ const onSelectChange = (type: keyof PreferencesState, value: unknown): void => {
   align-items: center;
   gap: 12px;
   margin-top: 4px;
+  color: var(--editorColor60);
+  font-size: 12px;
+}
+
+.update-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.update-progress-bar {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  background: var(--editorColor10);
+  border-radius: 2px;
+}
+
+.update-progress-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--themeColor);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+.update-progress-bar.indeterminate > span {
+  width: 100% !important;
+  opacity: 0.4;
+}
+
+.update-progress-meta {
+  display: flex;
+  gap: 10px;
   color: var(--editorColor60);
   font-size: 12px;
 }

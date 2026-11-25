@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { app, ipcMain, BrowserWindow, type WebContents } from 'electron'
+import { app, ipcMain, net, BrowserWindow, type WebContents } from 'electron'
 import log from 'electron-log'
 import type { UpdateState } from '@shared/types/ipc'
 import { APP_NAME, GITHUB_REPO_SLUG } from '@shared/brand'
@@ -14,7 +14,7 @@ import {
 import { onInternalChannel } from './utils/internalIpc'
 
 const LATEST_RELEASE_URL = `https://api.github.com/repos/${GITHUB_REPO_SLUG}/releases/latest`
-const RELEASE_CHECK_TIMEOUT_MS = 15_000
+const RELEASE_CHECK_TIMEOUT_MS = 30_000
 
 const listeners = new Set<WebContents>()
 let state: UpdateState = { phase: 'idle' }
@@ -79,8 +79,10 @@ ipcMain.on('mt::update-listen', ({ sender }) => {
 const isAbortError = (error: unknown): boolean =>
   error instanceof Error && (error.name === 'AbortError' || error.message.includes('aborted'))
 
-const fetchLatestRelease = async(): Promise<string> => {
-  const response = await fetch(LATEST_RELEASE_URL, {
+const fetchLatestReleaseOnce = async(): Promise<string> => {
+  // net.fetch uses the Chromium network stack, so the check honours the
+  // system proxy and certificate store instead of failing like undici does.
+  const response = await net.fetch(LATEST_RELEASE_URL, {
     headers: {
       Accept: 'application/vnd.github+json',
       'User-Agent': `${APP_NAME}/${app.getVersion()}`
@@ -98,6 +100,30 @@ const fetchLatestRelease = async(): Promise<string> => {
   )
     throw new Error('GitHub release has no tag')
   return payload.tag_name
+}
+
+// Flaky connections are the common failure here, not bad responses: retry a
+// couple of times with a short backoff. Client errors (404, rate limit) are
+// reported straight away because retrying cannot help.
+const isRetryable = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return true
+  const status = /^GitHub returned (\d{3})$/.exec(error.message)
+  if (!status) return true
+  return Number(status[1]) >= 500
+}
+
+const fetchLatestRelease = async(): Promise<string> => {
+  let lastError: unknown
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await fetchLatestReleaseOnce()
+    } catch (error) {
+      lastError = error
+      if (attempt === 2 || !isRetryable(error)) break
+      await new Promise(resolve => setTimeout(resolve, 600 * (attempt + 1)))
+    }
+  }
+  throw lastError
 }
 
 const updateRoot = (version: string): string =>

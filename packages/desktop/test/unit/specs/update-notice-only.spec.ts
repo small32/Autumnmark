@@ -1,12 +1,13 @@
 import { EventEmitter } from 'node:events'
 import { ipcMain, type BrowserWindow } from 'electron'
 import type * as DesktopUpdates from '../../../src/main/updates'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Portable ZIPs, unsigned macOS builds and non-AppImage Linux packages cannot
 // install updates, but they must still learn that a newer release exists.
-const { updater, isUpdatable } = vi.hoisted(() => ({
+const { updater, isUpdatable, netFetch } = vi.hoisted(() => ({
   isUpdatable: vi.fn(),
+  netFetch: vi.fn(),
   updater: {
     allowPrerelease: true,
     autoDownload: true,
@@ -23,7 +24,8 @@ vi.mock('electron', async() => {
   return {
     app: Object.assign(new EventEmitter(), { getVersion: () => '0.1.3' }),
     ipcMain: new EventEmitter(),
-    BrowserWindow: {}
+    BrowserWindow: {},
+    net: { fetch: netFetch }
   }
 })
 vi.mock('electron-log', () => ({ default: { warn: vi.fn() } }))
@@ -37,7 +39,6 @@ const release = (tag: string): Response =>
   new Response(JSON.stringify({ tag_name: tag }), { status: 200, headers: { 'content-type': 'application/json' } })
 
 let updates: typeof DesktopUpdates
-let fetchMock: ReturnType<typeof vi.fn>
 
 describe('release-only update checks', () => {
   beforeEach(async() => {
@@ -46,20 +47,14 @@ describe('release-only update checks', () => {
     ipcMain.removeAllListeners()
     sender.removeAllListeners()
     isUpdatable.mockReturnValue(false)
-    fetchMock = vi.fn(async() => release('v0.1.3'))
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => release('v0.1.3'))
     updates = await import('../../../src/main/updates')
     listen()
     send.mockClear()
   })
 
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
   it('reports a newer release without touching the updater or the filesystem', async() => {
-    fetchMock = vi.fn(async() => release('v0.2.0'))
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => release('v0.2.0'))
     // The startup check is the path that shows an unsolicited notice.
     updates.startAutomaticUpdateChecks(() => win)
     await vi.waitFor(() => {
@@ -78,8 +73,7 @@ describe('release-only update checks', () => {
   })
 
   it('ignores a release tag that cannot be compared', async() => {
-    fetchMock = vi.fn(async() => release('nightly'))
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => release('nightly'))
     updates.checkUpdates(win)
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'current' })
@@ -87,18 +81,31 @@ describe('release-only update checks', () => {
   })
 
   it('reports a check error when GitHub is unreachable', async() => {
-    fetchMock = vi.fn(async() => { throw new Error('offline') })
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => { throw new Error('offline') })
     updates.checkUpdates(win)
+    // Network errors are retried with a short backoff before giving up.
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'error', stage: 'check' })
-    })
+    }, { timeout: 8000 })
     expect(updater.checkForUpdates).not.toHaveBeenCalled()
   })
 
+  it('retries a transient network failure instead of reporting it', async() => {
+    let attempts = 0
+    netFetch.mockImplementation(async() => {
+      attempts += 1
+      if (attempts === 1) throw new Error('fetch failed')
+      return release('v0.2.0')
+    })
+    updates.checkUpdates(win)
+    await vi.waitFor(() => {
+      expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version: '0.2.0' })
+    }, { timeout: 8000 })
+    expect(attempts).toBe(2)
+  })
+
   it('reports a check error when GitHub returns a non-OK status', async() => {
-    fetchMock = vi.fn(async() => new Response('rate limited', { status: 403 }))
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => new Response('rate limited', { status: 403 }))
     updates.checkUpdates(win)
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'error', stage: 'check' })
@@ -109,7 +116,7 @@ describe('release-only update checks', () => {
     updates.startAutomaticUpdateChecks(() => win)
     updates.startAutomaticUpdateChecks(() => win)
     await vi.waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledOnce()
+      expect(netFetch).toHaveBeenCalledOnce()
     })
   })
 
@@ -117,19 +124,18 @@ describe('release-only update checks', () => {
     const preferences = { getItem: vi.fn((key: string) => key === 'checkUpdatesOnStartup' ? false : true) }
     updates.startAutomaticUpdateChecks(() => win, () => preferences)
     await Promise.resolve()
-    expect(fetchMock).not.toHaveBeenCalled()
+    expect(netFetch).not.toHaveBeenCalled()
 
     updates.checkUpdates(win)
     await vi.waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledOnce()
+      expect(netFetch).toHaveBeenCalledOnce()
     })
     // A manual check never opens a dialog while notices are off.
     expect(send.mock.calls.some(call => call[2] === true)).toBe(false)
   })
 
   it('announces a new release once and keeps the notice after a background dismissal', async() => {
-    fetchMock = vi.fn(async() => release('v0.2.0'))
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => release('v0.2.0'))
     updates.startAutomaticUpdateChecks(() => win)
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version: '0.2.0' }, true)
@@ -139,21 +145,19 @@ describe('release-only update checks', () => {
     // Re-checking the same release must not re-open the dialog on its own.
     updates.checkUpdates(win)
     await vi.waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(netFetch).toHaveBeenCalledTimes(2)
     })
     expect(send.mock.calls.filter(call => call[2] === true)).toHaveLength(1)
   })
 
   it('retries a failed check', async() => {
-    fetchMock = vi.fn(async() => { throw new Error('offline') })
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => { throw new Error('offline') })
     updates.checkUpdates(win)
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'error', stage: 'check' })
-    })
+    }, { timeout: 8000 })
 
-    fetchMock = vi.fn(async() => release('v0.2.0'))
-    vi.stubGlobal('fetch', fetchMock)
+    netFetch.mockImplementation(async() => release('v0.2.0'))
     updates.checkUpdates(win)
     await vi.waitFor(() => {
       // A manual check reports the version without an unsolicited notice.

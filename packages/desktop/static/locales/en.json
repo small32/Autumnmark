@@ -1312,7 +1312,7 @@
     "later": "Later",
     "upToDate": "You’re using the latest version.",
     "downloaded": "The update has been downloaded. The application will close to install it.",
-    "checkFailed": "Could not check for updates. Try again later.",
+    "checkFailed": "Could not reach GitHub. Check your network or proxy settings and try again.",
     "installFailed": "Could not install the update. Try again later.",
     "checking": "Checking for updates…",
     "preparing": "Preparing version {version} for installation…",

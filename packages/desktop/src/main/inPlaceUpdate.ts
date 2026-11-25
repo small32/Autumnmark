@@ -5,7 +5,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
-import { app } from 'electron'
+import { app, net } from 'electron'
 import { APP_NAME, GITHUB_REPO_SLUG } from '@shared/brand'
 
 // In-place updates: download the release archive, verify it, unpack it into a
@@ -85,7 +85,8 @@ export const downloadFile = async(
   onProgress: (progress: DownloadProgress) => void,
   signal: AbortSignal
 ): Promise<void> => {
-  const response = await fetch(url, {
+  // Downloads must follow the same proxy configuration as the check.
+  const response = await net.fetch(url, {
     signal,
     headers: {
       Accept: 'application/octet-stream',
