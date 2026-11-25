@@ -1,3 +1,8 @@
+## AutumnMark+ 0.1.8
+
+- Software updates now has its own category in Preferences, listed separately in the left sidebar instead of being buried at the bottom of General.
+- The automatic check and in-app update switches, all update actions, and the download progress display moved to the new page; searching for an update setting opens it directly.
+
 ## AutumnMark+ 0.1.7
 
 - Update checks and downloads now use the same network stack as the rest of the app, so they follow the system proxy and certificate settings. Previously a machine whose browser could open GitHub could still fail with "Could not check for updates".
