@@ -1,3 +1,8 @@
+## AutumnMark+ 0.2.3
+
+- Removed Linux support. Official packages are now published for Windows x64 and macOS ARM64 only; Linux-specific code, build targets, downloads and documentation have been dropped.
+- Windows and macOS installations keep the same profile directory and in-app update flow.
+
 ## AutumnMark+ 0.2.2
 
 - Update packages are now downloaded into an `update` folder inside the application directory instead of the system temporary folder.
