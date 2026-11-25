@@ -95,7 +95,7 @@ export class SessionHost {
   private _startupWarning: string | undefined
   private _startupActiveId: string | null = null
   private readonly _startupWindowIds = new Set<string>()
-  private _tabClosePending = false
+  private readonly _tabClosePending = new Set<string>()
   private _startQueue: Promise<void> = Promise.resolve()
   private readonly _windowOperations = new Map<string, Promise<unknown>>()
   private readonly _checkpointQueues = new Map<string, Promise<WindowSnapshot>>()
@@ -1406,8 +1406,9 @@ export class SessionHost {
     windowId: string,
     ids: string[]
   ): Promise<{ status: 'closed' | 'canceled' | 'failed' }> {
-    if (this._tabClosePending) return { status: 'canceled' }
-    this._tabClosePending = true
+    // Per-window: one window's save dialog must not cancel another window's close.
+    if (this._tabClosePending.has(windowId)) return { status: 'canceled' }
+    this._tabClosePending.add(windowId)
     try {
       const initial = await this._requestCheckpoint(windowId)
       const selected = initial.documents.filter((document) => ids.includes(document.id))
@@ -1444,7 +1445,7 @@ export class SessionHost {
       this.report(error, windowId)
       return { status: 'failed' }
     } finally {
-      this._tabClosePending = false
+      this._tabClosePending.delete(windowId)
     }
   }
 

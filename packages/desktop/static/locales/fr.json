@@ -867,6 +867,15 @@
         },
         "plantumlServer": {
           "title": "URL du serveur PlantUML"
+        },
+        "newDrawingView": {
+          "title": "Ouvrir les nouveaux dessins dans",
+          "dialog": "Fenêtre flottante",
+          "tab": "Nouvel onglet"
+        },
+        "embedDrawings": {
+          "title": "Embed drawings in Markdown",
+          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -1039,7 +1048,17 @@
     "loadFailed": "Impossible de charger le contenu.",
     "refreshFailed": "Échec de l’actualisation. Le dernier contenu reçu est affiché.",
     "refresh": "Actualiser",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "announcement": "Annonces",
+    "unreadAnnouncement": "Annonce non lue",
+    "unverified": "GitHub est indisponible. Impossible de vérifier si l’annonce est à jour.",
+    "donation": {
+      "title": "Soutenir AutumnMark+",
+      "description": "Scannez le code avec l’application correspondante pour soutenir le développement d’AutumnMark+.",
+      "alipay": "Alipay",
+      "wechatPay": "WeChat Pay",
+      "qrCode": "Code QR pour faire un don avec {method}"
+    }
   },
   "commands": {
     "mt": {
@@ -1421,5 +1440,162 @@
     "viewImage": "Afficher l’image",
     "copyLink": "Copier l’adresse du lien",
     "resumed": "Le mode édition est activé. L’enregistrement automatique a repris."
+  },
+  "themeAi": {
+    "viewChange": "Voir cette modification",
+    "previewStatus": "Aperçu du thème actif",
+    "previewing": "Aperçu dans cette note",
+    "previewReady": "Brouillon prêt à prévisualiser",
+    "previewHere": "Prévisualiser dans cette note",
+    "endPreview": "Fermer l’aperçu",
+    "previewEnded": "Aperçu fermé. La modification figure dans l’historique.",
+    "apply": "Appliquer au thème",
+    "applied": "Thème appliqué.",
+    "copyOnApply": "L’application crée une copie modifiable du thème.",
+    "changed": "Le thème actuel a changé. Réessayez avec ce thème."
+  },
+  "themeHistory": {
+    "empty": "Aucune version de ce thème n’a encore été enregistrée.",
+    "restoreAndApply": "Restaurer et appliquer",
+    "confirmApplyDetail": "Cette version sera appliquée. La version actuelle restera dans l’historique.",
+    "appliedCollaboration": "Les modifications d’un client IA externe ont été appliquées.",
+    "appliedRecovered": "Version appliquée précédemment",
+    "title": "Historique des versions",
+    "current": "Brouillon actuel",
+    "loading": "Chargement des versions…",
+    "storageError": "Impossible de lire ou de sauvegarder les versions du thème sur cet appareil.",
+    "aiSummary": "Résumé par IA",
+    "changes": "Modifications",
+    "previous": "Comparaison avec la version précédente",
+    "noChanges": "Le contenu du thème est identique à celui de la version précédente.",
+    "restore": "Restaurer comme brouillon",
+    "confirmRestore": "Confirmer la restauration",
+    "confirm": "Restaurer la version du {date} à {time} ?",
+    "confirmDetail": "La restauration ajoute une version. Le brouillon actuel restera dans l’historique.",
+    "restored": "La version du {date} à {time} a été restaurée.",
+    "applyHint": "Choisissez « Enregistrer et appliquer » pour mettre à jour le thème utilisé.",
+    "kind": {
+      "initial": "Version initiale",
+      "manual": "Modification manuelle",
+      "ai": "Modification par IA",
+      "save": "Enregistrer",
+      "apply": "Enregistrer et appliquer",
+      "restore": "Restaurer",
+      "undo": "Annuler",
+      "collaboration": "Modification collaborative",
+      "recovered": "Brouillon récupéré"
+    },
+    "description": {
+      "initial": "Point de départ de ce thème.",
+      "manual": "Le brouillon a été modifié manuellement.",
+      "ai": "L’assistant IA a modifié le brouillon.",
+      "save": "Le thème a été enregistré.",
+      "apply": "Le thème a été enregistré et appliqué.",
+      "restore": "Une version précédente a été restaurée.",
+      "undo": "Une modification du brouillon a été annulée.",
+      "collaboration": "Le brouillon a été mis à jour depuis le dossier de collaboration.",
+      "recovered": "Un brouillon enregistré sur cet appareil a été récupéré."
+    },
+    "field": {
+      "name": "Nom du thème",
+      "base": "Thème de base",
+      "css": "Style",
+      "sample": "Markdown de l’aperçu"
+    },
+    "appliedAi": "L’assistant IA a appliqué une modification au thème."
+  },
+  "about": {
+    "copyright": "Copyright © Luo Ran 2017-{year}",
+    "copyrightContributors": "Contributeurs aux droits d'auteur"
+  },
+  "documentChat": {
+    "undoChanges": "Annuler les modifications",
+    "changesReverted": "Modifications annulées",
+    "turnActions": "Actions de cet échange",
+    "deleteTurn": "Supprimer cet échange",
+    "revertTurn": "Annuler et supprimer cet échange",
+    "revertFailed": "Certaines modifications n’ont pas pu être annulées, car le document ou le thème a changé. La conversation a été conservée.",
+    "configure": "Configurer les modèles d’IA",
+    "onboarding": {
+      "title": "Modifier avec l’IA",
+      "loadingModels": "Chargement des modèles d’IA…",
+      "retry": "Réessayer",
+      "builtIn": "Utiliser l’IA dans AutumnMark+",
+      "builtInHint": "Ajoutez un modèle pour discuter et modifier votre document ou votre thème dans la barre latérale.",
+      "externalClient": "Vous utilisez déjà un client IA ?",
+      "externalHint": "Utilisez votre client habituel sans configurer de modèle dans AutumnMark+.",
+      "useExternal": "Utiliser un client IA externe",
+      "target": "Élément à modifier",
+      "editDocument": "Modifier le document",
+      "editTheme": "Modifier le thème",
+      "copyFailed": "Impossible de copier dans le presse-papiers. Réessayez.",
+      "skillIntro": "Appelez le Skill {0} dans un client compatible pour modifier un document ou un thème.",
+      "documentScope": "Avec un seul document ouvert dans l’ensemble des fenêtres, le Skill peut le modifier directement. S’il y en a plusieurs, le client vous demande d’en choisir un.",
+      "themeScope": "Si l’éditeur de thèmes est ouvert, le Skill modifie son brouillon actuel. Sinon, il modifie le thème appliqué.",
+      "invokeSkill": "Appeler le Skill dans le client",
+      "invokeHint": "Collez l’exemple dans votre client et adaptez-le à la modification souhaitée.",
+      "documentInstruction": "Utilise le Skill {0} pour transformer les points à confirmer du document actuel en liste de contrôle.",
+      "themeInstruction": "Utilise le Skill {0} pour réduire légèrement la taille des titres de premier niveau du thème actuel.",
+      "skillHelp": "Le client ne trouve pas le Skill ?",
+      "skillHelpHint": "AutumnMark+ installe et met à jour le Skill au démarrage. Actualisez la liste des Skills du client ou importez-le depuis le dossier partagé ci-dessous.",
+      "copyInstruction": "Copier la commande",
+      "instructionCopied": "Commande copiée. Collez-la dans votre client IA."
+    },
+    "tab": "IA",
+    "title": "Assistant IA",
+    "empty": "Posez une question ou décrivez une modification du document ou de son apparence.",
+    "message": "Écrire à l’assistant",
+    "waiting": "En attente du modèle…",
+    "review": "Examiner les modifications de {name}",
+    "applyHint": "Ouvrez le document cible en mode édition pour appliquer ces modifications.",
+    "apply": "Appliquer les modifications",
+    "applied": "Modifications appliquées dans l’éditeur.",
+    "changed": "Le document a changé ou n’est plus modifiable. Demandez à nouveau les modifications à partir de la version actuelle.",
+    "contextTooSmall": "Le message et le contexte de l’éditeur dépassent la capacité de contexte du modèle.",
+    "documentTooLarge": "The open document exceeds the AI sidebar’s document size limit.",
+    "invalidEdits": "Les modifications proposées n’ont pas pu être associées au document. Demandez au modèle de réessayer.",
+    "invalidThemeEdits": "Les modifications proposées pour le thème n’ont pas pu être appliquées au CSS actuel. Demandez au modèle de réessayer.",
+    "sendFailed": "Impossible d’envoyer le message. Vérifiez la conversation et réessayez."
+  },
+  "drawing": {
+    "insert": "Insérer un dessin Excalidraw",
+    "openInTab": "Ouvrir dans un onglet",
+    "new": "Nouveau dessin Excalidraw",
+    "open": "Ouvrir un dessin Excalidraw",
+    "untitled": "Dessin sans titre",
+    "addDocument": "Ajouter un document Markdown",
+    "addDocumentButton": "Ajouter un document",
+    "searchDocuments": "Rechercher des documents Markdown",
+    "insertIntoNote": "Insérer dans le document",
+    "wholeDocument": "Document entier",
+    "addCard": "Ajouter la carte",
+    "discardChanges": "Ignorer les modifications non enregistrées de ce dessin ?",
+    "discard": "Ignorer les modifications",
+    "changedOnDisk": "Le dessin a été modifié sur le disque. Rouvrez-le pour afficher la dernière version.",
+    "invalidFile": "Sélectionnez un fichier .excalidraw.",
+    "openFailed": "Impossible d’ouvrir le fichier. {reason}",
+    "saveFailed": "Impossible d’enregistrer ou d’insérer le dessin. {reason}",
+    "cardFailed": "Impossible d’ajouter la carte du document. {reason}",
+    "embedded": "Embedded drawing",
+    "filename": "Drawing filename",
+    "invalidName": "Enter a valid drawing filename.",
+    "renameFailed": "Could not rename the drawing. {reason}",
+    "documentUnavailable": "The source document is unavailable.",
+    "browseDocuments": "Browse Files…",
+    "canvas": "Canvas",
+    "source": "Source",
+    "invalidSource": "The drawing source is invalid. {reason}",
+    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
+    "discardSource": "Discard the unapplied changes to the drawing source?",
+    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
+  },
+  "history": {
+    "title": "Historique",
+    "document": "Document",
+    "theme": "Thème",
+    "documentChanges": "Modifications du document par l’IA",
+    "empty": "Cet historique ne contient encore aucune modification.",
+    "undated": "Sans date",
+    "viewConversation": "Voir la conversation"
   }
 }

@@ -1,7 +1,4 @@
 {
-  "lastReadAnnouncement": {
-    "type": "string"
-  },
   "imageFolderPath": {
     "description": "The image folder to store local images.",
     "type": "string"

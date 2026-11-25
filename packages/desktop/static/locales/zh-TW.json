@@ -867,6 +867,15 @@
         },
         "plantumlServer": {
           "title": "PlantUML 伺服器 URL"
+        },
+        "embedDrawings": {
+          "title": "在 Markdown 中內嵌繪圖",
+          "description": "關閉後，插入繪圖將建立獨立的 .excalidraw 檔案，並在文件中引用該檔案。"
+        },
+        "newDrawingView": {
+          "title": "新建繪圖的開啟方式",
+          "dialog": "浮動視窗",
+          "tab": "新分頁"
         }
       },
       "misc": {
@@ -1039,7 +1048,17 @@
     "loadFailed": "無法取得內容。",
     "refreshFailed": "重新整理失敗，正在顯示上次取得的內容。",
     "refresh": "重新整理",
-    "retry": "重試"
+    "retry": "重試",
+    "announcement": "公告",
+    "unreadAnnouncement": "公告有更新",
+    "unverified": "暫時無法連線至 GitHub，無法確認公告是否為最新版本。",
+    "donation": {
+      "title": "支持秋箋",
+      "description": "歡迎使用支付寶或微信掃描 QR 碼，支持秋箋的持續開發。",
+      "alipay": "支付寶",
+      "wechatPay": "微信支付",
+      "qrCode": "{method}捐贈收款 QR 碼"
+    }
   },
   "commands": {
     "mt": {
@@ -1421,5 +1440,162 @@
     "viewImage": "檢視圖片",
     "copyLink": "複製連結位址",
     "resumed": "已切換至編輯模式，自動儲存已恢復。"
+  },
+  "themeAi": {
+    "viewChange": "查看本次變更",
+    "previewStatus": "主題預覽中",
+    "previewing": "正在此筆記中預覽",
+    "previewReady": "主題草稿可預覽",
+    "previewHere": "在此筆記預覽",
+    "endPreview": "結束預覽",
+    "previewEnded": "已結束預覽，變更已寫入版本記錄。",
+    "apply": "套用至主題",
+    "applied": "已套用主題。",
+    "copyOnApply": "套用時會自動建立自訂主題副本。",
+    "changed": "目前主題已變更，請用目前主題重試。"
+  },
+  "themeHistory": {
+    "empty": "此主題還沒有儲存的版本。",
+    "restoreAndApply": "還原並套用",
+    "confirmApplyDetail": "將套用這個版本。目前版本會保留在歷史記錄中。",
+    "appliedCollaboration": "套用了外部 AI 用戶端的修改。",
+    "appliedRecovered": "先前套用的版本",
+    "title": "版本記錄",
+    "current": "目前草稿",
+    "loading": "正在讀取版本…",
+    "storageError": "無法在這台裝置讀取或儲存主題版本。",
+    "aiSummary": "AI 摘要",
+    "changes": "變更",
+    "previous": "與上一個版本比較",
+    "noChanges": "主題內容與上一個版本相同。",
+    "restore": "還原為草稿",
+    "confirmRestore": "確認還原",
+    "confirm": "還原 {date} {time} 的版本？",
+    "confirmDetail": "還原會新增一筆記錄，原有草稿會保留在版本記錄中。",
+    "restored": "已還原 {date} {time} 的版本。",
+    "applyHint": "若要更新使用中的主題，請選擇「儲存並套用」。",
+    "kind": {
+      "initial": "初始版本",
+      "manual": "手動編輯",
+      "ai": "AI 編輯",
+      "save": "手動儲存",
+      "apply": "儲存並套用",
+      "restore": "版本還原",
+      "undo": "復原",
+      "collaboration": "協作編輯",
+      "recovered": "找回的草稿"
+    },
+    "description": {
+      "initial": "此主題的初始快照。",
+      "manual": "已手動編輯主題草稿。",
+      "ai": "AI 助手編輯了主題草稿。",
+      "save": "已儲存目前主題。",
+      "apply": "已儲存並套用主題。",
+      "restore": "已還原較早的版本。",
+      "undo": "已復原草稿中的一次變更。",
+      "collaboration": "已根據協作資料夾中的檔案更新草稿。",
+      "recovered": "已找回這台裝置上儲存的草稿。"
+    },
+    "field": {
+      "name": "主題名稱",
+      "base": "基礎主題",
+      "css": "樣式",
+      "sample": "預覽 Markdown"
+    },
+    "appliedAi": "AI 助理已套用主題變更。"
+  },
+  "about": {
+    "copyright": "Copyright © Luo Ran 2017-{year}",
+    "copyrightContributors": "版權貢獻者"
+  },
+  "documentChat": {
+    "undoChanges": "撤回修改",
+    "changesReverted": "修改已撤回",
+    "turnActions": "本輪對話操作",
+    "deleteTurn": "刪除本輪對話",
+    "revertTurn": "撤回並刪除本輪對話",
+    "revertFailed": "正文或樣式已變更，部分修改無法撤回。對話已保留。",
+    "configure": "設定 AI 模型",
+    "onboarding": {
+      "title": "用 AI 編輯文件",
+      "loadingModels": "正在讀取 AI 模型…",
+      "retry": "重試",
+      "builtIn": "在 AutumnMark+ 內使用",
+      "builtInHint": "新增模型後，即可在側邊欄對話、修改正文或主題樣式。",
+      "externalClient": "已有常用的 AI 用戶端？",
+      "externalHint": "無須在 AutumnMark+ 中設定模型。",
+      "useExternal": "使用外部 AI 用戶端",
+      "target": "修改目標",
+      "editDocument": "修改正文",
+      "editTheme": "修改主題樣式",
+      "copyFailed": "無法複製到剪貼簿，請重試。",
+      "skillIntro": "在支援 Skill 的用戶端呼叫 {0}，即可修改文件或主題。",
+      "documentScope": "所有視窗只開啟一份文件時，Skill 會直接修改。開啟多份時，用戶端會先列出文件，請你確認要修改哪一份。",
+      "themeScope": "主題編輯器開啟時，只修改裡面目前選取的草稿。關閉時，修改 AutumnMark+ 正在使用的主題。",
+      "invokeSkill": "在用戶端呼叫 Skill",
+      "invokeHint": "將下方範例貼到用戶端，再換成你想做的修改。",
+      "documentInstruction": "請使用 {0} Skill，將目前文件中的待確認事項整理成清單。",
+      "themeInstruction": "請使用 {0} Skill，把目前主題的一級標題字級調小一點。",
+      "skillHelp": "用戶端找不到 Skill？",
+      "skillHelpHint": "AutumnMark+ 啟動時會自動安裝和更新 Skill。請重新整理用戶端的 Skill 清單，或從下方共用目錄匯入。",
+      "copyInstruction": "複製呼叫指令",
+      "instructionCopied": "已複製呼叫指令，請貼到 AI 用戶端。"
+    },
+    "tab": "AI",
+    "title": "AI 助理",
+    "empty": "可以提問，或描述要如何修改文件或其外觀。",
+    "message": "傳訊息給助理",
+    "waiting": "正在等待模型回覆…",
+    "review": "檢視「{name}」的變更",
+    "applyHint": "在編輯模式開啟目標文件，即可套用這些變更。",
+    "apply": "套用變更",
+    "applied": "變更已套用至編輯器。",
+    "changed": "文件已變更或無法再編輯。請依目前的版本重新提出修改要求。",
+    "contextTooSmall": "訊息與編輯器的上下文超過模型的上下文長度限制。",
+    "documentTooLarge": "目前開啟的文件超過 AI 側欄的大小限制。",
+    "invalidEdits": "無法在文件中找到建議變更的對應內容。請讓模型再試一次。",
+    "invalidThemeEdits": "無法將建議的主題變更套用至目前的 CSS。請讓模型再試一次。",
+    "sendFailed": "無法傳送訊息。請檢查對話後再試一次。"
+  },
+  "drawing": {
+    "new": "新增 Excalidraw 繪圖",
+    "insert": "插入 Excalidraw 繪圖",
+    "openInTab": "移到分頁",
+    "open": "開啟 Excalidraw 繪圖",
+    "embedded": "內嵌繪圖",
+    "untitled": "未命名繪圖",
+    "filename": "繪圖檔名",
+    "invalidName": "請輸入有效的繪圖檔名。",
+    "renameFailed": "無法重新命名繪圖。{reason}",
+    "documentUnavailable": "無法存取原始文件。",
+    "addDocument": "新增 Markdown 文件",
+    "addDocumentButton": "新增文件",
+    "searchDocuments": "搜尋 Markdown 文件",
+    "browseDocuments": "瀏覽檔案…",
+    "canvas": "畫布",
+    "source": "原始碼",
+    "invalidSource": "繪圖原始碼無效。{reason}",
+    "sourceChanged": "編輯原始碼期間畫布已修改。捨棄原始碼草稿後可載入最新版本。",
+    "discardSource": "捨棄尚未套用的繪圖原始碼變更嗎？",
+    "insertionChanged": "文件已修改。請在目標位置重新插入繪圖。",
+    "insertIntoNote": "插入到文件",
+    "wholeDocument": "整份文件",
+    "addCard": "新增卡片",
+    "discardChanges": "要捨棄這張繪圖中尚未儲存的變更嗎？",
+    "discard": "捨棄變更",
+    "changedOnDisk": "磁碟上的繪圖已變更。請重新開啟以查看最新版本。",
+    "invalidFile": "請選擇 .excalidraw 檔案。",
+    "openFailed": "無法開啟檔案。{reason}",
+    "saveFailed": "無法儲存或插入繪圖。{reason}",
+    "cardFailed": "無法新增文件卡片。{reason}"
+  },
+  "history": {
+    "title": "歷史紀錄",
+    "document": "文件",
+    "theme": "主題",
+    "documentChanges": "AI 文件變更",
+    "empty": "目前沒有歷史變更。",
+    "undated": "無日期",
+    "viewConversation": "檢視對話"
   }
 }

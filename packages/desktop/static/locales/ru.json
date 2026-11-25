@@ -867,6 +867,15 @@
         },
         "plantumlServer": {
           "title": "URL сервера PlantUML"
+        },
+        "newDrawingView": {
+          "title": "Открывать новые рисунки в",
+          "dialog": "Плавающее окно",
+          "tab": "Новая вкладка"
+        },
+        "embedDrawings": {
+          "title": "Embed drawings in Markdown",
+          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -1039,7 +1048,17 @@
     "loadFailed": "Не удалось загрузить содержимое.",
     "refreshFailed": "Не удалось обновить данные. Показано последнее загруженное содержимое.",
     "refresh": "Обновить",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "announcement": "Объявления",
+    "unreadAnnouncement": "Непрочитанное объявление",
+    "unverified": "GitHub недоступен. Не удалось проверить актуальность объявления.",
+    "donation": {
+      "title": "Поддержать AutumnMark+",
+      "description": "Отсканируйте код в соответствующем приложении, чтобы поддержать разработку AutumnMark+.",
+      "alipay": "Alipay",
+      "wechatPay": "WeChat Pay",
+      "qrCode": "QR-код для пожертвования через {method}"
+    }
   },
   "commands": {
     "mt": {
@@ -1421,5 +1440,162 @@
     "viewImage": "Просмотреть изображение",
     "copyLink": "Копировать адрес ссылки",
     "resumed": "Режим редактирования включён. Автосохранение возобновлено."
+  },
+  "themeAi": {
+    "viewChange": "Посмотреть это изменение",
+    "previewStatus": "Предпросмотр темы",
+    "previewing": "Предпросмотр в этой заметке",
+    "previewReady": "Черновик темы готов к просмотру",
+    "previewHere": "Посмотреть в этой заметке",
+    "endPreview": "Закрыть предпросмотр",
+    "previewEnded": "Предпросмотр закрыт. Изменение сохранено в истории.",
+    "apply": "Применить к теме",
+    "applied": "Тема применена.",
+    "copyOnApply": "При применении создаётся редактируемая копия темы.",
+    "changed": "Текущая тема изменилась. Попробуйте снова."
+  },
+  "themeHistory": {
+    "empty": "У этой темы пока нет сохранённых версий.",
+    "restoreAndApply": "Восстановить и применить",
+    "confirmApplyDetail": "Эта версия будет применена. Текущая версия останется в истории.",
+    "appliedCollaboration": "Применены изменения от внешнего ИИ-клиента.",
+    "appliedRecovered": "Ранее применённая версия",
+    "title": "История версий",
+    "current": "Текущий черновик",
+    "loading": "Загрузка версий…",
+    "storageError": "Не удалось прочитать или сохранить версии темы на этом устройстве.",
+    "aiSummary": "Сводка ИИ",
+    "changes": "Изменения",
+    "previous": "Сравнение с предыдущей версией",
+    "noChanges": "Содержимое темы совпадает с предыдущей версией.",
+    "restore": "Восстановить как черновик",
+    "confirmRestore": "Подтвердить восстановление",
+    "confirm": "Восстановить версию от {date}, {time}?",
+    "confirmDetail": "При восстановлении создаётся версия. Текущий черновик останется в истории.",
+    "restored": "Восстановлена версия от {date}, {time}.",
+    "applyHint": "Чтобы обновить используемую тему, выберите «Сохранить и применить».",
+    "kind": {
+      "initial": "Начальная версия",
+      "manual": "Ручная правка",
+      "ai": "Правка с ИИ",
+      "save": "Сохранить",
+      "apply": "Сохранить и применить",
+      "restore": "Восстановление",
+      "undo": "Отмена правки",
+      "collaboration": "Совместная правка",
+      "recovered": "Восстановленный черновик"
+    },
+    "description": {
+      "initial": "Исходное состояние темы.",
+      "manual": "Черновик темы изменён вручную.",
+      "ai": "ИИ-помощник изменил черновик.",
+      "save": "Тема сохранена.",
+      "apply": "Тема сохранена и применена.",
+      "restore": "Восстановлена предыдущая версия.",
+      "undo": "Изменение в черновике отменено.",
+      "collaboration": "Черновик обновлён из папки совместной работы.",
+      "recovered": "Восстановлен черновик, сохранённый на этом устройстве."
+    },
+    "field": {
+      "name": "Название темы",
+      "base": "Базовая тема",
+      "css": "Стиль",
+      "sample": "Markdown для предпросмотра"
+    },
+    "appliedAi": "ИИ-ассистент применил изменение темы."
+  },
+  "about": {
+    "copyright": "Copyright © Luo Ran 2017-{year}",
+    "copyrightContributors": "Сделано с <3 участниками GitHub"
+  },
+  "documentChat": {
+    "undoChanges": "Отменить изменения",
+    "changesReverted": "Изменения отменены",
+    "turnActions": "Действия с этим обменом",
+    "deleteTurn": "Удалить этот обмен",
+    "revertTurn": "Отменить изменения и удалить этот обмен",
+    "revertFailed": "Часть изменений не удалось отменить, поскольку документ или тема изменились. Диалог сохранён.",
+    "configure": "Настроить модели ИИ",
+    "onboarding": {
+      "title": "Редактировать с помощью ИИ",
+      "loadingModels": "Загрузка моделей ИИ…",
+      "retry": "Повторить",
+      "builtIn": "Использовать ИИ в AutumnMark+",
+      "builtInHint": "Добавьте модель, чтобы общаться и редактировать документ или тему в боковой панели.",
+      "externalClient": "Уже используете клиент ИИ?",
+      "externalHint": "Пользуйтесь своим клиентом без настройки модели в AutumnMark+.",
+      "useExternal": "Использовать внешний клиент ИИ",
+      "target": "Что редактировать",
+      "editDocument": "Редактировать документ",
+      "editTheme": "Редактировать тему",
+      "copyFailed": "Не удалось скопировать в буфер обмена. Повторите попытку.",
+      "skillIntro": "Вызовите навык {0} в совместимом клиенте, чтобы отредактировать документ или тему.",
+      "documentScope": "Если во всех окнах открыт только один документ, навык может изменить его сразу. Если документов несколько, клиент попросит выбрать один.",
+      "themeScope": "Если редактор тем открыт, навык изменяет текущий черновик. Если он закрыт, навык меняет применённую тему.",
+      "invokeSkill": "Вызвать навык в клиенте",
+      "invokeHint": "Вставьте пример в клиент и укажите нужные правки.",
+      "documentInstruction": "Используй навык {0}, чтобы сделать список задач из открытых вопросов в текущем документе.",
+      "themeInstruction": "Используй навык {0}, чтобы немного уменьшить заголовки первого уровня в текущей теме.",
+      "skillHelp": "Не видите навык в клиенте?",
+      "skillHelpHint": "AutumnMark+ устанавливает и обновляет навык при запуске. Обновите список навыков клиента или импортируйте навык из общей папки ниже.",
+      "copyInstruction": "Скопировать указание",
+      "instructionCopied": "Указание скопировано. Вставьте его в клиент ИИ."
+    },
+    "tab": "ИИ",
+    "title": "ИИ-ассистент",
+    "empty": "Задайте вопрос или опишите желаемые изменения в документе или его оформлении.",
+    "message": "Напишите ассистенту",
+    "waiting": "Ожидание ответа модели…",
+    "review": "Просмотреть изменения в {name}",
+    "applyHint": "Откройте нужный документ в режиме редактирования, чтобы применить эти изменения.",
+    "apply": "Применить изменения",
+    "applied": "Изменения применены в редакторе.",
+    "changed": "Документ изменился или больше недоступен для редактирования. Запросите изменения ещё раз для текущей версии.",
+    "contextTooSmall": "Сообщение и контекст редактора превышают размер контекста модели.",
+    "documentTooLarge": "The open document exceeds the AI sidebar’s document size limit.",
+    "invalidEdits": "Не удалось найти в документе фрагменты для предложенных изменений. Попросите модель повторить попытку.",
+    "invalidThemeEdits": "Не удалось применить предложенные изменения темы к текущему CSS. Попросите модель повторить попытку.",
+    "sendFailed": "Не удалось отправить сообщение. Проверьте беседу и повторите попытку."
+  },
+  "drawing": {
+    "insert": "Вставить рисунок Excalidraw",
+    "openInTab": "Открыть во вкладке",
+    "new": "Новый рисунок Excalidraw",
+    "open": "Открыть рисунок Excalidraw",
+    "untitled": "Рисунок без названия",
+    "addDocument": "Добавить документ Markdown",
+    "addDocumentButton": "Добавить документ",
+    "searchDocuments": "Поиск документов Markdown",
+    "insertIntoNote": "Вставить в документ",
+    "wholeDocument": "Весь документ",
+    "addCard": "Добавить карточку",
+    "discardChanges": "Отменить несохранённые изменения рисунка?",
+    "discard": "Отменить изменения",
+    "changedOnDisk": "Рисунок изменён на диске. Откройте его заново, чтобы увидеть последнюю версию.",
+    "invalidFile": "Выберите файл .excalidraw.",
+    "openFailed": "Не удалось открыть файл. {reason}",
+    "saveFailed": "Не удалось сохранить или вставить рисунок. {reason}",
+    "cardFailed": "Не удалось добавить карточку документа. {reason}",
+    "embedded": "Embedded drawing",
+    "filename": "Drawing filename",
+    "invalidName": "Enter a valid drawing filename.",
+    "renameFailed": "Could not rename the drawing. {reason}",
+    "documentUnavailable": "The source document is unavailable.",
+    "browseDocuments": "Browse Files…",
+    "canvas": "Canvas",
+    "source": "Source",
+    "invalidSource": "The drawing source is invalid. {reason}",
+    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
+    "discardSource": "Discard the unapplied changes to the drawing source?",
+    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
+  },
+  "history": {
+    "title": "История",
+    "document": "Документ",
+    "theme": "Тема",
+    "documentChanges": "Изменения документа, внесённые ИИ",
+    "empty": "В этой истории пока нет изменений.",
+    "undated": "Без даты",
+    "viewConversation": "Просмотреть беседу"
   }
 }

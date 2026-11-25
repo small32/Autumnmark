@@ -139,8 +139,11 @@ describe('window defaults and contract fixtures', () => {
     expect(first.workspace?.id).toBe(second.workspace?.id)
     expect(state.session.lastWindow).toBeNull()
     expect(JSON.parse(JSON.stringify(state))).toEqual(state)
+    // `themeAi` belonged to an upstream-only sidebar panel; without that panel
+    // the parser must fall back to the default view instead of restoring a
+    // blank sidebar.
     const legacySidebar = { ...first.layout.sidebar, activeView: 'themeAi' }
     const restored = parseWindowSnapshot({ ...first, layout: { ...first.layout, sidebar: legacySidebar } })
-    expect(restored?.layout.sidebar.activeView).toBe('documentChat')
+    expect(restored?.layout.sidebar.activeView).toBe('files')
   })
 })

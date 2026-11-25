@@ -867,6 +867,15 @@
         },
         "plantumlServer": {
           "title": "PlantUML 서버 URL"
+        },
+        "newDrawingView": {
+          "title": "새 그림을 여는 방식",
+          "dialog": "플로팅 창",
+          "tab": "새 탭"
+        },
+        "embedDrawings": {
+          "title": "Embed drawings in Markdown",
+          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -1039,7 +1048,17 @@
     "loadFailed": "내용을 불러오지 못했습니다.",
     "refreshFailed": "새로 고치지 못했습니다. 마지막으로 가져온 내용을 표시합니다.",
     "refresh": "새로 고침",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "announcement": "공지 사항",
+    "unreadAnnouncement": "읽지 않은 공지 사항",
+    "unverified": "GitHub에 연결할 수 없어 최신 공지인지 확인하지 못했습니다.",
+    "donation": {
+      "title": "AutumnMark+ 후원하기",
+      "description": "해당 앱으로 QR 코드를 스캔하여 AutumnMark+ 개발을 후원할 수 있습니다.",
+      "alipay": "Alipay",
+      "wechatPay": "WeChat Pay",
+      "qrCode": "{method} 후원용 QR 코드"
+    }
   },
   "commands": {
     "mt": {
@@ -1421,5 +1440,162 @@
     "viewImage": "이미지 보기",
     "copyLink": "링크 주소 복사",
     "resumed": "편집 모드가 켜졌습니다. 자동 저장이 재개되었습니다."
+  },
+  "themeAi": {
+    "viewChange": "이 변경 사항 보기",
+    "previewStatus": "테마 미리 보기 중",
+    "previewing": "이 노트에서 미리 보는 중",
+    "previewReady": "미리 볼 수 있는 테마 초안",
+    "previewHere": "이 노트에서 미리 보기",
+    "endPreview": "미리 보기 종료",
+    "previewEnded": "미리 보기가 종료되었습니다. 변경 사항은 버전 기록에 남습니다.",
+    "apply": "테마에 적용",
+    "applied": "테마가 적용되었습니다.",
+    "copyOnApply": "적용하면 편집 가능한 테마 사본이 생성됩니다.",
+    "changed": "현재 테마가 변경되었습니다. 다시 시도해 주세요."
+  },
+  "themeHistory": {
+    "empty": "이 테마에 저장된 버전이 없습니다.",
+    "restoreAndApply": "복원 및 적용",
+    "confirmApplyDetail": "이 버전이 적용됩니다. 현재 버전은 기록에 남습니다.",
+    "appliedCollaboration": "외부 AI 클라이언트의 변경 사항을 적용했습니다.",
+    "appliedRecovered": "이전에 적용된 버전",
+    "title": "버전 기록",
+    "current": "현재 초안",
+    "loading": "버전을 불러오는 중…",
+    "storageError": "이 기기에서 테마 버전을 읽거나 저장할 수 없습니다.",
+    "aiSummary": "AI 요약",
+    "changes": "변경 사항",
+    "previous": "이전 버전과 비교",
+    "noChanges": "테마 내용이 이전 버전과 같습니다.",
+    "restore": "초안으로 복원",
+    "confirmRestore": "복원 확인",
+    "confirm": "{date} {time} 버전을 복원할까요?",
+    "confirmDetail": "복원하면 버전이 추가되며 현재 초안은 기록에 남습니다.",
+    "restored": "{date} {time} 버전을 복원했습니다.",
+    "applyHint": "사용 중인 테마를 업데이트하려면 ‘저장 및 적용’을 선택하세요.",
+    "kind": {
+      "initial": "초기 버전",
+      "manual": "수동 편집",
+      "ai": "AI 편집",
+      "save": "저장",
+      "apply": "저장 및 적용",
+      "restore": "복원",
+      "undo": "실행 취소",
+      "collaboration": "협업 편집",
+      "recovered": "복구된 초안"
+    },
+    "description": {
+      "initial": "이 테마의 초기 상태입니다.",
+      "manual": "테마 초안을 직접 편집했습니다.",
+      "ai": "AI 도우미가 초안을 편집했습니다.",
+      "save": "테마를 저장했습니다.",
+      "apply": "테마를 저장하고 적용했습니다.",
+      "restore": "이전 버전을 복원했습니다.",
+      "undo": "초안의 변경 사항을 취소했습니다.",
+      "collaboration": "협업 폴더의 파일로 초안을 업데이트했습니다.",
+      "recovered": "이 기기에 저장된 초안을 복구했습니다."
+    },
+    "field": {
+      "name": "테마 이름",
+      "base": "기본 테마",
+      "css": "스타일",
+      "sample": "미리 보기 Markdown"
+    },
+    "appliedAi": "AI 도우미가 테마 변경 사항을 적용했습니다."
+  },
+  "about": {
+    "copyright": "Copyright © Luo Ran 2017-{year}",
+    "copyrightContributors": "저작권 기여자"
+  },
+  "documentChat": {
+    "undoChanges": "변경 사항 되돌리기",
+    "changesReverted": "변경 사항을 되돌렸습니다",
+    "turnActions": "이 대화 차례의 작업",
+    "deleteTurn": "이 대화 차례 삭제",
+    "revertTurn": "이 대화 차례의 변경을 되돌리고 삭제",
+    "revertFailed": "문서나 테마가 변경되어 일부 변경 사항을 되돌리지 못했습니다. 대화는 유지됩니다.",
+    "configure": "AI 모델 설정",
+    "onboarding": {
+      "title": "AI로 편집",
+      "loadingModels": "AI 모델을 불러오는 중…",
+      "retry": "다시 시도",
+      "builtIn": "AutumnMark+에서 AI 사용",
+      "builtInHint": "모델을 추가하면 사이드바에서 대화하고 문서나 테마를 편집할 수 있습니다.",
+      "externalClient": "이미 사용 중인 AI 클라이언트가 있나요?",
+      "externalHint": "AutumnMark+에서 모델을 설정하지 않고도 원하는 클라이언트를 사용할 수 있습니다.",
+      "useExternal": "외부 AI 클라이언트 사용",
+      "target": "편집 대상",
+      "editDocument": "문서 편집",
+      "editTheme": "테마 편집",
+      "copyFailed": "클립보드에 복사할 수 없습니다. 다시 시도하세요.",
+      "skillIntro": "호환되는 클라이언트에서 {0} Skill을 호출하면 문서나 테마를 편집할 수 있습니다.",
+      "documentScope": "모든 창에서 열린 문서가 하나뿐이면 바로 편집합니다. 여러 개면 클라이언트가 어떤 문서를 편집할지 확인합니다.",
+      "themeScope": "테마 편집기가 열려 있으면 현재 초안을 편집합니다. 닫혀 있으면 적용된 테마를 편집합니다.",
+      "invokeSkill": "클라이언트에서 Skill 호출",
+      "invokeHint": "예시를 클라이언트에 붙여넣고 원하는 변경 내용으로 수정하세요.",
+      "documentInstruction": "{0} Skill을 사용해 현재 문서의 확인 사항을 체크리스트로 정리해 주세요.",
+      "themeInstruction": "{0} Skill을 사용해 현재 테마의 1단계 제목을 조금 작게 만들어 주세요.",
+      "skillHelp": "클라이언트에서 Skill을 찾을 수 없나요?",
+      "skillHelpHint": "AutumnMark+는 시작할 때 Skill을 자동으로 설치하고 업데이트합니다. 클라이언트의 Skill 목록을 새로 고치거나 아래 공유 폴더에서 가져오세요.",
+      "copyInstruction": "호출 지시 복사",
+      "instructionCopied": "호출 지시를 복사했습니다. AI 클라이언트에 붙여넣으세요."
+    },
+    "tab": "AI",
+    "title": "AI 도우미",
+    "empty": "질문하거나 문서 또는 모양에 적용할 변경 사항을 설명하세요.",
+    "message": "도우미에게 메시지 보내기",
+    "waiting": "모델의 응답을 기다리는 중…",
+    "review": "{name} 변경 사항 검토",
+    "applyHint": "변경 사항을 적용하려면 대상 문서를 편집 모드로 여세요.",
+    "apply": "변경 사항 적용",
+    "applied": "편집기에 변경 사항을 적용했습니다.",
+    "changed": "문서가 변경되었거나 더 이상 편집할 수 없습니다. 현재 버전을 기준으로 변경 사항을 다시 요청하세요.",
+    "contextTooSmall": "메시지와 편집기 컨텍스트가 모델의 컨텍스트 한도를 초과합니다.",
+    "documentTooLarge": "The open document exceeds the AI sidebar’s document size limit.",
+    "invalidEdits": "제안된 변경 사항과 일치하는 부분을 문서에서 찾을 수 없습니다. 모델에 다시 요청하세요.",
+    "invalidThemeEdits": "제안된 테마 변경 사항을 현재 CSS에 적용할 수 없습니다. 모델에 다시 요청하세요.",
+    "sendFailed": "메시지를 보내지 못했습니다. 대화를 확인하고 다시 시도하세요."
+  },
+  "drawing": {
+    "insert": "Excalidraw 그림 삽입",
+    "openInTab": "탭에서 열기",
+    "new": "새 Excalidraw 그림",
+    "open": "Excalidraw 그림 열기",
+    "untitled": "제목 없는 그림",
+    "addDocument": "Markdown 문서 추가",
+    "addDocumentButton": "문서 추가",
+    "searchDocuments": "Markdown 문서 검색",
+    "insertIntoNote": "문서에 삽입",
+    "wholeDocument": "문서 전체",
+    "addCard": "카드 추가",
+    "discardChanges": "이 그림의 저장하지 않은 변경 사항을 버리시겠습니까?",
+    "discard": "변경 사항 버리기",
+    "changedOnDisk": "디스크의 그림이 변경되었습니다. 최신 버전을 보려면 다시 여세요.",
+    "invalidFile": ".excalidraw 파일을 선택하세요.",
+    "openFailed": "파일을 열 수 없습니다. {reason}",
+    "saveFailed": "그림을 저장하거나 삽입할 수 없습니다. {reason}",
+    "cardFailed": "문서 카드를 추가할 수 없습니다. {reason}",
+    "embedded": "Embedded drawing",
+    "filename": "Drawing filename",
+    "invalidName": "Enter a valid drawing filename.",
+    "renameFailed": "Could not rename the drawing. {reason}",
+    "documentUnavailable": "The source document is unavailable.",
+    "browseDocuments": "Browse Files…",
+    "canvas": "Canvas",
+    "source": "Source",
+    "invalidSource": "The drawing source is invalid. {reason}",
+    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
+    "discardSource": "Discard the unapplied changes to the drawing source?",
+    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
+  },
+  "history": {
+    "title": "기록",
+    "document": "문서",
+    "theme": "테마",
+    "documentChanges": "AI 문서 변경 사항",
+    "empty": "아직 이 기록에 변경 사항이 없습니다.",
+    "undated": "날짜 없음",
+    "viewConversation": "대화 보기"
   }
 }

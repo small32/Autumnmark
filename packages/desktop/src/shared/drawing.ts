@@ -11,5 +11,5 @@ export function drawingFilename(filename: string): string | undefined {
 }
 
 export const blankDrawing = JSON.stringify({
-  type: 'excalidraw', version: 2, source: 'AutumnMark', elements: [], appState: {}, files: {}
+  type: 'excalidraw', version: 2, source: 'AutumnMark+', elements: [], appState: {}, files: {}
 })

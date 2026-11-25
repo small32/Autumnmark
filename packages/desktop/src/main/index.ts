@@ -17,6 +17,7 @@ import { setPlantumlServerSource } from './ipc/diagram'
 import { registerThemeStudio } from './ipc/themeStudio'
 import { registerThemeCatalog } from './ipc/themeCatalog'
 import { registerAiModels } from './ipc/aiModels'
+import { registerDocumentChat } from './ipc/documentChat'
 import { APP_ID, APP_NAME } from '@shared/brand'
 
 process.env.MARKTEXT_VERSION = MARKTEXT_VERSION
@@ -131,6 +132,7 @@ try {
 setPlantumlServerSource(() => accessor.preferences.getItem<string>('plantumlServer') ?? '')
 
 const savedModelSettings = registerAiModels(accessor)
+registerDocumentChat(accessor, savedModelSettings)
 registerThemeStudio(accessor, savedModelSettings)
 registerThemeCatalog(accessor)
 

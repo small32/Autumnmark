@@ -867,6 +867,15 @@
         },
         "plantumlServer": {
           "title": "PlantUML Server URL"
+        },
+        "embedDrawings": {
+          "title": "Embed drawings in Markdown",
+          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
+        },
+        "newDrawingView": {
+          "title": "Open new drawings in",
+          "dialog": "Floating editor",
+          "tab": "New tab"
         }
       },
       "misc": {
@@ -1039,7 +1048,17 @@
     "loadFailed": "Could not load the content.",
     "refreshFailed": "Refresh failed. Showing the last fetched content.",
     "refresh": "Refresh",
-    "retry": "Retry"
+    "retry": "Retry",
+    "announcement": "Announcements",
+    "unreadAnnouncement": "Unread announcement",
+    "unverified": "GitHub is unavailable. The latest announcement could not be verified.",
+    "donation": {
+      "title": "Support AutumnMark+",
+      "description": "Scan with the matching app to support AutumnMark+’s development.",
+      "alipay": "Alipay",
+      "wechatPay": "WeChat Pay",
+      "qrCode": "{method} donation QR code"
+    }
   },
   "commands": {
     "mt": {
@@ -1421,5 +1440,162 @@
     "viewImage": "View Image",
     "copyLink": "Copy Link Address",
     "resumed": "Edit Mode is on. Auto-save has resumed."
+  },
+  "history": {
+    "title": "History",
+    "document": "Document",
+    "theme": "Theme",
+    "documentChanges": "AI document changes",
+    "empty": "There are no changes in this history yet.",
+    "undated": "Undated",
+    "viewConversation": "View conversation"
+  },
+  "documentChat": {
+    "undoChanges": "Undo changes",
+    "changesReverted": "Changes reverted",
+    "turnActions": "Turn actions",
+    "deleteTurn": "Delete this turn",
+    "revertTurn": "Revert and delete this turn",
+    "revertFailed": "Some changes could not be reverted because the document or theme has changed. The conversation was kept.",
+    "tab": "AI",
+    "title": "AI Assistant",
+    "empty": "Ask a question or describe a change to the document or its appearance.",
+    "configure": "Configure AI models",
+    "onboarding": {
+      "title": "Edit with AI",
+      "loadingModels": "Loading AI models…",
+      "retry": "Retry",
+      "builtIn": "Use AI in AutumnMark+",
+      "builtInHint": "Add a model to chat and edit your document or theme in the sidebar.",
+      "externalClient": "Already use an AI client?",
+      "externalHint": "Use your preferred client without setting up a model in AutumnMark+.",
+      "useExternal": "Use an external AI client",
+      "target": "What to edit",
+      "editDocument": "Edit document",
+      "editTheme": "Edit theme",
+      "copyFailed": "Could not copy to the clipboard. Try again.",
+      "skillIntro": "Call the {0} Skill in a compatible client to edit a document or theme.",
+      "documentScope": "With one document open across all windows, the Skill can edit it directly. With multiple documents open, the client asks you to choose one.",
+      "themeScope": "With the theme editor open, the Skill edits its current draft. Otherwise, it edits the applied theme.",
+      "invokeSkill": "Call the Skill in your client",
+      "invokeHint": "Paste the example into your client and adapt it to the change you want.",
+      "documentInstruction": "Use the {0} Skill to turn the pending items in the current document into a checklist.",
+      "themeInstruction": "Use the {0} Skill to make the current theme’s first-level headings a little smaller.",
+      "skillHelp": "Can’t find the Skill in your client?",
+      "skillHelpHint": "AutumnMark+ installs and updates the Skill on startup. Refresh the client’s Skill list, or import the Skill from the shared folder below.",
+      "copyInstruction": "Copy invocation",
+      "instructionCopied": "Invocation copied. Paste it into your AI client."
+    },
+    "message": "Message the assistant",
+    "waiting": "Waiting for the model…",
+    "review": "Review changes to {name}",
+    "applyHint": "Open the target document in editing mode to apply these changes.",
+    "apply": "Apply changes",
+    "applied": "Changes applied to the editor.",
+    "changed": "The document changed or is no longer editable. Ask for changes again using the current version.",
+    "contextTooSmall": "The message and editor context exceed the model’s context size.",
+    "documentTooLarge": "The open document exceeds the AI sidebar’s document size limit.",
+    "invalidEdits": "The proposed changes could not be matched to the document. Ask the model to try again.",
+    "invalidThemeEdits": "The proposed theme changes could not be applied to the current CSS. Ask the model to try again.",
+    "sendFailed": "Could not send the message. Check the conversation and try again."
+  },
+  "themeAi": {
+    "viewChange": "View this change",
+    "previewStatus": "Theme preview active",
+    "previewing": "Previewing in this note",
+    "previewReady": "Theme draft ready to preview",
+    "previewHere": "Preview in this note",
+    "endPreview": "End preview",
+    "previewEnded": "Preview ended. The change is in version history.",
+    "apply": "Apply to theme",
+    "applied": "Theme applied.",
+    "copyOnApply": "Applying creates an editable copy of this theme.",
+    "changed": "The current theme changed. Try again with the current theme."
+  },
+  "themeHistory": {
+    "empty": "No versions have been saved for this theme yet.",
+    "restoreAndApply": "Restore and apply",
+    "confirmApplyDetail": "This version will become the applied theme. The current version will stay in the history.",
+    "appliedAi": "The AI assistant applied a theme change.",
+    "appliedCollaboration": "Applied changes from an external AI client.",
+    "appliedRecovered": "Previous applied version",
+    "title": "Version history",
+    "current": "Current draft",
+    "loading": "Loading versions…",
+    "storageError": "Could not read or save theme versions on this device.",
+    "aiSummary": "AI summary",
+    "changes": "Changes",
+    "previous": "Compared with the previous version",
+    "noChanges": "The theme content matches the previous version.",
+    "restore": "Restore as draft",
+    "confirmRestore": "Confirm restore",
+    "confirm": "Restore the version from {date} at {time}?",
+    "confirmDetail": "Restoring adds a version. The draft you have now will stay in history.",
+    "restored": "Restored the version from {date} at {time}.",
+    "applyHint": "Use Save and apply to update the theme in use.",
+    "kind": {
+      "initial": "Initial version",
+      "manual": "Manual edit",
+      "ai": "AI edit",
+      "save": "Save",
+      "apply": "Save and apply",
+      "restore": "Restore",
+      "undo": "Undo",
+      "collaboration": "Collaboration edit",
+      "recovered": "Recovered draft"
+    },
+    "description": {
+      "initial": "Starting point for this theme.",
+      "manual": "Edited the theme draft.",
+      "ai": "The AI assistant edited the draft.",
+      "save": "Saved the theme.",
+      "apply": "Saved and applied the theme.",
+      "restore": "Restored a previous version.",
+      "undo": "Undid a change to the draft.",
+      "collaboration": "Updated the draft from the collaboration folder.",
+      "recovered": "Recovered a draft saved on this device."
+    },
+    "field": {
+      "name": "Theme name",
+      "base": "Base theme",
+      "css": "Style",
+      "sample": "Preview Markdown"
+    }
+  },
+  "about": {
+    "copyright": "Copyright © Luo Ran 2017-{year}",
+    "copyrightContributors": "Made with <3 by Github Contributors"
+  },
+  "drawing": {
+    "new": "New Excalidraw Drawing",
+    "insert": "Insert Excalidraw Drawing",
+    "openInTab": "Open in Tab",
+    "open": "Open Excalidraw Drawing",
+    "embedded": "Embedded drawing",
+    "untitled": "Untitled Drawing",
+    "filename": "Drawing filename",
+    "invalidName": "Enter a valid drawing filename.",
+    "renameFailed": "Could not rename the drawing. {reason}",
+    "documentUnavailable": "The source document is unavailable.",
+    "addDocument": "Add Markdown Document",
+    "addDocumentButton": "Add Document",
+    "searchDocuments": "Search Markdown documents",
+    "browseDocuments": "Browse Files…",
+    "canvas": "Canvas",
+    "source": "Source",
+    "invalidSource": "The drawing source is invalid. {reason}",
+    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
+    "discardSource": "Discard the unapplied changes to the drawing source?",
+    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point.",
+    "insertIntoNote": "Insert into Document",
+    "wholeDocument": "Whole document",
+    "addCard": "Add Card",
+    "discardChanges": "Discard the unsaved changes to this drawing?",
+    "discard": "Discard Changes",
+    "changedOnDisk": "This drawing changed on disk. Reopen it to see the latest version.",
+    "invalidFile": "Select an .excalidraw file.",
+    "openFailed": "Could not open the file. {reason}",
+    "saveFailed": "Could not save or insert the drawing. {reason}",
+    "cardFailed": "Could not add the document card. {reason}"
   }
 }

@@ -53,7 +53,7 @@ export interface WindowGeometryState {
 export interface WindowLayoutState {
   sidebar: {
     visible: boolean
-    activeView: 'files' | 'outline' | 'search' | 'documentChat'
+    activeView: 'files' | 'outline' | 'search'
     // Remembered CSS-pixel width, including while the sidebar is hidden.
     preferredWidthPx: number
     openedFiles: { expanded: boolean; preferredHeightPx: number }

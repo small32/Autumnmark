@@ -40,49 +40,20 @@
         {{ t('documentChat.onboarding.retry') }}
       </button>
     </div>
-    <div class="route">
-      <h3>{{ t('documentChat.onboarding.externalClient') }}</h3>
-      <p>{{ t('documentChat.onboarding.externalHint') }}</p>
-      <button
-        ref="externalButton"
-        class="external-button"
-        type="button"
-        aria-haspopup="dialog"
-        @click="external = true"
-      >
-        {{ t('documentChat.onboarding.useExternal') }}
-        <ArrowRight aria-hidden="true" />
-      </button>
-    </div>
-    <teleport to="body">
-      <external-ai-skill-dialog
-        v-if="external"
-        @close="closeExternal"
-      />
-    </teleport>
   </section>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, useId } from 'vue'
-import { ArrowRight, MagicStick } from '@element-plus/icons-vue'
+import { useId } from 'vue'
+import { MagicStick } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import EmptyStateButton from '@/components/emptyStateButton.vue'
-import ExternalAiSkillDialog from './externalAiSkillDialog.vue'
 
 defineProps<{ modelState: 'loading' | 'ready' | 'failed' }>()
 const emit = defineEmits<{ retry: [] }>()
 const { t } = useI18n()
 const ipc = window.electron.ipcRenderer
 const headingId = useId()
-const external = ref(false)
-const externalButton = ref<HTMLButtonElement>()
-
-async function closeExternal(): Promise<void> {
-  external.value = false
-  await nextTick()
-  externalButton.value?.focus()
-}
 </script>
 
 <style scoped>
@@ -145,6 +116,5 @@ button:not(.empty-state-button) {
 }
 button:enabled { cursor: pointer; }
 button:not(.empty-state-button):enabled:hover { border-color: var(--themeColor); }
-.external-button { display: flex; align-items: center; justify-content: center; gap: 5px; }
 .feedback-error { color: var(--deleteColor); }
 </style>

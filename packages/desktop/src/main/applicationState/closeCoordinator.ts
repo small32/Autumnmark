@@ -21,8 +21,13 @@ interface PreparedWindow {
   discarded: Map<string, number>
 }
 
+const QUIT_KEY = '__quit__'
+
 export class CloseCoordinator {
-  private _pending = false
+  /** Close flows that are currently running, keyed by window id (or the quit key). */
+  private _pending = new Set<string>()
+  /** Serializes close flows so checkpoints and commits never overlap. */
+  private _chain: Promise<void> = Promise.resolve()
 
   constructor(private readonly _ports: ClosePorts) {}
 
@@ -42,8 +47,22 @@ export class CloseCoordinator {
   }
 
   private async _requestClose(windowId?: string): Promise<void> {
-    if (this._pending) return
-    this._pending = true
+    // A repeated request for the same target is idempotent, but a request for
+    // another window must not be dropped: it waits for the running flow and
+    // then closes its own window.
+    const key = windowId ?? QUIT_KEY
+    if (this._pending.has(key)) return
+    this._pending.add(key)
+    try {
+      const run = this._chain.then(() => this._runClose(windowId))
+      this._chain = run.then(() => {}, () => {})
+      await run
+    } finally {
+      this._pending.delete(key)
+    }
+  }
+
+  private async _runClose(windowId?: string): Promise<void> {
     try {
       const initial = this._ports.getSession()
       const windows = structuredClone(
@@ -93,8 +112,6 @@ export class CloseCoordinator {
       for (const entry of prepared) await this._ports.destroy(entry.snapshot.id)
     } catch (error) {
       if (!(error instanceof WindowCloseCanceled)) throw error
-    } finally {
-      this._pending = false
     }
   }
 }
