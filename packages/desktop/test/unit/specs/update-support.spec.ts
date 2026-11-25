@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const files = vi.hoisted(() => new Set<string>())
 vi.mock('common/filesystem', () => ({ isFile: (pathname: string) => files.has(pathname) }))
-import { isUpdatable } from '../../../src/main/utils/isUpdatable'
+import { canCheckForUpdates, isUpdatable } from '../../../src/main/utils/isUpdatable'
 
 describe('installed update support', () => {
   const platform = Object.getOwnPropertyDescriptor(process, 'platform')
@@ -45,5 +45,21 @@ describe('installed update support', () => {
     expect(isUpdatable()).toBe(false)
     files.add(path.join(process.resourcesPath, 'app-update.yml'))
     expect(isUpdatable()).toBe(true)
+  })
+
+  it('lets packaged builds check for releases even when they cannot install them', () => {
+    files.add(path.join(process.resourcesPath, 'app-update.yml'))
+    // A portable ZIP: metadata exists but the install marker does not.
+    expect(isUpdatable()).toBe(false)
+    expect(canCheckForUpdates()).toBe(true)
+  })
+
+  it('does not check for releases while running unpackaged', () => {
+    Object.defineProperty(process, 'defaultApp', { configurable: true, value: true })
+    try {
+      expect(canCheckForUpdates()).toBe(false)
+    } finally {
+      Reflect.deleteProperty(process, 'defaultApp')
+    }
   })
 })

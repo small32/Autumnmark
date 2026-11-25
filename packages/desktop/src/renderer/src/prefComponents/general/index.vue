@@ -218,7 +218,10 @@
           :bool="checkUpdatesOnStartup"
           :on-change="(value) => onSelectChange('checkUpdatesOnStartup', value)"
         />
+        <!-- Portable and unsigned builds cannot install updates in place, so the
+             download switch would have nothing to control. -->
         <bool
+          v-if="updatable"
           id="setting-onlineUpdateEnabled"
           :description="preferenceLabel('onlineUpdateEnabled')"
           :notes="preferenceNotes('onlineUpdateEnabled')"
@@ -226,40 +229,37 @@
           :on-change="(value) => onSelectChange('onlineUpdateEnabled', value)"
         />
         <div class="update-check">
-          <template v-if="updatable">
-            <el-button
-              type="primary"
-              :loading="updateChecking"
-              @click="checkForUpdates"
-            >
-              {{ t('preferences.general.updates.checkNow') }}
-            </el-button>
-            <!-- The update dialog is suppressed when notices are off, so the
-                 settings page must offer the install/release actions itself. -->
-            <el-button
-              v-if="updateInstallable"
-              type="primary"
-              @click="updates.install()"
-            >
-              {{ t('updates.install') }}
-            </el-button>
-            <el-button
-              v-if="updateReleaseAvailable"
-              @click="updates.openRelease()"
-            >
-              {{ t('updates.openRelease') }}
-            </el-button>
-            <span v-if="updateStatus">{{ updateStatus }}</span>
-          </template>
-          <template v-else>
-            <!-- Portable ZIP and unsigned builds cannot be replaced in place,
-                 so offer the download page instead of a dead check button. -->
-            <el-button @click="updates.openRelease()">
-              {{ t('updates.openRelease') }}
-            </el-button>
-            <span>{{ t('preferences.general.updates.unavailable') }}</span>
-          </template>
+          <el-button
+            v-if="checkable"
+            type="primary"
+            :loading="updateChecking"
+            @click="checkForUpdates"
+          >
+            {{ t('preferences.general.updates.checkNow') }}
+          </el-button>
+          <!-- The update dialog is suppressed when notices are off, so the
+               settings page must offer the install/release actions itself. -->
+          <el-button
+            v-if="updateInstallable"
+            type="primary"
+            @click="updates.install()"
+          >
+            {{ t('updates.install') }}
+          </el-button>
+          <el-button
+            v-if="updateReleaseAvailable"
+            @click="updates.openRelease()"
+          >
+            {{ t('updates.openRelease') }}
+          </el-button>
+          <span v-if="updateStatus">{{ updateStatus }}</span>
         </div>
+        <p
+          v-if="!updatable"
+          class="update-note"
+        >
+          {{ t('preferences.general.updates.unavailable') }}
+        </p>
       </template>
     </compound>
   </div>
@@ -335,6 +335,9 @@ const {
 const updates = useAutoUpdatesStore()
 const { status: updateStatus } = storeToRefs(updates)
 const updatable = window.electron.isUpdatable === true
+// Portable ZIPs, unsigned macOS builds and non-AppImage Linux packages can
+// still ask GitHub for the latest release, they just cannot install it.
+const checkable = window.electron.canCheckForUpdates === true
 const updateChecking = computed(() => updates.state.phase === 'checking')
 // A ready package can be installed from here even when the update dialog is
 // suppressed by the "check on startup" switch.
@@ -395,6 +398,12 @@ const onSelectChange = (type: keyof PreferencesState, value: unknown): void => {
   align-items: center;
   gap: 12px;
   margin-top: 4px;
+  color: var(--editorColor60);
+  font-size: 12px;
+}
+
+.update-note {
+  margin: 6px 0 0;
   color: var(--editorColor60);
   font-size: 12px;
 }

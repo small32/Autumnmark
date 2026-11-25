@@ -8,3 +8,10 @@ export const isUpdatable = (): boolean => {
   // Only NSIS installs carry this marker; ZIP builds have no installed app to replace.
   return process.platform === 'win32' && isFile(path.join(resources, 'nsis-installed'))
 }
+
+// A portable ZIP, an unsigned macOS build or a Linux package without AppImage
+// support cannot replace itself, but it can still ask GitHub for the latest
+// release and send the user to the download page.
+// `process.defaultApp` is set only while Electron runs unpackaged.
+export const canCheckForUpdates = (): boolean =>
+  isUpdatable() || (process as NodeJS.Process & { defaultApp?: boolean }).defaultApp !== true

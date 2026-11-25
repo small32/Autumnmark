@@ -1,6 +1,6 @@
 import bus from '../bus'
 import { delay, isMac } from '@/util'
-import { isUpdatable } from './utils'
+import { canCheckForUpdates } from './utils'
 import getCommandDescriptionById from './descriptions'
 import { END_USER_DOCS_URL } from '@shared/brand'
 
@@ -636,7 +636,7 @@ const commands: CommandDescriptor[] = [
 ]
 
 
-if (isUpdatable()) {
+if (canCheckForUpdates()) {
   commands.push({
     id: 'file.check-update',
     description: getCommandDescriptionById('file.check-update'),

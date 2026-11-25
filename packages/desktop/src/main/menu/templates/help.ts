@@ -2,7 +2,7 @@ import { shell, type BrowserWindow, type MenuItemConstructorOptions } from 'elec
 import * as actions from '../actions/help'
 import { checkUpdates } from '../actions/marktext'
 import { t } from '../../i18n'
-import { isUpdatable } from '../../utils/isUpdatable'
+import { canCheckForUpdates } from '../../utils/isUpdatable'
 import { END_USER_DOCS_URL, GITHUB_REPO_URL } from '@shared/brand'
 
 export default function(): MenuItemConstructorOptions {
@@ -51,7 +51,7 @@ export default function(): MenuItemConstructorOptions {
     submenu
   }
 
-  if (isUpdatable()) {
+  if (canCheckForUpdates()) {
     submenu.push(
       {
         type: 'separator'

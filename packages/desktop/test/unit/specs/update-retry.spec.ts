@@ -18,10 +18,14 @@ const { updater, isUpdatable } = vi.hoisted(() => ({
 vi.mock('electron-updater', () => ({ autoUpdater: updater }))
 vi.mock('electron', async() => {
   const { EventEmitter } = await import('node:events')
-  return { app: new EventEmitter(), ipcMain: new EventEmitter(), BrowserWindow: {} }
+  return {
+    app: Object.assign(new EventEmitter(), { getVersion: () => '0.1.3' }),
+    ipcMain: new EventEmitter(),
+    BrowserWindow: {}
+  }
 })
 vi.mock('electron-log', () => ({ default: { warn: vi.fn() } }))
-vi.mock('../../../src/main/utils/isUpdatable', () => ({ isUpdatable }))
+vi.mock('../../../src/main/utils/isUpdatable', () => ({ isUpdatable, canCheckForUpdates: () => true }))
 
 const interval = 20 * 60 * 1000
 const send = vi.fn()
@@ -42,6 +46,7 @@ describe('desktop updates', () => {
     updaterEvents.removeAllListeners()
     updater.on.mockImplementation((event, callback) => updaterEvents.on(event, callback))
     isUpdatable.mockReturnValue(true)
+    vi.stubGlobal('fetch', vi.fn(async() => new Response(JSON.stringify({ tag_name: 'v0.1.3' }), { status: 200 })))
     updater.checkForUpdates.mockResolvedValue({ isUpdateAvailable: false })
     updater.downloadUpdate.mockResolvedValue([])
     updates = await import('../../../src/main/updates')
@@ -68,7 +73,7 @@ describe('desktop updates', () => {
     expect(send.mock.calls.some(call => call[2] === true)).toBe(false)
   })
 
-  it('skips the startup check on unsupported installations', async() => {
+  it('never asks the installer to check for updates on unsupported installations', async() => {
     isUpdatable.mockReturnValue(false)
     updates.startAutomaticUpdateChecks(() => win)
     await vi.advanceTimersByTimeAsync(interval)

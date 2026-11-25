@@ -1,9 +1,14 @@
-import { ipcMain, BrowserWindow, type WebContents } from 'electron'
+import { app, ipcMain, BrowserWindow, type WebContents } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import type { UpdateState } from '@shared/types/ipc'
-import { isUpdatable } from './utils/isUpdatable'
+import { APP_NAME, GITHUB_REPO_SLUG } from '@shared/brand'
+import { isUpdatable, canCheckForUpdates } from './utils/isUpdatable'
+import { isNewerRelease } from './utils/releaseVersion'
 import { onInternalChannel } from './utils/internalIpc'
+
+const LATEST_RELEASE_URL = `https://api.github.com/repos/${GITHUB_REPO_SLUG}/releases/latest`
+const RELEASE_CHECK_TIMEOUT_MS = 15_000
 
 const listeners = new Set<WebContents>()
 let state: UpdateState = { phase: 'idle' }
@@ -100,6 +105,44 @@ ipcMain.on('mt::update-background', () => {
   pendingDialog = undefined
 })
 
+// Portable ZIPs, unsigned macOS builds and Linux packages without AppImage
+// support cannot replace themselves in place. They can still ask GitHub for the
+// latest release and point the user at the download page.
+
+const fetchLatestRelease = async(): Promise<string> => {
+  const response = await fetch(LATEST_RELEASE_URL, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      'User-Agent': `${APP_NAME}/${app.getVersion()}`
+    },
+    signal: AbortSignal.timeout(RELEASE_CHECK_TIMEOUT_MS)
+  })
+  if (!response.ok) throw new Error(`GitHub returned ${response.status}`)
+  const payload: unknown = await response.json()
+  if (
+    !payload ||
+    typeof payload !== 'object' ||
+    !('tag_name' in payload) ||
+    typeof payload.tag_name !== 'string' ||
+    !payload.tag_name.trim()
+  )
+    throw new Error('GitHub release has no tag')
+  return payload.tag_name
+}
+
+// Resolve only the presence of a newer release; never touch the filesystem.
+const checkLatestRelease = async(generation: number, getWindow: () => BrowserWindow | null): Promise<void> => {
+  const tag = await fetchLatestRelease()
+  if (generation !== dismissedNoticeGeneration) return
+  const version = tag.replace(/^v/, '')
+  if (!isNewerRelease(version, app.getVersion())) {
+    publish({ phase: 'current' })
+    return
+  }
+  publish({ phase: 'available', version })
+  if (announceDownload) showDialog(getWindow())
+}
+
 const runCheck = async(automatic: boolean, getWindow: () => BrowserWindow | null): Promise<void> => {
   if (automatic && !noticesEnabled()) return
   const generation = dismissedNoticeGeneration
@@ -117,6 +160,10 @@ const runCheck = async(automatic: boolean, getWindow: () => BrowserWindow | null
   announceDownload = automatic && noticesEnabled()
   let version: string | undefined
   try {
+    if (!isUpdatable()) {
+      await checkLatestRelease(generation, getWindow)
+      return
+    }
     const result = await autoUpdater.checkForUpdates()
     if (generation !== dismissedNoticeGeneration) return
     // A cached installer may have been launched during a startup release check.
@@ -203,7 +250,7 @@ export const startAutomaticUpdateChecks = (
   readPreferences = getPreferences ?? null
   // Only one silent check on startup; further checks are explicitly requested
   // from settings or through the update menu.
-  if (startupCheckDone || !isUpdatable()) return
+  if (startupCheckDone || !canCheckForUpdates()) return
   startupCheckDone = true
   void runCheck(true, getWindow)
 }
