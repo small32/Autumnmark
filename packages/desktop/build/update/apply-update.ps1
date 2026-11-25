@@ -16,7 +16,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$waitSeconds = 90
+# Process-exit checks: up to 5 checks, 3 seconds apart.
+$processCheckIntervalSeconds = 3
+$processCheckMax = 5
 
 function Write-UpdateLog([string]$message) {
   if (-not $LogPath) { return }
@@ -28,33 +30,50 @@ function Write-UpdateLog([string]$message) {
   }
 }
 
-function Wait-ForOldProcess {
-  $deadline = (Get-Date).AddSeconds($waitSeconds)
-  while (Get-Process -Id $ParentPid -ErrorAction SilentlyContinue) {
-    if ((Get-Date) -gt $deadline) {
-      Write-UpdateLog "old process $ParentPid still alive after $waitSeconds s; terminating"
-      try { Stop-Process -Id $ParentPid -Force -ErrorAction Stop } catch { }
-      Start-Sleep -Seconds 2
-      break
+# Close the running application, then poll until it is really gone before
+# replacing any file. The app also calls app.quit() itself; stopping it here
+# makes the swap independent of that timing. Poll every 3 seconds, at most 5
+# times; only start the swap once nothing is still running from this folder.
+function Get-InstalledProcesses {
+  $prefix = $Target.TrimEnd('\') + '\'
+  $found = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+    Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) })
+  return $found
+}
+
+function Stop-RunningApp {
+  # 1. Ask the main process to exit first, then force it if needed.
+  $main = Get-Process -Id $ParentPid -ErrorAction SilentlyContinue
+  if ($main) {
+    try { $main.CloseMainWindow() | Out-Null } catch { }
+    Start-Sleep -Milliseconds 800
+    if (Get-Process -Id $ParentPid -ErrorAction SilentlyContinue) {
+      try { Stop-Process -Id $ParentPid -Force -ErrorAction Stop; Write-UpdateLog "force stopped parent process $ParentPid" } catch { }
     }
-    Start-Sleep -Milliseconds 400
+  }
+  # 2. Stop helper processes (GPU, renderer, crash handler) still running from
+  #    this install folder.
+  foreach ($proc in (Get-InstalledProcesses)) {
+    try {
+      Stop-Process -Id $proc.ProcessId -Force -ErrorAction Stop
+      Write-UpdateLog "stopped install process $($proc.ProcessId) ($($proc.Name))"
+    } catch { }
   }
 }
 
-# The main process can be gone while its helper processes (GPU, renderer,
-# crash handler) still hold files under the install directory. Rename-Item
-# fails with "item is in use" until those handles are released, so wait for
-# every process running from this directory before touching it.
-function Wait-ForInstalledProcesses {
-  $deadline = (Get-Date).AddSeconds(20)
-  $prefix = $Target.TrimEnd('\') + '\'
-  while ((Get-Date) -lt $deadline) {
-    $running = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
-      Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) })
-    if ($running.Count -eq 0) { return }
-    Start-Sleep -Milliseconds 400
+function Wait-ForProcessExit {
+  for ($check = 1; $check -le $processCheckMax; $check++) {
+    $stillRunning = @()
+    if (Get-Process -Id $ParentPid -ErrorAction SilentlyContinue) { $stillRunning += $ParentPid }
+    foreach ($proc in (Get-InstalledProcesses)) { $stillRunning += $proc.ProcessId }
+    if ($stillRunning.Count -eq 0) {
+      Write-UpdateLog ("all application processes exited (check {0}/{1})" -f $check, $processCheckMax)
+      return $true
+    }
+    Write-UpdateLog ("check {0}/{1}: still running: {2}" -f $check, $processCheckMax, ($stillRunning -join ', '))
+    if ($check -lt $processCheckMax) { Start-Sleep -Seconds $processCheckIntervalSeconds }
   }
-  Write-UpdateLog 'some processes under the install directory are still running; continuing'
+  return $false
 }
 
 function Remove-OldBackups {
@@ -70,8 +89,12 @@ function Remove-OldBackups {
 }
 
 Write-UpdateLog "start (source=$Source, target=$Target, pid=$ParentPid)"
-Wait-ForOldProcess
-Wait-ForInstalledProcesses
+Stop-RunningApp
+if (-not (Wait-ForProcessExit)) {
+  Write-UpdateLog "application still running after $processCheckMax checks; aborting the update"
+  if ($Cleanup) { try { Remove-Item -LiteralPath $Cleanup -Recurse -Force } catch { } }
+  exit 5
+}
 
 if (-not (Test-Path -LiteralPath $Source)) {
   Write-UpdateLog 'staged build is missing; aborting'
@@ -79,55 +102,49 @@ if (-not (Test-Path -LiteralPath $Source)) {
   exit 2
 }
 
-$moved = $false
-
-if (Test-Path -LiteralPath $Target) {
-  # Antivirus, the shell or a dying helper can hold a handle for a moment
-  # after the processes exit. A failed Move-Item may already have relocated
-  # part of the directory, so each attempt uses a fresh backup name and drops
-  # incomplete leftovers before retrying.
-  $moveOk = $false
-  for ($attempt = 1; $attempt -le 15; $attempt++) {
-    $backup = '{0}.backup-{1}-{2}' -f $Target, (Get-Date -Format 'yyyyMMddHHmmss'), $attempt
-    try {
-      Move-Item -LiteralPath $Target -Destination $backup -Force -ErrorAction Stop
-      $moveOk = $true
-      $moved = $true
-      Write-UpdateLog "current build moved to $backup (attempt $attempt)"
-      break
-    } catch {
-      if (Test-Path -LiteralPath $backup) {
-        try { Remove-Item -LiteralPath $backup -Recurse -Force -ErrorAction Stop } catch { }
-      }
-      if ($attempt -eq 15) {
-        Write-UpdateLog "cannot move the current build aside after $attempt attempts (permission or lock): $_"
-        exit 3
-      }
-      Start-Sleep -Milliseconds 800
-    }
-  }
-  if (-not $moveOk) { exit 3 }
+# Copy files with robocopy instead of renaming the whole install directory.
+# Windows Explorer (and antivirus) can keep a handle on the directory for as
+# long as it is open, which makes Move-Item fail with "item is in use" even
+# after every application process has exited. Robocopy copies file by file:
+# an open directory handle no longer blocks the update.
+function Copy-Tree([string]$From, [string]$To) {
+  $arguments = @($From, $To, '/E', '/R:2', '/W:1', '/NFL', '/NDL', '/NJH', '/NJS')
+  $copy = Start-Process -FilePath 'robocopy' -ArgumentList $arguments -Wait -PassThru -WindowStyle Hidden
+  # robocopy exit codes 0-7 mean success (files copied / extra files present);
+  # 8 and above are actual errors.
+  if ($copy.ExitCode -ge 8) { throw "robocopy exited with $($copy.ExitCode)" }
+  return $copy.ExitCode
 }
 
-$copyOk = $false
+$backup = '{0}.backup-{1}' -f $Target, (Get-Date -Format 'yyyyMMddHHmmss')
+$backedUp = $false
+
+if (Test-Path -LiteralPath $Target) {
+  try {
+    Copy-Tree $Target $backup | Out-Null
+    $backedUp = $true
+    Write-UpdateLog "current build copied to $backup"
+  } catch {
+    Write-UpdateLog "backup copy failed: $_"
+    exit 3
+  }
+}
+
+$copyCode = -1
 try {
   New-Item -ItemType Directory -Path $Target -Force | Out-Null
   # /E keeps files that only exist in the old build; deleting user files on a
   # failed update is worse than leaving a few stale ones behind.
-  $arguments = @($Source, $Target, '/E', '/R:2', '/W:1', '/NFL', '/NDL', '/NJH', '/NJS')
-  $copy = Start-Process -FilePath 'robocopy' -ArgumentList $arguments -Wait -PassThru -WindowStyle Hidden
-  if ($copy.ExitCode -ge 8) { throw "robocopy exited with $($copy.ExitCode)" }
-  $copyOk = $true
-  Write-UpdateLog 'staged build copied'
+  $copyCode = Copy-Tree $Source $Target
+  Write-UpdateLog "staged build copied (robocopy exit $copyCode)"
 } catch {
   Write-UpdateLog "copy failed: $_"
 }
 
-if (-not $copyOk) {
-  try { Remove-Item -LiteralPath $Target -Recurse -Force -ErrorAction SilentlyContinue } catch { }
-  if ($moved -and (Test-Path -LiteralPath $backup)) {
+if ($copyCode -lt 0 -or $copyCode -ge 8) {
+  if ($backedUp -and (Test-Path -LiteralPath $backup)) {
     try {
-      Move-Item -LiteralPath $backup -Destination $Target -Force
+      Copy-Tree $backup $Target | Out-Null
       Write-UpdateLog 'rolled back to the previous build'
     } catch {
       Write-UpdateLog "rollback failed, backup kept at $backup : $_"

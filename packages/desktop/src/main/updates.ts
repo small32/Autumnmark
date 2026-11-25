@@ -132,14 +132,20 @@ const fetchLatestRelease = async(): Promise<string> => {
   throw lastError
 }
 
+// Keep downloaded packages next to the program (D:\Tools\AutumnMark+\update)
+// instead of in the system Temp directory. On macOS the app bundle is a
+// read-only package, so non-Windows builds keep using the OS temp folder.
 const updateRoot = (version: string): string =>
-  path.join(app.getPath('temp'), 'autumnmark-update', version)
+  process.platform === 'win32'
+    ? path.join(path.dirname(app.getPath('exe')), 'update', version)
+    : path.join(app.getPath('temp'), 'autumnmark-update', version)
 
 // Each attempt gets a fresh directory. Reusing a fixed path means a previous
 // staging tree that is still locked (an antivirus scan or a half-finished
 // install) makes the *next* download fail with EBUSY — reported to the user as
-// a network error. Failed directories are left for the OS temp cleaner rather
-// than deleting something another process may still be reading.
+// a network error. Failed directories are left in place (or cleaned by the OS
+// temp sweep on non-Windows) rather than deleting a file another process may
+// still be reading.
 const freshUpdateRoot = (version: string): Promise<string> =>
   createUpdateAttemptDirectory(updateRoot(version))
 

@@ -1,3 +1,8 @@
+## AutumnMark+ 0.2.2
+
+- Update packages are now downloaded into an `update` folder inside the application directory instead of the system temporary folder.
+- Before replacing files, the updater closes the running application and checks every 3 seconds (up to 5 times) that no application process remains. The swap starts only once the processes are gone; if they are still running after 5 checks, the update stops with an error instead of replacing files in use.
+
 ## AutumnMark+ 0.2.1
 
 - Fixed an update that could stop at "cannot move the current build aside" when the previous instance had just closed. The updater now waits for all processes running from the install folder to exit and retries the swap for a few seconds if a file is briefly still in use.
