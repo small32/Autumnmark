@@ -9,8 +9,6 @@ import yaml
 
 def merge_artifacts(source: Path, destination: Path, version: str) -> None:
     targets = [
-        ('linux-x64', 'autumnmark-linux.yml', f'autumnmark-linux-{version}',
-         ('.AppImage', '.deb', '.rpm', '.snap', '.tar.gz')),
         ('macos-arm64', 'autumnmark-mac.yml', f'autumnmark-mac-arm64-{version}',
          ('.dmg', '.dmg.blockmap', '.zip', '.zip.blockmap')),
         ('windows-x64', 'autumnmark.yml', f'autumnmark-win-x64-{version}',

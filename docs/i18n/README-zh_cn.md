@@ -10,7 +10,7 @@
 <div align="center">
   <strong>:high_brightness: 下一代 Markdown 编辑器 :crescent_moon:</strong><br>
   一款专注于速度和易用性的简洁优雅的开源 Markdown 编辑器。<br>
-  <sub>支持 Linux、macOS 和 Windows。</sub>
+  <sub>支持 macOS 和 Windows。</sub>
 </div>
 
 <br>
@@ -136,11 +136,11 @@ MarkText 是一款由社区支持驱动的开源 Markdown 编辑器。如果 Mar
 
 ## 下载与安装
 
-![平台](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
+![平台](https://img.shields.io/static/v1.svg?label=Platform&message=macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
 想了解最新版本的新功能？请参阅 [CHANGELOG](https://marktext.me/docs/changelog)。
 
@@ -168,13 +168,9 @@ choco install marktext
 winget install marktext
 ```
 
-#### Linux
-
-请参阅 [Linux 安装说明](https://marktext.me/docs/installation)。
-
 #### 其他
 
-所有 Linux、macOS 和 Windows 的二进制文件均可从[发布页](https://github.com/marktext/marktext/releases/latest)下载。如果你的系统没有对应版本，请提交 [issue](https://github.com/marktext/marktext/issues)。
+所有 macOS 和 Windows 的二进制文件均可从[发布页](https://github.com/marktext/marktext/releases/latest)下载。如果你的系统没有对应版本，请提交 [issue](https://github.com/marktext/marktext/issues)。
 
 ## 开发
 

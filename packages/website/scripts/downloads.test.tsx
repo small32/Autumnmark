@@ -21,8 +21,7 @@ test('macOS leaves the chip unknown when the UA claims Intel', () => {
 test('client hints distinguish Apple Silicon, Windows Arm, and 64-bit x86', async () => {
   for (const [platform, os] of [
     ['macOS', 'mac'],
-    ['Windows', 'windows'],
-    ['Linux', 'linux']
+    ['Windows', 'windows']
   ]) {
     for (const [architecture, expected] of [
       ['arm', 'arm64'],
@@ -78,10 +77,8 @@ test('32-bit and unrecognized client hints cannot select a 64-bit build', async 
   }
 })
 
-test('unfrozen desktop UAs can identify Linux and Windows CPUs', () => {
+test('unfrozen desktop UAs can identify Windows CPUs', () => {
   for (const [platform, userAgent, os, architecture] of [
-    ['Linux aarch64', 'Mozilla/5.0 (X11; Linux aarch64) Firefox/144.0', 'linux', 'arm64'],
-    ['Linux x86_64', 'Mozilla/5.0 (X11; Linux x86_64) Firefox/144.0', 'linux', 'x64'],
     ['Win32', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/144.0', 'windows', 'x64']
   ]) {
     assert.deepEqual(getDeviceTarget({ ...mac, platform, userAgent }), {
@@ -95,8 +92,8 @@ test('phones, desktop-mode iPads, ChromeOS, and unknown systems offer all platfo
   for (const browser of [
     { ...mac, maxTouchPoints: 5 },
     { ...mac, userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0)' },
-    { ...mac, platform: 'Linux armv8l', userAgent: 'Mozilla/5.0 (Linux; Android 15) Chrome/142.0' },
-    { ...mac, platform: 'Linux x86_64', userAgent: 'Mozilla/5.0 (X11; CrOS x86_64)' },
+    { ...mac, platform: 'Unknown armv8l', userAgent: 'Mozilla/5.0 (Linux; Android 15) Chrome/142.0' },
+    { ...mac, platform: 'Unknown x86_64', userAgent: 'Mozilla/5.0 (X11; CrOS x86_64)' },
     { ...mac, platform: 'Unknown', userAgent: 'Unknown' }
   ]) {
     assert.deepEqual(getDeviceTarget(browser), { platform: null, architecture: null })
@@ -105,7 +102,7 @@ test('phones, desktop-mode iPads, ChromeOS, and unknown systems offer all platfo
 
 test('download URLs include only published installers from the displayed version', () => {
   const installers = PROJECT_INFO.releaseAssets.filter((name) =>
-    /\.(dmg|exe|zip|AppImage|deb|rpm|tar\.gz|snap)$/.test(name)
+    /\.(dmg|exe|zip)$/.test(name)
   )
   assert.equal(RELEASE_DOWNLOADS.length, installers.length)
   for (const item of RELEASE_DOWNLOADS) {
@@ -120,7 +117,7 @@ test('download URLs include only published installers from the displayed version
       PROJECT_INFO.releaseAssets.includes(decodeURIComponent(url.pathname.split('/').at(-1)!))
     )
   }
-  const x64Only = getReleaseDownloads('v1.0.0', ['autumnmark-linux-1.0.0.snap'])
+  const x64Only = getReleaseDownloads('v1.0.0', ['autumnmark-win-x64-1.0.0-setup.exe'])
   assert.equal(x64Only.length, 1)
   assert.equal(x64Only[0].architecture, 'x64')
   assert.deepEqual(

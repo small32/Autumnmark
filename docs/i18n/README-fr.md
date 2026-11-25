@@ -10,7 +10,7 @@
 <div align="center">
   <strong>:high_brightness: Éditeur Markdown nouvelle génération :crescent_moon:</strong><br>
   Un éditeur Markdown open source, simple et élégant, axé sur la vitesse et la facilité d'utilisation.<br>
-  <sub>Disponible pour Linux, macOS et Windows.</sub>
+  <sub>Disponible pour macOS et Windows.</sub>
 </div>
 
 <br>
@@ -135,11 +135,11 @@ MarkText est un éditeur Markdown open-source soutenu par sa communauté. Si Mar
 
 ## Téléchargement et Installation
 
-![Plateforme](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
+![Plateforme](https://img.shields.io/static/v1.svg?label=Platform&message=macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
 Vous voulez voir les nouvelles fonctionnalités de la dernière version ? Consultez le [CHANGELOG](https://marktext.me/docs/changelog).
 
@@ -167,13 +167,9 @@ Pour utiliser Winget, vous devez avoir [Winget](https://docs.microsoft.com/en-us
 winget install marktext
 ```
 
-#### Linux
-
-Veuillez suivre les [instructions d'installation Linux](https://marktext.me/docs/installation).
-
 #### Autres
 
-Tous les binaires pour Linux, macOS et Windows peuvent être téléchargés depuis la [page de releases](https://github.com/marktext/marktext/releases/latest). Si une version n'est pas disponible pour votre système, veuillez ouvrir un [issue](https://github.com/marktext/marktext/issues).
+Tous les binaires pour macOS et Windows peuvent être téléchargés depuis la [page de releases](https://github.com/marktext/marktext/releases/latest). Si une version n'est pas disponible pour votre système, veuillez ouvrir un [issue](https://github.com/marktext/marktext/issues).
 
 ## Développement
 

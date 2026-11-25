@@ -8,8 +8,8 @@ on:
       platform:
         description: Hosted OS for the desktop test
         type: choice
-        options: [linux, windows]
-        default: linux
+        options: [windows]
+        default: windows
       grep:
         description: Playwright test title pattern (empty runs the full desktop suite)
         type: string
@@ -27,22 +27,13 @@ concurrency:
 
 jobs:
   e2e:
-    runs-on: ${{ (github.event_name == 'push' || inputs.platform == 'windows') && 'windows-latest' || 'ubuntu-24.04' }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
 
       - name: Enable long paths on Windows
         if: runner.os == 'Windows'
         run: git config --global core.longpaths true
-
-      - name: Install System Dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libx11-dev libxkbfile-dev libsecret-1-dev libfontconfig-dev \
-            xvfb libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
-            libdrm2 libgtk-3-0 libgbm1 libasound2t64
 
       - uses: ./.github/actions/setup
         with:
@@ -55,7 +46,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           npm_config_user_agent: 'pnpm'
-          USE_ELECTRON_CLANG: '0'
 
       - name: Build app
         run: pnpm build
@@ -73,9 +63,4 @@ jobs:
             pnpm -C packages/desktop exec playwright test test/e2e/preferences-window.spec.ts test/e2e/theme-studio.spec.ts test/e2e/theme-library.spec.ts test/e2e/theme-collaboration.spec.ts --grep='Theme settings page|theme preview compares|online themes install|deleting an active custom theme|Theme menu opens|CSS inspector docks|a file-based agent|one theme studio|theme library deletes|previously saved themes|saving an active theme|AI and CSS edit'
             exit $?
           fi
-          tests=(pnpm test:e2e --grep="${TEST_GREP:-.*}")
-          if [[ "$RUNNER_OS" == Linux ]]; then
-            xvfb-run --auto-servernum "${tests[@]}"
-          else
-            "${tests[@]}"
-          fi
+          pnpm test:e2e --grep="${TEST_GREP:-.*}"

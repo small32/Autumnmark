@@ -1,6 +1,6 @@
 
 // NOTE: Avoid `Ctrl+Alt` and `AltGr` shortcuts on Windows because these are used to produce alternative characters.
-//       Unlike Linux, `Ctrl+Alt` is an alias to `AltGr` on Windows and will produce alternative characters too.
+//       `Ctrl+Alt` is an alias to `AltGr` on Windows and will produce alternative characters too.
 //       We'll should try bind no keys to `Alt` "modifiers" because there are only a few key bindings available.
 
 const keybindings: Map<string, string> = new Map([

@@ -170,14 +170,9 @@ const downloadRelease = async(version: string): Promise<void> => {
     if (!expected) throw new Error('The release has no checksum for this archive')
     await verifyChecksum(archive, expected)
 
-    if (process.platform === 'linux') {
-      // An AppImage is the artifact itself; there is nothing to unpack.
-      staged = { version, root: directory, staging: archive, archive }
-    } else {
-      const staging = path.join(directory, 'staging')
-      await extractArchive(archive, staging)
-      staged = { version, root: directory, staging, archive }
-    }
+    const staging = path.join(directory, 'staging')
+    await extractArchive(archive, staging)
+    staged = { version, root: directory, staging, archive }
     publish({ phase: 'ready', version })
     if (announceDownload && getActiveWindow) showDialog(getActiveWindow())
   } catch (error) {
@@ -206,8 +201,6 @@ const applyUpdate = async(version: string): Promise<void> => {
   if (install.mode === 'app') {
     if (!bundle) throw new Error('The update archive has no application bundle')
     source = bundle
-  } else if (install.mode === 'file') {
-    source = staged.archive
   } else {
     source = staged.staging
   }

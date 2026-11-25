@@ -6,7 +6,6 @@ import { canCheckForUpdates, canInstallInPlace, isUpdatable } from '../utils/isU
 
 const ENV_ALLOWLIST = [
   'NODE_ENV',
-  'APPIMAGE',
   'MARKTEXT_VERSION',
   'MARKTEXT_VERSION_STRING',
   'MARKTEXT_RIPGREP_PATH',

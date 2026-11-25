@@ -4,7 +4,6 @@
 
 MarkText is a desktop application and available for:
 
-- Linux x64 and arm64 (arm64 release packages are available since 0.23.0)
 - macOS 13 (Ventura) or later, x64 and arm64 (Apple Silicon)
 - Windows x64 and arm64
 
@@ -33,7 +32,3 @@ Yes, please see [here](PORTABLE.md) for further information.
 ### How can I report bugs and problems?
 
 You can report bugs and problems via our [GitHub issue tracker](https://github.com/marktext/marktext/issues). Please provide a detailed description of the problem to better solve the issue.
-
-### I cannot launch MarkText on Linux (SUID sandbox)
-
-If Chromium reports that its sandbox helper is not configured correctly, see the [Linux notes](LINUX.md). The cause and available remedies depend on the distribution, package format and system sandbox configuration.

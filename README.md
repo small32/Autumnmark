@@ -80,7 +80,7 @@ print(f"{direction} {abs(rise)} 米")
 
 ## 下载与开发
 
-正式版提供 Windows x64、macOS ARM64（Apple 芯片）和 Linux x64 安装包。编辑器支持可视化和源码编辑、数学公式、Mermaid 图表，以及 HTML 和 PDF 导出。[下载安装包](https://github.com/small32/Autumnmark/releases/latest)
+正式版提供 Windows x64 和 macOS ARM64（Apple 芯片）安装包。编辑器支持可视化和源码编辑、数学公式、Mermaid 图表，以及 HTML 和 PDF 导出。[下载安装包](https://github.com/small32/Autumnmark/releases/latest)
 
 从仓库根目录运行 `pnpm install` 安装依赖，再用 `pnpm run dev` 启动桌面端。Windows x64 安装包可用 `pnpm run build:win:x64` 构建。[贡献指南](.github/CONTRIBUTING.md)
 

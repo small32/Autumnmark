@@ -6,29 +6,7 @@ MarkText is built from the pnpm workspace at the repository root. Compiling the 
 
 - Node.js `>=22.12.0` and pnpm `>=10`. Use the pnpm version pinned by `packageManager` in the root `package.json`.
 - Python 3 and a C++ toolchain for native dependencies. Release CI selects Python 3.12.
-- The release workflow builds Windows x64, macOS ARM64 (Apple Silicon), and Linux x64 on GitHub-hosted runners.
-
-### Linux
-
-On Debian-based distributions:
-
-```sh
-sudo apt-get install libx11-dev libxkbfile-dev libsecret-1-dev libfontconfig-dev rpm
-```
-
-On Red Hat-based distributions:
-
-```sh
-sudo dnf install libX11-devel libxkbfile-devel libsecret-devel fontconfig-devel
-```
-
-On Arch Linux:
-
-```sh
-sudo pacman -S libx11 libxkbfile libsecret fontconfig
-```
-
-See [Linux development](LINUX_DEV.md) for additional tooling and troubleshooting. Running the application also requires Electron's desktop libraries; the Debian and RPM packages declare their runtime dependencies in `packages/desktop/electron-builder.yml`.
+- The release workflow builds Windows x64 and macOS ARM64 (Apple Silicon) on GitHub-hosted runners.
 
 ### Windows
 
@@ -60,11 +38,10 @@ Run the command for your host platform:
 | -------------------------- | --------------------------------------------- |
 | `pnpm run build:win:x64`   | Windows x64 NSIS installer and zip            |
 | `pnpm run build:mac:arm64` | Apple Silicon macOS DMG and zip               |
-| `pnpm run build:linux:x64` | Linux x64 AppImage, snap, deb, rpm and tar.gz |
 
 Each packaging script minifies locales, rebuilds native modules, compiles the app and runs electron-builder with publishing disabled. Installers land in the repository-root `dist/`, configured by `directories.output: ../../dist` in `packages/desktop/electron-builder.yml`.
 
-The shorter commands `build:win`, `build:mac` and `build:linux` produce the same architectures as the release workflow.
+The shorter commands `build:win` and `build:mac` produce the same architectures as the release workflow.
 
 ## Development and checks
 

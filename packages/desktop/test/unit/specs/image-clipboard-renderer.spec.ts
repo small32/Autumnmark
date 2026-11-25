@@ -1,8 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { clipboardImagePath, copyImageToClipboard } from '@/util/clipboard'
 
-vi.mock('@/util/index', () => ({ isLinux: false }))
-
 afterEach(() => vi.unstubAllGlobals())
 
 describe('renderer image copy lifecycle', () => {

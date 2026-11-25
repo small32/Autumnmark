@@ -37,8 +37,8 @@ jobs:
           cache: 'pnpm'
 
       # The root postinstall script rebuilds the desktop app's Electron-native
-      # modules (native-keymap, keytar, ced). They need these system libraries
-      # on Linux even though the website itself does not.
+      # modules (native-keymap, keytar, ced). The CI runner needs these system
+      # libraries even though the website itself does not.
       - name: Install desktop-rebuild system libs
         run: |
           sudo apt-get update

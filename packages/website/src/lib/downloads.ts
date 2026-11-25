@@ -7,9 +7,9 @@ export const DOWNLOAD = {
   twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent('https://github.com/small32/Autumnmark')}&text=${encodeURIComponent('AutumnMark+ — a Markdown editor that gets out of your way')}`
 }
 
-export type Platform = 'mac' | 'windows' | 'linux'
+export type Platform = 'mac' | 'windows'
 export type Architecture = 'x64' | 'arm64'
-export type DownloadFormat = 'dmg' | 'exe' | 'zip' | 'AppImage' | 'deb' | 'rpm' | 'tar.gz' | 'snap'
+export type DownloadFormat = 'dmg' | 'exe' | 'zip'
 export type ReleaseDownload = {
   platform: Platform
   architecture: Architecture
@@ -37,13 +37,6 @@ export const DOWNLOAD_PLATFORMS: {
     description: 'Intel, AMD, and Arm PCs',
     architectures: ['x64', 'arm64'],
     formats: ['exe', 'zip']
-  },
-  {
-    id: 'linux',
-    label: 'Linux',
-    description: 'Debian, Ubuntu, Fedora, and more',
-    architectures: ['x64', 'arm64'],
-    formats: ['AppImage', 'deb', 'rpm', 'tar.gz', 'snap']
   }
 ]
 
@@ -61,7 +54,7 @@ export function getReleaseDownloads(tag: string, assetNames: string[]): ReleaseD
     for (const architecture of platform.architectures) {
       for (const format of platform.formats) {
         const prefix = platform.id === 'windows' ? 'win' : platform.id
-        const arch = platform.id === 'linux' && architecture === 'x64' ? '' : `-${architecture}`
+        const arch = `-${architecture}`
         const suffix = format === 'exe' ? '-setup.exe' : `.${format}`
         const name = `autumnmark-${prefix}${arch}-${version}${suffix}`
         if (names.has(name)) {

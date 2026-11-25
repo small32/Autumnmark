@@ -1,4 +1,3 @@
-import { isLinux } from './index'
 
 interface ImageClipboardFallback {
   text: string
@@ -90,7 +89,6 @@ export const clipboardImagePath = (src: string): string => {
 }
 
 export const guessClipboardFilePath = async(): Promise<string> => {
-  if (isLinux) return ''
   try {
     const result = await window.electron.clipboard.guessFilePath()
     return typeof result === 'string' ? result : ''

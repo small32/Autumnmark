@@ -221,7 +221,7 @@
       "screenshot": "스크린샷",
       "lineEnding": "줄 끝",
       "lineEndingCrlf": "CRLF(Windows)",
-      "lineEndingLf": "LF(Linux/Mac)"
+      "lineEndingLf": "LF(Mac)"
     },
     "paragraph": {
       "title": "단락",

@@ -39,7 +39,7 @@ export interface DownloadProgress {
   bytesPerSecond: number
 }
 
-export type ApplyMode = 'dir' | 'app' | 'file'
+export type ApplyMode = 'dir' | 'app'
 
 export interface InstallTarget {
   target: string
@@ -57,8 +57,6 @@ export const releaseAssetName = (version: string): string | null => {
     return process.arch === 'x64' ? `autumnmark-win-x64-${version}.zip` : null
   if (process.platform === 'darwin')
     return process.arch === 'arm64' ? `autumnmark-mac-arm64-${version}.zip` : null
-  if (process.platform === 'linux')
-    return process.arch === 'x64' ? `autumnmark-linux-${version}.AppImage` : null
   return null
 }
 
@@ -162,9 +160,7 @@ export const resolveInstallTarget = (): InstallTarget => {
     const bundle = path.resolve(app.getAppPath(), '../../..')
     return { target: bundle, launch: bundle, mode: 'app' }
   }
-  const image = process.env.APPIMAGE
-  if (!image) throw new Error('This Linux build does not run from an AppImage')
-  return { target: image, launch: image, mode: 'file' }
+  throw new Error('In-place updates are only supported on Windows and macOS')
 }
 
 export const stagedBundlePath = async(staging: string): Promise<string> => {
@@ -175,8 +171,8 @@ export const stagedBundlePath = async(staging: string): Promise<string> => {
 }
 
 // The swap script travels with the archive, so the version being installed
-// decides how it replaces the previous one. AppImages cannot expose files
-// before the swap, so they fall back to the script of the running version.
+// decides how it replaces the previous one. A fallback to the running
+// version's script keeps older staged packages usable.
 export const resolveApplyScript = async(staging: string, bundle: string | null): Promise<string> => {
   const name = process.platform === 'win32' ? 'apply-update.ps1' : 'apply-update.sh'
   const staged = bundle

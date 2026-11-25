@@ -21,7 +21,7 @@ Here is an example:
 - `Option` (alias `Alt`) on macOS
 - `Control` (alias `Ctrl`)
 - `Shift`
-- `Alt` on Linux and Windows
+- `Alt` on Windows
 - `CommandOrControl` (alias `CmdOrCtrl`), resolved for the current platform
 
 Please don't bind `AltGr`, use `Ctrl+Alt` instead.
@@ -37,5 +37,4 @@ Please don't bind `AltGr`, use `Ctrl+Alt` instead.
 ## Available key bindings
 
 - [Key bindings for macOS](KEYBINDINGS_OSX.md)
-- [Key bindings for Linux](KEYBINDINGS_LINUX.md)
 - [Key bindings for Windows](KEYBINDINGS_WINDOWS.md)

@@ -5,13 +5,13 @@ show suggestions in the editor's context menu. It is disabled by default. The
 `--disable-spellcheck` command-line option disables it for the current session.
 
 MarkText uses [Electron's built-in spell checker](https://www.electronjs.org/docs/latest/tutorial/spellchecker/):
-Hunspell on Linux and Windows, and the native system checker on macOS.
+Hunspell on Windows, and the native system checker on macOS.
 
 ![](../assets/marktext-spellchecker-menu.png)
 
 ## Languages
 
-On Linux and Windows, select the default language in Preferences → Spelling.
+On Windows, select the default language in Preferences → Spelling.
 The choices come from Electron's available dictionary list. Use **Spelling →
 Change Language** in the editor context menu to switch the current editor's
 language without changing the saved default. Electron downloads required
@@ -29,7 +29,7 @@ context-menu suggestions.
 ## Custom dictionary
 
 Right-click a misspelled word and choose **Add to Dictionary** to accept it.
-On Linux and Windows, the custom dictionary list in Preferences → Spelling lets
+On Windows, the custom dictionary list in Preferences → Spelling lets
 you remove previously added words. MarkText does not provide a separate
 **Ignore** command or a manual dictionary-installation list.
 

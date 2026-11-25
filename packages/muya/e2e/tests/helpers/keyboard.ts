@@ -7,7 +7,7 @@ export function metaKey(): 'Meta' | 'Control' {
     return process.platform === 'darwin' ? 'Meta' : 'Control';
 }
 
-// Ctrl+Arrow moves by word on Windows/Linux, not to the line boundary.
+// Ctrl+Arrow moves by word on Windows, not to the line boundary.
 export function lineStartKey(): 'Meta+ArrowLeft' | 'Home' {
     return process.platform === 'darwin' ? 'Meta+ArrowLeft' : 'Home';
 }

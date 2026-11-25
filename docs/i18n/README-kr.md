@@ -10,7 +10,7 @@
 <div align="center">
   <strong>:high_brightness: 차세대 마크다운 에디터 :crescent_moon:</strong><br>
   속도와 사용성에 초점을 맞춘 단순하고 우아한 오픈 소스 마크다운 에디터.<br>
-  <sub>Linux, macOS 및 Windows에서 사용 가능합니다.</sub>
+  <sub>macOS 및 Windows에서 사용 가능합니다.</sub>
 </div>
 
 <br>
@@ -136,11 +136,11 @@ MarkText는 커뮤니티의 지원으로 운영되는 오픈소스 Markdown 편�
 
 ## 다운로드 및 설치
 
-![플랫폼](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
+![플랫폼](https://img.shields.io/static/v1.svg?label=Platform&message=macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
 최신 버전의 새 기능을 확인하고 싶으신가요? [CHANGELOG](https://marktext.me/docs/changelog)를 참조하세요.
 
@@ -168,13 +168,9 @@ Winget을 사용하려면 [Winget](https://docs.microsoft.com/en-us/windows/pack
 winget install marktext
 ```
 
-#### Linux
-
-[Linux 설치 지침](https://marktext.me/docs/installation)을 따르세요.
-
 #### 기타
 
-Linux, macOS 및 Windows용 모든 바이너리는 [릴리스 페이지](https://github.com/marktext/marktext/releases/latest)에서 다운로드할 수 있습니다. 시스템에 사용 가능한 버전이 없으면 [issue](https://github.com/marktext/marktext/issues)를 열어 주세요.
+macOS 및 Windows용 모든 바이너리는 [릴리스 페이지](https://github.com/marktext/marktext/releases/latest)에서 다운로드할 수 있습니다. 시스템에 사용 가능한 버전이 없으면 [issue](https://github.com/marktext/marktext/issues)를 열어 주세요.
 
 ## 개발
 

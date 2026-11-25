@@ -1,6 +1,6 @@
 # Installation
 
-MarkText is a free, open-source Markdown editor for **Linux**, **macOS** and **Windows**. Pre-built binaries are published with every release on [GitHub releases](https://github.com/marktext/marktext/releases/latest). Pick the one that matches your platform.
+MarkText is a free, open-source Markdown editor for **macOS** and **Windows**. Pre-built binaries are published with every release on [GitHub releases](https://github.com/marktext/marktext/releases/latest). Pick the one that matches your platform.
 
 ## Windows
 
@@ -25,27 +25,12 @@ The current application requires macOS 13 (Ventura) or later; see [supported pla
 
 Open the DMG and drag MarkText into your **Applications** folder. The packaging configuration sets `mac.notarize: false`, so macOS may block the first launch. If macOS blocks the app, review the system's security prompt before proceeding.
 
-## Linux
-
-MarkText ships x64 packages in five Linux formats. Since 0.23.0, arm64 packages are also available as AppImage, deb, rpm and tar.gz, named `marktext-linux-arm64-<version>.<ext>`. Snap is built for x64 only. Most users want the AppImage.
-
-| Artifact                            | When to choose                                                                                              |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `marktext-linux-<version>.AppImage` | Standalone executable. Requires compatible system libraries. `chmod +x` and double-click (or run directly). |
-| `marktext-linux-<version>.deb`      | Debian, Ubuntu, Linux Mint, Pop!_OS, … (`sudo apt install ./marktext-linux-<version>.deb`).                 |
-| `marktext-linux-<version>.rpm`      | Fedora, RHEL, openSUSE, … (`sudo rpm -i marktext-linux-<version>.rpm`).                                     |
-| `marktext-linux-<version>.snap`     | Ubuntu / any snap-enabled distro (`sudo snap install marktext-linux-<version>.snap --dangerous`).           |
-| `marktext-linux-<version>.tar.gz`   | Portable tarball. Extract and run the included `marktext` binary.                                           |
-
-> [!NOTE]
-> See [Linux notes](LINUX.md) for distro-specific tips (sandbox flags, font configuration, file-association quirks).
-
 ## Verify the download
 
 All artifacts are listed with their SHA-256 in `SHA256SUMS.txt`. Verify with:
 
 ```sh
-# Linux with GNU coreutils
+# With GNU coreutils
 sha256sum -c SHA256SUMS.txt --ignore-missing
 ```
 
@@ -59,10 +44,10 @@ If you'd rather build from source — for example to track `develop`, to run on 
 git clone https://github.com/marktext/marktext.git
 cd marktext
 pnpm install
-pnpm run build:linux:x64
+pnpm run build:win:x64
 ```
 
-This example packages Linux x64. On another host or architecture, choose the matching `build:win:x64` or `build:mac:arm64` script. Installers land in the repository's `dist/` folder; `pnpm run build` alone only compiles the application.
+This example packages Windows x64. For Apple Silicon, use the `build:mac:arm64` script. Installers land in the repository's `dist/` folder; `pnpm run build` alone only compiles the application.
 
 ## Updating
 
@@ -76,9 +61,5 @@ You can also download a newer package from the releases page and install or extr
 | ------------------------- | ---------------------------------------------------------------------------------------------------- |
 | Windows                   | **Settings → Apps**, or run the bundled `Uninstall MarkText.exe`.                                    |
 | macOS                     | Drag **MarkText.app** to the Trash. Optionally also remove `~/Library/Application Support/marktext`. |
-| Linux (.deb)              | `sudo apt remove marktext`                                                                           |
-| Linux (.rpm)              | `sudo rpm -e marktext`                                                                               |
-| Linux (snap)              | `sudo snap remove marktext`                                                                          |
-| Linux (AppImage / tar.gz) | Delete the file you extracted.                                                                       |
 
 To wipe MarkText's user data as well, remove its [application data directory](APPLICATION_DATA_DIRECTORY.md).

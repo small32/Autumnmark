@@ -49,7 +49,7 @@ const readElectronLanguages = (): string[] => {
   return values
 }
 
-// macOS .lproj bundles spell the region with an underscore, Windows/Linux .pak
+// macOS .lproj bundles spell the region with an underscore, Windows .pak
 // files with a hyphen; electron-builder.yml carries both spellings.
 const primarySubtag = (tag: string): string => tag.replace('_', '-').split('-')[0].toLowerCase()
 

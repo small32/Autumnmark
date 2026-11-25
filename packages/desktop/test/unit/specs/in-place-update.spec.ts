@@ -29,13 +29,11 @@ describe('release assets', () => {
     if (arch) Object.defineProperty(process, 'arch', arch)
   })
 
-  it('maps each platform to the archive the release actually ships', () => {
+  it('maps each supported platform to the archive the release actually ships', () => {
     setPlatform('win32', 'x64')
     expect(releaseAssetName('0.2.0')).toBe('autumnmark-win-x64-0.2.0.zip')
     setPlatform('darwin', 'arm64')
     expect(releaseAssetName('0.2.0')).toBe('autumnmark-mac-arm64-0.2.0.zip')
-    setPlatform('linux', 'x64')
-    expect(releaseAssetName('0.2.0')).toBe('autumnmark-linux-0.2.0.AppImage')
     // No published artifact for these combinations.
     setPlatform('win32', 'arm64')
     expect(releaseAssetName('0.2.0')).toBeNull()
@@ -121,14 +119,12 @@ describe('install target', () => {
     }
   })
 
-  it('refuses to fake an in-place update for a non-AppImage Linux build', () => {
+  it('refuses to stage an update on unsupported platforms', () => {
     const platform = Object.getOwnPropertyDescriptor(process, 'platform')
     Object.defineProperty(process, 'platform', { configurable: true, value: 'linux' })
-    vi.stubEnv('APPIMAGE', '')
     try {
-      expect(() => resolveInstallTarget()).toThrow(/AppImage/)
+      expect(() => resolveInstallTarget()).toThrow(/Windows and macOS/)
     } finally {
-      vi.unstubAllEnvs()
       if (platform) Object.defineProperty(process, 'platform', platform)
     }
   })

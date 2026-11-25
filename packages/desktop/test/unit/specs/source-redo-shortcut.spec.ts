@@ -50,10 +50,4 @@ describe('source mode redo shortcuts (#2183)', () => {
     expect(editor.getValue()).toBe('after')
     expect(editor.historySize().redo).toBe(0)
   })
-
-  it('preserves the Linux Ctrl+Shift+Z binding', () => {
-    const editor = createEditor(false)
-    press(editor, 90, true)
-    expect(editor.getValue()).toBe('after')
-  })
 })

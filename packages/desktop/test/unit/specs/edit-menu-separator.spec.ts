@@ -19,7 +19,7 @@ async function buildEditSubmenu(platform: NodeJS.Platform): Promise<MenuItemCons
 
 const hasAdjacentNativeSeparators = (items: MenuItemConstructorOptions[]): boolean => {
   // Chromium's SimpleMenuModel bypasses command visibility for separators,
-  // so `visible: false` alone cannot hide them on Windows/Linux (#5884).
+  // so `visible: false` alone cannot hide them on Windows (#5884).
   const visible = items.filter(i => i.type === 'separator' || i.visible !== false)
   return visible.some((item, i) =>
     item.type === 'separator' && visible[i + 1]?.type === 'separator'
@@ -35,7 +35,8 @@ const screenshotSection = (items: MenuItemConstructorOptions[]): MenuItemConstru
 }
 
 describe('Edit menu separators (#2997, #5884)', () => {
-  it.each(['win32', 'linux'] as const)('has no doubled native separator on %s', async(platform) => {
+  it('has no doubled native separator on Windows', async() => {
+    const platform = 'win32' as const
     const submenu = await buildEditSubmenu(platform)
     expect(hasAdjacentNativeSeparators(submenu)).toBe(false)
     expect(screenshotSection(submenu)).toEqual([{ type: 'separator' }])

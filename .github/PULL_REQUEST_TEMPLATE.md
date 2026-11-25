@@ -16,7 +16,7 @@ Closes #
 ## Test plan
 
 - [ ] New tests added (or explain why not needed)
-- [ ] Manually tested on: <!-- macOS / Windows / Linux -->
+- [ ] Manually tested on: <!-- macOS / Windows -->
 
 ## Notes for reviewers [optional]
 

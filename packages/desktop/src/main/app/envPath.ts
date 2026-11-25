@@ -6,27 +6,22 @@ import { spawn } from 'child_process'
 // user's own CLI tools are unreachable (#5518, #2751). `patchEnvPath` is sync
 // and covers everything reading process.env.PATH; `ensureShellEnvPath` must be
 // awaited, so only `resolveCommand` benefits from it.
-const SYSTEM_BIN_DIRS: Record<string, string[]> = {
-  darwin: [
-    '/opt/homebrew/bin',
-    '/usr/local/bin',
-    '/usr/local/lib/node_modules/.bin',
-    '/usr/bin',
-    '/bin',
-    '/Library/TeX/texbin'
-  ],
-  linux: ['/usr/local/bin', '/usr/local/lib/node_modules/.bin', '/usr/bin', '/bin']
-}
+const DARWIN_BIN_DIRS = [
+  '/opt/homebrew/bin',
+  '/usr/local/bin',
+  '/usr/local/lib/node_modules/.bin',
+  '/usr/bin',
+  '/bin',
+  '/Library/TeX/texbin'
+]
 
 // A `pnpm add -g picgo` lands in exactly one of these, which no system dir
 // covers and launchd never puts on PATH.
-const userBinDirs = (platform: NodeJS.Platform, env: NodeJS.ProcessEnv): string[] => {
+const userBinDirs = (env: NodeJS.ProcessEnv): string[] => {
   const home = env.HOME
   if (!home) return []
   return [
-    platform === 'darwin'
-      ? path.join(home, 'Library', 'pnpm')
-      : path.join(home, '.local', 'share', 'pnpm'),
+    path.join(home, 'Library', 'pnpm'),
     path.join(home, '.local', 'bin'),
     path.join(home, '.volta', 'bin'),
     path.join(home, '.bun', 'bin'),
@@ -47,12 +42,10 @@ const windowsShimDirs = (env: NodeJS.ProcessEnv): string[] =>
 
 export const extraPathDirs = (platform: NodeJS.Platform, env: NodeJS.ProcessEnv): string[] => {
   if (platform === 'win32') return [...new Set(windowsShimDirs(env))]
-  // Keyed off win32 rather than off this table, or the BSDs would get no
-  // fallback at all while still paying for the shell spawn.
-  const system = SYSTEM_BIN_DIRS[platform] ?? []
+  const system = platform === 'darwin' ? DARWIN_BIN_DIRS : []
   // Routinely a dir already listed, and npm leaves a `~/…` prefix unexpanded.
   const npmPrefix = env.npm_config_prefix ? [path.join(env.npm_config_prefix, 'bin')] : []
-  const dirs = [...system, ...userBinDirs(platform, env), ...npmPrefix]
+  const dirs = [...system, ...userBinDirs(env), ...npmPrefix]
   return [...new Set(dirs.filter((dir) => path.isAbsolute(dir)))]
 }
 

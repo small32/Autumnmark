@@ -3,13 +3,13 @@ import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures/muya';
 import { focusEditor, loadMarkdown } from '../helpers/keyboard';
 
-// #3452 — document-level navigation: macOS ⌘↑/⌘↓, Windows/Linux Ctrl+Home/End.
+// #3452 — document-level navigation: macOS ⌘↑/⌘↓, Windows Ctrl+Home/End.
 // The engine's part is to refuse the key; the browser moves the caret and the
 // engine adopts it on keyup, so asserting the caret covers both halves.
 //
 // Blink binds these keys per platform (`editing_behavior.cc`: Ctrl+Home/End only
 // when !IS_MAC), so each group runs where its binding exists — the Ctrl group
-// covers the Windows/Linux path on the Linux CI runner.
+// covers the Windows path on the Windows CI runner.
 
 const isMac = process.platform === 'darwin';
 
@@ -142,7 +142,7 @@ test.describe('macOS ⌘↑/⌘↓ reach the document edges (#3452)', () => {
     });
 });
 
-test.describe('Windows/Linux Ctrl+Home/Ctrl+End reach the document edges (#3452)', () => {
+test.describe('Windows Ctrl+Home/Ctrl+End reach the document edges (#3452)', () => {
     test.skip(isMac, 'Ctrl+Home/End is not bound on macOS');
 
     test('Ctrl+Home moves the caret to the start of the document', async ({ page }) => {

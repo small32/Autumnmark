@@ -236,13 +236,8 @@ for (const action of ['Escape', 'outside', 'blur', 'read-only', 'replace']) {
       if (action === 'Escape') await page.keyboard.press('Escape')
       if (action === 'outside') await page.mouse.move(5, 5)
       if (action === 'blur') {
-        if (process.platform === 'linux') {
-          // Xvfb CI cannot reliably transfer native window focus.
-          await page.locator('.mu-editor').evaluate(node => (node as HTMLElement).blur())
-        } else {
-          const window = await app.browserWindow(page)
-          await window.evaluate(window => window.blur())
-        }
+        const window = await app.browserWindow(page)
+        await window.evaluate(window => window.blur())
         await expect(page.locator('.mu-text-drag-preview')).toHaveCount(0)
       }
       if (action === 'read-only') {

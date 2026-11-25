@@ -4,12 +4,6 @@
   "contributors": 0,
   "releaseAssets": [
     "SHA256SUMS.txt",
-    "autumnmark-linux-0.2.2.AppImage",
-    "autumnmark-linux-0.2.2.deb",
-    "autumnmark-linux-0.2.2.rpm",
-    "autumnmark-linux-0.2.2.snap",
-    "autumnmark-linux-0.2.2.tar.gz",
-    "autumnmark-linux.yml",
     "autumnmark-mac-arm64-0.2.2.dmg",
     "autumnmark-mac-arm64-0.2.2.dmg.blockmap",
     "autumnmark-mac-arm64-0.2.2.zip",

@@ -282,7 +282,7 @@ No, the two version numbers are independent.
 
 ## Built with Muya
 
-- [MarkText](https://github.com/marktext/marktext) — next-generation Markdown editor for macOS, Windows, and Linux.
+- [MarkText](https://github.com/marktext/marktext) — next-generation Markdown editor for macOS and Windows.
 - [MindBox](https://www.mindbox.cc/) — note-taking app with first-class Markdown support.
 
 ## License

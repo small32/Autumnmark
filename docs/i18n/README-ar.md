@@ -10,7 +10,7 @@
 <div dir="rtl" align="center">
   <strong>:high_brightness: محرر ماركداون من الجيل التالي :crescent_moon:</strong><br>
   محرر ماركداون مفتوح المصدر بسيط وأنيق يركز على السرعة وسهولة الاستخدام.<br>
-  <sub>متاح لنظام Linux وmacOS وWindows.</sub>
+  <sub>متاح لنظام macOS وWindows.</sub>
 </div>
 
 <br>
@@ -135,11 +135,11 @@ MarkText هو محرر Markdown مفتوح المصدر يعتمد على دعم
 
 ## التنزيل والتثبيت
 
-![المنصة](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
+![المنصة](https://img.shields.io/static/v1.svg?label=Platform&message=macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
 هل تريد الاطلاع على الميزات الجديدة لأحدث إصدار؟ يرجى الرجوع إلى [CHANGELOG](https://marktext.me/docs/changelog).
 
@@ -167,13 +167,9 @@ choco install marktext
 winget install marktext
 ```
 
-#### Linux
-
-يرجى اتباع [تعليمات تثبيت Linux](https://marktext.me/docs/installation).
-
 #### أنظمة أخرى
 
-يمكن تنزيل جميع الملفات الثنائية لنظام Linux وmacOS وWindows من [صفحة الإصدارات](https://github.com/marktext/marktext/releases/latest). إذا لم يكن الإصدار متاحًا لنظامك، فيرجى فتح [مشكلة](https://github.com/marktext/marktext/issues).
+يمكن تنزيل جميع الملفات الثنائية لنظام macOS وWindows من [صفحة الإصدارات](https://github.com/marktext/marktext/releases/latest). إذا لم يكن الإصدار متاحًا لنظامك، فيرجى فتح [مشكلة](https://github.com/marktext/marktext/issues).
 
 ## التطوير
 

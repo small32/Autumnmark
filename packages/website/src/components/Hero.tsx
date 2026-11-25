@@ -44,7 +44,7 @@ export default function Hero() {
         </div>
         <div className={revealClass('d4', 'hero-note')}>
           <span>
-            <CheckIcon /> macOS · Windows · Linux
+            <CheckIcon /> macOS · Windows
           </span>
           <span>
             <CheckIcon /> No account, no tracking

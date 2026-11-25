@@ -108,7 +108,7 @@ Passing cases have no baseline entry. Reason text may be refined without changin
 the comparison contract.
 
 After investigating a change, either edit the relevant entries or explicitly
-regenerate them on macOS/Linux:
+regenerate them locally:
 
 ```sh
 UPDATE_INLINE_SPEC_BASELINE=1 pnpm -C packages/muya test:inline-spec

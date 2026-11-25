@@ -98,7 +98,7 @@ jobs:
             const { data } = await github.rest.actions.listWorkflowRunArtifacts({
               ...repo, run_id: selected.id, per_page: 100
             });
-            const platforms = ['windows-x64', 'macos-arm64', 'linux-x64'];
+            const platforms = ['windows-x64', 'macos-arm64'];
             const artifactIds = platforms.map(platform => {
               const name = 'autumnmark-' + platform + '-preview';
               const artifact = data.artifacts.find(item => item.name === name && !item.expired);
@@ -157,8 +157,7 @@ jobs:
             'autumnmark-win-x64-' + version + '-setup.exe',
             'autumnmark-win-x64-' + version + '.zip',
             'autumnmark-mac-arm64-' + version + '.dmg',
-            'autumnmark-mac-arm64-' + version + '.zip',
-            ...['AppImage', 'snap', 'deb', 'rpm', 'tar.gz'].map(ext => 'autumnmark-linux-' + version + '.' + ext)
+            'autumnmark-mac-arm64-' + version + '.zip'
           ]
           const files = readdirSync('dist')
           for (const name of expected) {

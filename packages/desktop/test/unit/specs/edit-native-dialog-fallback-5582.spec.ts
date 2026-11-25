@@ -90,7 +90,7 @@ describe('Edit actions reach macOS native dialogs (#5582)', () => {
       expect(send).toHaveBeenCalledWith('mt::editor-edit-action', ipcAction)
     })
 
-    it(`${name} does not use the native responder on Windows/Linux`, async() => {
+    it(`${name} does not use the native responder on Windows`, async() => {
       const actions = await importEditActions(false)
 
       call(actions, null)

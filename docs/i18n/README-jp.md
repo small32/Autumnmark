@@ -10,7 +10,7 @@
 <div align="center">
   <strong>:high_brightness: 次世代の Markdown エディタ :crescent_moon:</strong><br>
   スピードと使いやすさに特化した、シンプルでエレガントなオープンソースの Markdown エディタ。<br>
-  <sub>Linux、macOS、Windows に対応。</sub>
+  <sub>macOS、Windows に対応。</sub>
 </div>
 
 <br>
@@ -136,11 +136,11 @@ MarkText はコミュニティの支援によって成り立つオープンソ�
 
 ## ダウンロードとインストール
 
-![プラットフォーム](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
+![プラットフォーム](https://img.shields.io/static/v1.svg?label=Platform&message=macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
 最新バージョンの新機能を確認しますか？[CHANGELOG](https://marktext.me/docs/changelog) をご覧ください。
 
@@ -168,13 +168,9 @@ Winget を使用するには、[Winget](https://docs.microsoft.com/en-us/windows
 winget install marktext
 ```
 
-#### Linux
-
-[Linux インストール手順](https://marktext.me/docs/installation)に従ってください。
-
 #### その他
 
-Linux、macOS、Windows 用のすべてのバイナリは[リリースページ](https://github.com/marktext/marktext/releases/latest)からダウンロードできます。お使いのシステム用のバージョンがない場合は、[issue](https://github.com/marktext/marktext/issues) を開いてください。
+macOS、Windows 用のすべてのバイナリは[リリースページ](https://github.com/marktext/marktext/releases/latest)からダウンロードできます。お使いのシステム用のバージョンがない場合は、[issue](https://github.com/marktext/marktext/issues) を開いてください。
 
 ## 開発
 

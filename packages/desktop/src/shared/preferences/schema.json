@@ -11,7 +11,7 @@
     "default": 5000
   },
   "titleBarStyle": {
-    "description": "General--The title bar style (Windows and Linux system only).",
+    "description": "General--The title bar style (Windows only).",
     "enum": ["custom", "native"],
     "default": "custom"
   },

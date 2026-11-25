@@ -44,10 +44,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: linux-x64
-            os: ubuntu-22.04
-            platform: linux
-            command: build:linux:x64
           - name: windows-x64
             os: windows-latest
             platform: windows
@@ -62,23 +58,6 @@ jobs:
       - name: Enable long paths
         if: matrix.platform == 'windows'
         run: git config --global core.longpaths true
-
-      - name: Install Linux build dependencies
-        if: matrix.platform == 'linux'
-        run: |
-          curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /usr/share/keyrings/llvm.asc > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/llvm.asc] https://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" | sudo tee /etc/apt/sources.list.d/llvm18.list > /dev/null
-          sudo apt-get update
-          sudo apt-get install -y clang-18 libstdc++-12-dev icnsutils graphicsmagick xz-utils libx11-dev libxkbfile-dev gnome-keyring libsecret-1-dev libfontconfig-dev rpm
-
-      - name: Use Clang for Electron 45 headers
-        if: matrix.platform == 'linux'
-        run: |
-          echo "CC=clang-18" >> "$GITHUB_ENV"
-          echo "CXX=clang++-18" >> "$GITHUB_ENV"
-          echo "CXXFLAGS=-std=c++20" >> "$GITHUB_ENV"
-          clang++-18 --version
-          printf '#include <source_location>\nint main() { return std::source_location::current().line() == 0; }\n' | clang++-18 -std=c++20 -x c++ - -fsyntax-only
 
       - uses: actions/setup-python@v7.0.0
         with:
@@ -112,7 +91,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           npm_config_user_agent: 'pnpm'
-          USE_ELECTRON_CLANG: ${{ matrix.platform == 'linux' && '0' || '' }}
 
       - name: Build platform packages
         if: matrix.name != 'macos-arm64'
@@ -163,7 +141,7 @@ jobs:
           node <<'NODE'
           const { readdirSync, readFileSync, writeFileSync } = require('node:fs')
           const { createHash } = require('node:crypto')
-          const names = readdirSync('dist').filter(name => /\.(exe|zip|dmg|AppImage|snap|deb|rpm|tar\.gz)$/.test(name)).sort()
+          const names = readdirSync('dist').filter(name => /\.(exe|zip|dmg)$/.test(name)).sort()
           if (!names.length) throw new Error('No platform packages were produced')
           const lines = names.map(name => createHash('sha256').update(readFileSync('dist/' + name)).digest('hex') + '  ' + name)
           writeFileSync('dist/SHA256SUMS-' + process.env.PLATFORM + '.txt', lines.join('\n') + '\n')
@@ -180,9 +158,4 @@ jobs:
             dist/*.exe
             dist/*.zip
             dist/*.dmg
-            dist/*.AppImage
-            dist/*.snap
-            dist/*.deb
-            dist/*.rpm
-            dist/*.tar.gz
             dist/SHA256SUMS-${{ matrix.name }}.txt

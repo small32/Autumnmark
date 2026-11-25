@@ -41,8 +41,6 @@
     "build:win:x64": "tsx ../../scripts/minify-locales.ts && electron-rebuild && electron-vite build && electron-builder --win --x64 --publish never",
     "build:mac": "pnpm run build:mac:arm64",
     "build:mac:arm64": "tsx ../../scripts/minify-locales.ts && electron-rebuild --arch=arm64 && electron-vite build && electron-builder --mac --arm64 --publish never",
-    "build:linux": "pnpm run build:linux:x64",
-    "build:linux:x64": "tsx ../../scripts/minify-locales.ts && electron-rebuild --arch=x64 && electron-vite build && electron-builder --linux --x64 --publish never",
     "perf:inspect": "electron-vite preview -- --inspect=5858",
     "perf:inspect-brk": "electron-vite preview -- --inspect-brk=5858",
     "test": "vitest run",

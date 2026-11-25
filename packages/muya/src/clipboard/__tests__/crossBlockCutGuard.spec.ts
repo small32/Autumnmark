@@ -16,11 +16,11 @@ vi.mock('../../utils/prism/index', () => ({
 
 // #3491: on a cross-block selection, the keydown handler cuts (replaces) the
 // selection for an editing keystroke. It must NOT cut on a modifier combo —
-// in particular Ctrl+C (copy) on Windows/Linux, which previously deleted the
+// in particular Ctrl+C (copy) on Windows, which previously deleted the
 // selected text because only metaKey (macOS Cmd) was excluded.
 
 describe('shouldCrossBlockCut (#3491)', () => {
-    it('does NOT cut on Ctrl+C (Windows/Linux copy)', () => {
+    it('does NOT cut on Ctrl+C (Windows copy)', () => {
         expect(shouldCrossBlockCut('c', false, true)).toBe(false);
     });
 

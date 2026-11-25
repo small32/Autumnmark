@@ -33,8 +33,8 @@ export const IMAGE_EXTENSIONS: readonly string[] = Object.freeze([
 // Extensions the OS shell will execute rather than open in an application.
 // Opening one of these via shell.openPath runs code, so a markdown link
 // pointing at a co-located script/executable must be confirmed first (#3575).
-// The vulnerable path is cross-platform, so the list covers Windows, macOS and
-// Linux launchers — not just Windows.
+// The vulnerable path is cross-platform, so the list also covers launchers
+// users may keep alongside their documents.
 export const DANGEROUS_EXECUTABLE_EXTENSIONS: readonly string[] = Object.freeze([
   // Windows — native executables, installers and control-panel items
   'exe',
@@ -79,7 +79,7 @@ export const DANGEROUS_EXECUTABLE_EXTENSIONS: readonly string[] = Object.freeze(
   // macOS — Terminal scripts and app bundles
   'command',
   'app',
-  // Linux — desktop entries and self-contained executables
+  // Desktop entries and self-contained executables
   'desktop',
   'appimage',
   'run'

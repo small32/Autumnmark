@@ -24,9 +24,7 @@ export function getDeviceTarget(browser: BrowserDevice): DeviceTarget {
     ? 'mac'
     : /Win/i.test(system)
       ? 'windows'
-      : /Linux/i.test(system) && !/CrOS/i.test(userAgent)
-        ? 'linux'
-        : null
+      : null
   if (!os) return unknown
 
   // macOS UAs can claim Intel even on Apple Silicon; Chromium also freezes desktop CPU tokens.

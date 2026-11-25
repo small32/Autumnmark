@@ -39,16 +39,6 @@ empty read-only buffer.
 `marktext` has to point at your installation of MarkText. Where that is — and what you have
 to do about it — varies from platform to platform.
 
-### Linux
-
-The `.deb` and `.rpm` packages already install `/usr/bin/marktext`, and the Snap exposes a
-`marktext` command, so there is nothing to set up. For the AppImage or the tarball, alias the
-binary you extracted:
-
-```sh
-alias marktext="$HOME/Applications/marktext.AppImage"
-```
-
 ### macOS
 
 ```sh
@@ -74,6 +64,3 @@ target's. MarkText then aborts before it starts, printing only:
 ```
 [ERROR:base\i18n\icu_util.cc:232] Invalid file descriptor to ICU data received.
 ```
-
-Linking is safe on Linux — `/usr/bin/marktext` from the `.deb` and `.rpm` packages is itself a
-symlink into `/opt/marktext` — because the kernel resolves the link before the process starts.

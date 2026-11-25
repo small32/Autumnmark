@@ -1,13 +1,13 @@
 #!/bin/bash
-# AutumnMark+ in-place updater (macOS .app bundle and Linux AppImage).
+# AutumnMark+ in-place updater (macOS .app bundle).
 #
 # Runs detached from the app: waits for the old process to exit, moves the
-# current bundle/AppImage aside, copies the staged build over it, restarts,
+# current bundle aside, copies the staged build over it, restarts,
 # and rolls back when copying fails. Nothing here downloads anything.
 #
 # Usage:
 #   apply-update.sh --pid <pid> --source <path> --target <path> --launch <path>
-#                   --mode <app|file> [--log <path>] [--cleanup <dir>]
+#                   --mode <app> [--log <path>] [--cleanup <dir>]
 
 set -u
 
@@ -80,17 +80,10 @@ fi
 
 # 3. Copy the staged build into place.
 COPY_OK=0
-if [ "$MODE" = "file" ]; then
-  if cp "$SOURCE" "$TARGET" 2>/dev/null; then
-    chmod +x "$TARGET" 2>/dev/null || true
-    COPY_OK=1
-  fi
-else
-  if cp -R "$SOURCE" "$TARGET" 2>/dev/null; then
-    # Unsigned builds stay quarantined otherwise and Gatekeeper blocks them.
-    xattr -dr com.apple.quarantine "$TARGET" 2>/dev/null || true
-    COPY_OK=1
-  fi
+if cp -R "$SOURCE" "$TARGET" 2>/dev/null; then
+  # Unsigned builds stay quarantined otherwise and Gatekeeper blocks them.
+  xattr -dr com.apple.quarantine "$TARGET" 2>/dev/null || true
+  COPY_OK=1
 fi
 
 if [ "$COPY_OK" -ne 1 ]; then
@@ -100,7 +93,7 @@ if [ "$COPY_OK" -ne 1 ]; then
     mv "$BACKUP" "$TARGET" 2>/dev/null || log "rollback failed, backup kept at $BACKUP"
   fi
   if [ -e "$LAUNCH" ]; then
-    if [ "$MODE" = "app" ]; then open "$LAUNCH" || true; else "$LAUNCH" >/dev/null 2>&1 & fi
+    open "$LAUNCH" || true
   fi
   [ -n "$CLEANUP" ] && rm -rf "$CLEANUP"
   exit 4
@@ -117,11 +110,7 @@ fi
 
 # 5. Restart.
 if [ -e "$LAUNCH" ]; then
-  if [ "$MODE" = "app" ]; then
-    open "$LAUNCH" || true
-  else
-    ( cd "$(dirname "$LAUNCH")" && "$LAUNCH" >/dev/null 2>&1 & )
-  fi
+  open "$LAUNCH" || true
   log "restarted the application"
 fi
 

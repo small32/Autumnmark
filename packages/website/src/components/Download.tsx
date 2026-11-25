@@ -6,12 +6,11 @@ import { DOWNLOAD, DOWNLOAD_PLATFORMS, architectureLabel } from '@/lib/downloads
 import { PROJECT_INFO, RELEASE_DOWNLOADS } from '@/lib/project-info'
 import { EXT_LINK } from '@/lib/links'
 import { SECTIONS } from '@/lib/sections'
-import { DownloadIcon, LinuxIcon, MacIcon, WindowsIcon } from './Icons'
+import { DownloadIcon, MacIcon, WindowsIcon } from './Icons'
 
-const PLATFORM_ICONS = { mac: MacIcon, windows: WindowsIcon, linux: LinuxIcon }
-const PRIMARY_LABELS = { mac: 'DMG installer', windows: 'Windows installer', linux: 'AppImage' }
-const FORMAT_LABELS = { zip: '.zip', deb: '.deb', rpm: '.rpm', 'tar.gz': '.tar.gz', snap: '.snap' }
-const FORMAT_DESCRIPTIONS = { deb: 'Debian, Ubuntu', rpm: 'Red Hat, Fedora' }
+const PLATFORM_ICONS = { mac: MacIcon, windows: WindowsIcon }
+const PRIMARY_LABELS = { mac: 'DMG installer', windows: 'Windows installer' }
+const FORMAT_LABELS = { zip: '.zip' }
 
 export default function Download() {
   const target = useDeviceTarget()
@@ -28,7 +27,7 @@ export default function Download() {
           <h2 id="download-title">
             Download <span className="grad-text">MarkText</span>
           </h2>
-          <p>Free and open source. Your Markdown editor, on macOS, Windows, and Linux.</p>
+          <p>Free and open source. Your Markdown editor, on macOS and Windows.</p>
           <div className="download-version">
             <span className="tag">{PROJECT_INFO.releaseVersion}</span>
             <span>Latest stable release</span>
@@ -100,11 +99,6 @@ export default function Download() {
                         <tr key={format}>
                           <th scope="row">
                             {FORMAT_LABELS[format as keyof typeof FORMAT_LABELS] || `.${format}`}
-                            {format in FORMAT_DESCRIPTIONS && (
-                              <small>
-                                {FORMAT_DESCRIPTIONS[format as keyof typeof FORMAT_DESCRIPTIONS]}
-                              </small>
-                            )}
                           </th>
                           {platform.architectures.map((architecture) => {
                             const download = downloads.find(
@@ -153,10 +147,6 @@ export default function Download() {
               <p>
                 <strong>Windows:</strong> Open Settings → System → About → System type. Choose Arm64
                 for an ARM-based processor, or x64 for an Intel or AMD processor.
-              </p>
-              <p>
-                <strong>Linux:</strong> Run <code>uname -m</code>. Choose x64 for{' '}
-                <code>x86_64</code>, or Arm64 for <code>aarch64</code>.
               </p>
             </div>
           </details>

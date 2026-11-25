@@ -6,7 +6,7 @@ import { t } from '../../i18n'
 import type Keybindings from '../../keyboard/shortcutHandler'
 
 export default function(keybindings: Keybindings): MenuItemConstructorOptions {
-  // Native separators ignore command visibility on Windows/Linux (#5884).
+  // Native separators ignore command visibility on Windows (#5884).
   const screenshotItems: MenuItemConstructorOptions[] = isOsx
     ? [
       {

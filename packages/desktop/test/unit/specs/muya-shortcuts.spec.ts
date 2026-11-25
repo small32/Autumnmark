@@ -3,7 +3,6 @@ import { createMuyaShortcutResolvers } from '@/util/muyaShortcuts'
 import { acceleratorToLabel } from '@/util/accelerator'
 import darwin from 'main_renderer/keyboard/keybindingsDarwin'
 import windows from 'main_renderer/keyboard/keybindingsWindows'
-import linux from 'main_renderer/keyboard/keybindingsLinux'
 
 const actions = [
   ['format', 'strong', 'format.strong'],
@@ -39,8 +38,7 @@ const actions = [
 
 describe.each([
   ['macOS', darwin, true],
-  ['Windows', windows, false],
-  ['Linux', linux, false]
+  ['Windows', windows, false]
 ] as const)('Muya hints on %s', (_name, bindings, isMac) => {
   const resolve = createMuyaShortcutResolvers((id) => bindings.get(id), isMac)
 
@@ -62,17 +60,14 @@ it('reads live overrides and clears removed or unbound entries without a default
   expect(resolve.paragraph('diagram mermaid')).toBe('')
 })
 
-it('hides Windows heading hints while Linux inline code uses Ctrl+Y', () => {
+it('hides Windows heading hints', () => {
   expect(
     createMuyaShortcutResolvers((id) => windows.get(id), false).paragraph('atx-heading 1')
   ).toBe('')
-  expect(createMuyaShortcutResolvers((id) => linux.get(id), false).format('inline_code')).toBe(
-    'Ctrl+Y'
-  )
 })
 
 it('has no duplicate non-empty default accelerators on any platform', () => {
-  for (const bindings of [darwin, windows, linux]) {
+  for (const bindings of [darwin, windows]) {
     const labels = [...bindings.values()]
       .filter(Boolean)
       .map((value) => acceleratorToLabel(value, bindings === darwin))

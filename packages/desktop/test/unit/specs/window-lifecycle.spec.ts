@@ -25,7 +25,6 @@ vi.mock('main_renderer/config', () => ({
   TITLE_BAR_HEIGHT: 24,
   editorWinOptions: {},
   preferencesWinOptions: { width: 800, height: 600 },
-  isLinux: false,
   isWindows: false,
   isOsx: false
 }))

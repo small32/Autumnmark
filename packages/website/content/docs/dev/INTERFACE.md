@@ -12,7 +12,7 @@ The editor window contains a title bar, an optional sidebar, optional tabs and t
 
 ### Titlebar
 
-The title bar shows document information and the statistics counter. Linux and Windows expose the application menu and window controls in the custom title bar; the `titleBarStyle` preference also offers native window decorations. macOS uses the hidden-inset title-bar configuration in `packages/desktop/src/main/config.ts`.
+The title bar shows document information and the statistics counter. Windows exposes the application menu and window controls in the custom title bar; the `titleBarStyle` preference also offers native window decorations. macOS uses the hidden-inset title-bar configuration in `packages/desktop/src/main/config.ts`.
 
 ### Sidebar
 

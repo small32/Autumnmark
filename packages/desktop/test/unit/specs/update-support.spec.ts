@@ -11,7 +11,6 @@ describe('installed update support', () => {
 
   beforeEach(() => {
     files.clear()
-    vi.stubEnv('APPIMAGE', '')
     Object.defineProperty(process, 'platform', { configurable: true, value: 'win32' })
     Object.defineProperty(process, 'resourcesPath', { configurable: true, value: '/app/resources' })
   })
@@ -37,14 +36,6 @@ describe('installed update support', () => {
     files.add(path.join(process.resourcesPath, 'md.ico'))
     files.add(path.join(process.resourcesPath, 'icons', 'md.ico'))
     expect(isUpdatable()).toBe(false)
-  })
-
-  it('supports AppImages with update metadata', () => {
-    Object.defineProperty(process, 'platform', { configurable: true, value: 'linux' })
-    vi.stubEnv('APPIMAGE', '/app/marktext.AppImage')
-    expect(isUpdatable()).toBe(false)
-    files.add(path.join(process.resourcesPath, 'app-update.yml'))
-    expect(isUpdatable()).toBe(true)
   })
 
   it('lets packaged builds check for releases even when they cannot install them', () => {

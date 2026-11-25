@@ -39,7 +39,7 @@ describe('#3575 — isDangerousExecutableFile', () => {
     expect(isDangerousExecutableFile('evil.md:hidden')).toBe(false)
   })
 
-  it('flags macOS and Linux launchers, not just Windows', () => {
+  it('flags other launchers, not just Windows', () => {
     for (const name of ['run.command', 'Foo.app', 'launch.desktop', 'App.AppImage', 'installer.run']) {
       expect(isDangerousExecutableFile(name)).toBe(true)
     }

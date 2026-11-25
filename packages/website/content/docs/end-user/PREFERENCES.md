@@ -12,7 +12,7 @@ Invalid individual values fall back to defaults. An unreadable, malformed or non
 | openFilesInPreviewMode | Boolean | `true`        | Reuse a preview tab for sidebar files; editing or double-clicking keeps it open. Available in Preferences → General since 0.23.0. |
 | autoSave               | Boolean | `false`       | Automatically save the content being edited.                                                                                      |
 | autoSaveDelay          | Number  | `5000`        | The delay in milliseconds after a change before a file is saved automatically. Minimum `1000`.                                    |
-| titleBarStyle          | String  | `custom`      | The title bar style on Linux and Windows: `custom` or `native`.                                                                   |
+| titleBarStyle          | String  | `custom`      | The title bar style on Windows: `custom` or `native`.                                                                            |
 | openFilesInNewWindow   | Boolean | `false`       | Open files in a new window.                                                                                                       |
 | openFolderInNewWindow  | Boolean | `false`       | Open folder via menu in a new window.                                                                                             |
 | zoom                   | Number  | `1.0`         | The zoom level. Between `0.5` and `2.0` inclusive.                                                                                |
@@ -101,7 +101,7 @@ Invalid individual values fall back to defaults. An unreadable, malformed or non
 | ----------------------- | ------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
 | spellcheckerEnabled     | Boolean | `false` | Whether spell checking is enabled.                                                                                     |
 | spellcheckerNoUnderline | Boolean | `false` | Don't underline spelling mistakes.                                                                                     |
-| spellcheckerLanguage    | String  | `en-US` | Spell-checker language on Linux/Windows; choose from the available dictionaries. macOS uses system language detection. |
+| spellcheckerLanguage    | String  | `en-US` | Spell-checker language on Windows; choose from the available dictionaries. macOS uses system language detection. |
 
 #### Image
 

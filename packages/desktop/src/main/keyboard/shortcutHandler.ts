@@ -6,10 +6,9 @@ import log from 'electron-log'
 import { electronLocalshortcut, isValidElectronAccelerator } from 'common/localShortcut'
 import { isFile2 } from 'common/filesystem'
 import { isEqualAccelerator } from 'common/keybinding'
-import { isLinux, isOsx } from '../config'
+import { isOsx } from '../config'
 import { getKeyboardInfo, keyboardLayoutMonitor, type KeyboardInfo } from '../keyboard'
 import keybindingsDarwin from './keybindingsDarwin'
-import keybindingsLinux from './keybindingsLinux'
 import keybindingsWindows from './keybindingsWindows'
 import type { CommandManager } from '../commands'
 import type { AppEnvironment } from '../app/env'
@@ -92,8 +91,6 @@ class Keybindings {
   getDefaultKeybindings(): Map<string, string> {
     if (isOsx) {
       return keybindingsDarwin
-    } else if (isLinux) {
-      return keybindingsLinux
     }
     return keybindingsWindows
   }

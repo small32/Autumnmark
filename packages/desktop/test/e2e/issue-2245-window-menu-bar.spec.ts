@@ -3,7 +3,7 @@ import type { ElectronApplication, Page } from 'playwright'
 import { launchWithMarkdown } from './helpers'
 
 // #2245: with native window decorations each window draws its own menu bar on
-// Linux and Windows, and `Menu.setApplicationMenu` writes into all of them at
+// Windows, and `Menu.setApplicationMenu` writes into all of them at
 // once. Swapping it on focus therefore stripped the menu bar off the editor
 // window while Preferences was focused, and pushed the editor's menu bar onto
 // Preferences as soon as the editor was focused again.

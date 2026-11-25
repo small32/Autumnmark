@@ -30,7 +30,7 @@ vi.mock('common/filesystem', () => ({
   isFile2: () => false
 }))
 
-vi.mock('main_renderer/config', () => ({ isLinux: false, isOsx: true, isWindows: false }))
+vi.mock('main_renderer/config', () => ({ isOsx: true, isWindows: false }))
 vi.mock('main_renderer/menu/actions/edit', () => ({ updateSidebarMenu: vi.fn() }))
 vi.mock('main_renderer/menu/actions/format', () => ({ updateFormatMenu: vi.fn() }))
 vi.mock('main_renderer/menu/actions/paragraph', () => ({ updateSelectionMenus: vi.fn() }))

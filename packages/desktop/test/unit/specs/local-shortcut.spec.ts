@@ -22,7 +22,7 @@ const input = (overrides: Partial<KeyboardInput> = {}): KeyboardInput => ({
   ...overrides
 })
 
-describe.each(['darwin', 'win32', 'linux'])('shared recording and matching on %s', (platform) => {
+describe.each(['darwin', 'win32'])('shared recording and matching on %s', (platform) => {
   const primary = platform === 'darwin' ? 'Command' : 'Ctrl'
   const flags = platform === 'darwin' ? { metaKey: true } : { ctrlKey: true }
 

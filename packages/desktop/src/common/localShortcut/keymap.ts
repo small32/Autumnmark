@@ -89,12 +89,11 @@ export class KeyboardMapper {
     if (event.type !== 'keydown') return null
     const isMac = this.platform === 'darwin'
     const isWindows = this.platform === 'win32'
-    const isLinux = this.platform === 'linux'
     let { key, ctrlKey, altKey } = event
     const { code, shiftKey, metaKey } = event
     let characters = this.keymap[code]
 
-    if (key === 'Dead' && !isLinux && characters) {
+    if (key === 'Dead' && characters) {
       key =
         (altKey && shiftKey ? characters.withShiftAltGr : null) ??
         (altKey ? characters.withAltGr : null) ??
@@ -104,9 +103,6 @@ export class KeyboardMapper {
     }
     if (/^Numpad[0-9]$/.test(code)) key = `num${code.slice(-1)}`
     key = KEY_NAMES[code] ?? key
-    if (isLinux && code === 'NumpadDecimal' && !event.getModifierState('NumLock')) key = 'delete'
-    if (isLinux && code === 'IntlRo' && key === 'Unidentified' && ctrlKey) key = '/'
-
     const nonCharacter = key.length > 1
     if (nonCharacter) {
       key = NON_CHARACTER_NAMES[key] ?? key.toLowerCase()
@@ -125,9 +121,6 @@ export class KeyboardMapper {
             ctrlKey = false
             altKey = false
           }
-        } else if (isLinux && base && (ctrlKey || altKey || metaKey)) {
-          key = base
-          altKey = event.getModifierState('AltGraph')
         }
       }
     }

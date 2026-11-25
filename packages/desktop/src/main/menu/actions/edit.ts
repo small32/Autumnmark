@@ -47,7 +47,7 @@ ipcMain.on('mt::ask-for-image-auto-path', (e, { pathname, src, id }) => {
  * the Edit menu's handlers are invoked without a `win` and the shortcut would
  * otherwise be swallowed by MarkText. Forward the standard edit selector to
  * the panel's first responder instead. This is macOS-only: Electron does not
- * register `Menu.sendActionToFirstResponder` on Windows/Linux. When a MarkText
+ * register `Menu.sendActionToFirstResponder` on Windows. When a MarkText
  * window is focused the usual editor action runs (the editor keeps its own
  * undo/redo history and selection semantics, so a plain `role` can't be used).
  */

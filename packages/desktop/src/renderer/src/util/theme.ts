@@ -6,7 +6,6 @@ import {
   railscastsThemes
 } from '../config'
 import { builtinThemeCss } from './builtinTheme'
-import { isLinux } from './index'
 
 import { themeBaseId } from 'common/theme'
 import { localThemeList, type LocalTheme } from '@shared/localTheme'
@@ -18,14 +17,6 @@ const ORIGINAL_THEME = '#409EFF'
 const patchTheme = (css: string): string => {
   return `@media not print {\n${css}\n}`
 }
-
-const getEmojiPickerPatch = (): string => {
-  return isLinux
-    ? '.mu-emoji-picker section .emoji-wrapper .item span { font-family: sans-serif, "Noto Color Emoji"; }'
-    : ''
-}
-
-
 
 export const addThemeStyle = (id: string, library?: LocalTheme[]): void => {
   const theme = themeBaseId(id)
@@ -108,8 +99,6 @@ export const addCommonStyle = (options: CommonStyleOptions): void => {
 font-family: ${resolvedCodeFont};
 font-size: ${codeFontSize}px;
 }
-
-${getEmojiPickerPatch()}
 `
 }
 

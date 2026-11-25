@@ -92,8 +92,7 @@ export const registerAiModels = (app: Accessor) => {
     let encryptedKey = draft.key === null ? existing?.encryptedKey ?? '' : ''
     if (draft.key) {
       const available = await safeStorage.isAsyncEncryptionAvailable()
-      if (!available || (process.platform === 'linux' && safeStorage.getSelectedStorageBackend() === 'basic_text'))
-        throw new Error('keyStore')
+      if (!available) throw new Error('keyStore')
       const encrypted = await safeStorage.encryptStringAsync(draft.key)
       encryptedKey = encrypted.toString('base64')
     }

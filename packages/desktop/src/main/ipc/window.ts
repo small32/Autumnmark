@@ -94,8 +94,6 @@ export const registerWindowHandlers = (): void => {
       if (!win?.isFocused()) return false
 
       const cursor = screen.getCursorScreenPoint()
-      // Electron returns the origin when Wayland cannot supply screen coordinates.
-      if (process.platform === 'linux' && cursor.x === 0 && cursor.y === 0) return null
 
       const content = win.getContentBounds()
       const zoom = event.sender.getZoomFactor()

@@ -71,9 +71,7 @@ function getWindowShortcuts(win: BrowserWindow): WindowShortcuts {
         modifier === 'AltGraph' &&
         (mapper.platform === 'darwin'
           ? input.alt
-          : mapper.platform === 'win32'
-            ? state.altGr || (input.control && input.alt)
-            : state.altGr)
+          : state.altGr || (input.control && input.alt))
     })
     if (!isValidKeyBinding(normalized)) return
     const shortcut = state.shortcuts.find(

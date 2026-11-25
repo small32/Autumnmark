@@ -145,7 +145,7 @@ describe.skipIf(skipOnWindows)('uploader: clipboard image handed to the uploader
 describe.skipIf(skipOnWindows)('uploader: local image path handed to picgo (#3360)', () => {
   it('passes a path containing shell metacharacters through unmangled', async() => {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'mt-uploader-src-'))
-    // Legal on macOS/Linux, and the kind of name a screenshot tool or a
+    // Legal on macOS, and the kind of name a screenshot tool or a
     // download can produce.
     const weird = path.join(dir, 'a "quoted" $name `x`.png')
     await fs.writeFile(weird, PNG)

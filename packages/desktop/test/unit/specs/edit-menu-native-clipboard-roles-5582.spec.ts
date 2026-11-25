@@ -48,7 +48,7 @@ const clipboardItem = (submenu: ClipboardItem[], role: string): ClipboardItem | 
 
 describe('Edit menu uses native clipboard roles (#5582)', () => {
   for (const isOsx of [true, false]) {
-    const platform = isOsx ? 'macOS' : 'Windows/Linux'
+    const platform = isOsx ? 'macOS' : 'Windows'
 
     it(`binds Cut/Copy/Paste to native roles on ${platform}`, async() => {
       const submenu = await buildEditSubmenu(isOsx)

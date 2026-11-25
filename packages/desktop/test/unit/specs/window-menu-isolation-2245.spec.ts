@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ipcMain } from 'electron'
 
-// #2245: on Windows and Linux every window draws its own menu bar, and
+// #2245: on Windows every window draws its own menu bar, and
 // `Menu.setApplicationMenu` writes the menu into *all* of them. Switching the
 // application menu on focus therefore stripped the menu bar from the editor
 // window while Preferences was focused, and handed the Preferences window the
@@ -92,7 +92,7 @@ vi.mock('common/filesystem', () => ({
   isFile2: () => false
 }))
 
-vi.mock('main_renderer/config', () => ({ isLinux: true, isOsx: false, isWindows: false }))
+vi.mock('main_renderer/config', () => ({ isOsx: false, isWindows: true }))
 
 vi.mock('main_renderer/menu/actions/edit', () => ({ updateSidebarMenu: vi.fn() }))
 vi.mock('main_renderer/menu/actions/format', () => ({ updateFormatMenu: vi.fn() }))
@@ -111,11 +111,14 @@ import type Keybindings from 'main_renderer/keyboard/shortcutHandler'
 
 const makeAppMenu = () => {
   const preferences = { getItem: () => 'en' } as unknown as Preference
-  const keybindings = { registerEditorKeyHandlers: vi.fn() } as unknown as Keybindings
+  const keybindings = {
+    registerEditorKeyHandlers: vi.fn(),
+    registerAccelerator: vi.fn()
+  } as unknown as Keybindings
   return new AppMenu(preferences, keybindings, '/tmp/mt-test')
 }
 
-describe('Editor and Preferences keep their own menu bar on Linux (#2245)', () => {
+describe('Editor and Preferences keep their own menu bar on Windows (#2245)', () => {
   beforeEach(() => {
     reset()
     buildFromTemplate.mockClear()

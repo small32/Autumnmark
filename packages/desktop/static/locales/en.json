@@ -221,7 +221,7 @@
       "screenshot": "Screenshot",
       "lineEnding": "Line Ending",
       "lineEndingCrlf": "CRLF(Windows)",
-      "lineEndingLf": "LF(Linux/Mac)"
+      "lineEndingLf": "LF(Mac)"
     },
     "paragraph": {
       "title": "Paragraph",
@@ -754,7 +754,7 @@
         "endOfLine": {
           "default": "Default",
           "crlf": "CRLF(Windows)",
-          "lf": "LF(Linux/Mac)"
+          "lf": "LF(Mac)"
         }
       },
       "misc": {

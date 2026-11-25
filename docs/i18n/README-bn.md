@@ -10,7 +10,7 @@
 <div align="center">
   <strong>:high_brightness: আধুনিক প্রজন্মের Markdown এডিটর :crescent_moon:</strong><br>
   একটি সাধারণ এবং অত্যাধুনিক ওপেন-সোর্স Markdown এডিটর যা গতি এবং ব্যবহারযোগ্যতার দিকে গুরুত্ত দেয়।<br>
-  <sub>Linux, macOS এবং Windows-এর জন্য।</sub>
+  <sub>macOS এবং Windows-এর জন্য।</sub>
 </div>
 
 <br>
@@ -137,11 +137,11 @@ MarkText একটি ওপেন-সোর্স Markdown এডিটর, য
 
 ## ডাউনলোড ও ইনস্টলেশন
 
-![platform](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
+![platform](https://img.shields.io/static/v1.svg?label=Platform&message=macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
 সর্বশেষ সংস্করণের নতুন ফিচারগুলো দেখতে [CHANGELOG](https://marktext.me/docs/changelog) দেখুন।
 
@@ -173,13 +173,9 @@ Winget ব্যবহার করতে চাইলে আগে [Winget](htt
 winget install marktext
 ```
 
-#### Linux
-
-অনুগ্রহ করে [Linux installation instructions](https://marktext.me/docs/installation) অনুসরণ করুন।
-
 #### অন্যান্য
 
-Linux, macOS এবং Windows-এর সব binary [release page](https://github.com/marktext/marktext/releases/latest) থেকে ডাউনলোড করা যাবে। আপনার সিস্টেমের জন্য কোনো সংস্করণ না থাকলে একটি [issue](https://github.com/marktext/marktext/issues) খুলুন।
+macOS এবং Windows-এর সব binary [release page](https://github.com/marktext/marktext/releases/latest) থেকে ডাউনলোড করা যাবে। আপনার সিস্টেমের জন্য কোনো সংস্করণ না থাকলে একটি [issue](https://github.com/marktext/marktext/issues) খুলুন।
 
 ## ডেভেলপমেন্ট
 

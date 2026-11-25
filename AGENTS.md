@@ -170,11 +170,9 @@ If you need to invoke a script directly inside a package, use
 ```bash
 pnpm run build:win    # Windows x64 — NSIS installer + zip
 pnpm run build:mac    # macOS ARM64 — DMG + zip
-pnpm run build:linux  # Linux x64 — AppImage, snap, deb, rpm, tar.gz
 ```
 
-The architecture-specific commands are `build:win:x64`, `build:mac:arm64` and
-`build:linux:x64`.
+The architecture-specific commands are `build:win:x64` and `build:mac:arm64`.
 
 All platform build scripts automatically run `minify-locales` and `electron-rebuild` before packaging.
 
@@ -212,7 +210,7 @@ or single-test runs. Local preparation covers the version, changelog, diff and
 Git operations. Reuse applicable PR results. Dispatch any additional desktop UI
 checks through the hosted `E2E Test` workflow on the release branch.
 
-Publish Windows x64, macOS ARM64 (Apple Silicon) and Linux x64. Apply this
+Publish Windows x64 and macOS ARM64 (Apple Silicon). Apply this
 platform list to PR installer builds, previews, releases and updater manifests.
 Follow `packages/website/content/docs/dev/RELEASE.md` for the release steps.
 
@@ -281,18 +279,17 @@ See `packages/website/content/docs/dev/IPC.md` for conventions and examples.
 `packages/website/content/docs/dev/` contains the deeper developer documentation referenced by this guide. Same files are published as the developer docs section on <https://marktext.me/docs/dev/overview>:
 
 - `ARCHITECTURE.md` — process/module layering beyond the summary above
-- `BUILD.md` — full platform build prerequisites (including the Arch Linux deps added recently)
+- `BUILD.md` — full platform build prerequisites
 - `DEBUGGING.md` — attaching debuggers to main/renderer processes
 - `INTERFACE.md` — Muya and renderer public interfaces
 - `IPC.md` — full IPC channel catalog and `mt::` conventions
-- `LINUX_DEV.md` — Linux-specific dev environment setup
 - `PERFORMANCE.md` — perf measurement workflow (pairs with `pnpm run perf:inspect`)
 - `RELEASE.md` / `RELEASE_HOTFIX.md` — release process
 
 ## Important Build Notes
 
 - **CommonJS vs ESM**: `main` and `preload` compile to CommonJS; `renderer` is ESM-only. Do not use `require()` in renderer code.
-- **Minify locales**: `pnpm run minify-locales` must run before production builds. It is included in `build:unpack` and `build:win/mac/linux`, but not in `build` or `dev`.
+- **Minify locales**: `pnpm run minify-locales` must run before production builds. It is included in `build:unpack` and `build:win/mac`, but not in `build` or `dev`.
 - **Native modules**: After changing Electron version, run `pnpm run rebuild-native` (`electron-rebuild -f`).
 - **Hot reload**: The renderer hot-reloads via Vite HMR. `Ctrl+R` in the dev window reloads the renderer and re-runs the preload script. Changes to `main/` source are NOT picked up by a window reload — restart `pnpm run dev` to pick them up.
 - **electron-builder output**: `directories.output` in `packages/desktop/electron-builder.yml` is set to `../../dist` so installers land in the repo-root `dist/` (where CI artifact globs look for them). `out/` from electron-vite stays inside `packages/desktop/`.

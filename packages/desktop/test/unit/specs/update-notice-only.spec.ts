@@ -3,8 +3,8 @@ import { ipcMain, type BrowserWindow } from 'electron'
 import type * as DesktopUpdates from '../../../src/main/updates'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// Portable ZIPs, unsigned macOS builds and non-AppImage Linux packages cannot
-// install updates, but they must still learn that a newer release exists.
+// Portable ZIPs cannot install updates, but they must still learn that a newer
+// release exists.
 const { updater, isUpdatable, netFetch } = vi.hoisted(() => ({
   isUpdatable: vi.fn(),
   netFetch: vi.fn(),

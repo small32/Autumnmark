@@ -18,7 +18,7 @@ Right-click a document tab or the blank area around its contents to find its loc
 
 #### Toggle tabs
 
-MarkText can be used as a single editor but opens all files in a separate tab. Tabs can be shown or hidden through the View menu and reordered by drag and drop. The shortcut is <kbd>Option</kbd>+<kbd>Command</kbd>+<kbd>B</kbd> on macOS and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> on Linux and Windows.
+MarkText can be used as a single editor but opens all files in a separate tab. Tabs can be shown or hidden through the View menu and reordered by drag and drop. The shortcut is <kbd>Option</kbd>+<kbd>Command</kbd>+<kbd>B</kbd> on macOS and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> on Windows.
 
 **Want to use tabs without showing them?**
 
@@ -28,11 +28,11 @@ You can hide tabs and use key bindings such as <kbd>Ctrl</kbd>+<kbd>Tab</kbd> to
 
 #### Switch between editor modes
 
-Use the View menu to switch between the WYSIWYG and source-code editor. The shortcut is <kbd>Option</kbd>+<kbd>Command</kbd>+<kbd>S</kbd> on macOS and <kbd>Ctrl</kbd>+<kbd>E</kbd> on Linux and Windows. The realtime preview editor is the default editor with many features. A detailed overview of all features can be found [here](EDITING.md).
+Use the View menu to switch between the WYSIWYG and source-code editor. The shortcut is <kbd>Option</kbd>+<kbd>Command</kbd>+<kbd>S</kbd> on macOS and <kbd>Ctrl</kbd>+<kbd>E</kbd> on Windows. The realtime preview editor is the default editor with many features. A detailed overview of all features can be found [here](EDITING.md).
 
 #### Typewriter and focus mode
 
-Use <kbd>CmdOrCtrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> for focus mode. Typewriter mode uses <kbd>Option</kbd>+<kbd>Command</kbd>+<kbd>T</kbd> on macOS and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> on Linux and Windows.
+Use <kbd>CmdOrCtrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> for focus mode. Typewriter mode uses <kbd>Option</kbd>+<kbd>Command</kbd>+<kbd>T</kbd> on macOS and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> on Windows.
 
 <h4 align="center">:smile_cat:Edit modes:dog:</h4>
 
@@ -79,7 +79,7 @@ Find in files searches across available roots. When Opened Files is expanded and
 
 ### Reading Mode
 
-Since 0.23.0, Reading Mode applies to each document tab separately. Toggle it from the View menu or the switch in the document statistics popover in the bottom-right corner. Use <kbd>Control</kbd>+<kbd>Command</kbd>+<kbd>R</kbd> on macOS or <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> on Linux and Windows.
+Since 0.23.0, Reading Mode applies to each document tab separately. Toggle it from the View menu or the switch in the document statistics popover in the bottom-right corner. Use <kbd>Control</kbd>+<kbd>Command</kbd>+<kbd>R</kbd> on macOS or <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> on Windows.
 
 Reading Mode allows selection, copying and navigation while preventing document edits. Enabling it keeps unsaved changes in memory and pauses autosave for that tab; return to Edit Mode to continue editing and saving. It does not change the file's permissions on disk.
 

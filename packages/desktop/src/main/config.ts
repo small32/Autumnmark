@@ -3,7 +3,6 @@ import type { BrowserWindowConstructorOptions } from 'electron'
 
 export const isOsx: boolean = process.platform === 'darwin'
 export const isWindows: boolean = process.platform === 'win32'
-export const isLinux: boolean = process.platform === 'linux'
 
 // The dev server must load document-local file:// images from an HTTP origin.
 const webSecurity = !import.meta.env.DEV

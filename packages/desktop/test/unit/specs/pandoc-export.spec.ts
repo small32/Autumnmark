@@ -303,7 +303,7 @@ describe('pandoc export', () => {
       path.join(env['ProgramFiles(x86)'], 'Pandoc', 'pandoc.exe'),
       path.join(env.LOCALAPPDATA, 'Pandoc', 'pandoc.exe')
     ])
-    expect(pandocLocations('linux', env)).toEqual([])
+    expect(pandocLocations('darwin', env)).toEqual([])
   })
 
   // `resolveCommand` names the bare command when PATH holds it, so the pane needs this to

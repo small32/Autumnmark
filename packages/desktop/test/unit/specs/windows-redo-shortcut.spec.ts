@@ -4,14 +4,13 @@ import os from 'os'
 import path from 'path'
 import { isEqualAccelerator } from 'common/keybinding'
 import keybindingsWindows from 'main_renderer/keyboard/keybindingsWindows'
-import keybindingsLinux from 'main_renderer/keyboard/keybindingsLinux'
 import keybindingsDarwin from 'main_renderer/keyboard/keybindingsDarwin'
 import Keybindings from 'main_renderer/keyboard/shortcutHandler'
 
 const { register } = vi.hoisted(() => ({ register: vi.fn() }))
 
 vi.mock('electron', () => ({ shell: { openPath: vi.fn() } }))
-vi.mock('main_renderer/config', () => ({ isOsx: false, isLinux: false }))
+vi.mock('main_renderer/config', () => ({ isOsx: false }))
 vi.mock('common/localShortcut', () => ({
   electronLocalshortcut: { register, unregister: vi.fn(), setKeyboardLayout: vi.fn() },
   isValidElectronAccelerator: () => true
@@ -77,15 +76,13 @@ describe('Windows redo shortcut (#2183)', () => {
     expect(execute).toHaveBeenCalledExactlyOnceWith('format.inline-code', win)
   })
 
-  it('keeps Ctrl+Y distinct from other Windows commands and preserves other platforms', () => {
+  it('keeps Ctrl+Y distinct from other Windows commands and preserves macOS', () => {
     expect(keybindingsWindows.get('edit.undo')).toBe('Ctrl+Z')
     for (const [id, accelerator] of keybindingsWindows) {
       if (id !== 'edit.redo' && accelerator) {
         expect(isEqualAccelerator(accelerator, 'Ctrl+Y'), id).toBe(false)
       }
     }
-    expect(keybindingsLinux.get('edit.redo')).toBe('Ctrl+Shift+Z')
-    expect(keybindingsLinux.get('format.inline-code')).toBe('Ctrl+Y')
     expect(keybindingsDarwin.get('edit.redo')).toBe('Command+Shift+Z')
   })
 })

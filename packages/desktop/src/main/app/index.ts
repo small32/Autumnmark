@@ -6,7 +6,7 @@ import log from 'electron-log'
 import { app, BrowserWindow, clipboard, nativeTheme, ipcMain } from 'electron'
 import type { BrowserWindowConstructorOptions } from 'electron'
 import { isChildOfDirectory } from 'common/filesystem/paths'
-import { isLinux, isOsx, isWindows } from '../config'
+import { isOsx, isWindows } from '../config'
 import parseArgs, { userArguments } from '../cli/parser'
 import { normalizeAndResolvePath } from '../filesystem'
 import { normalizeCliMarkdownPath, normalizeMarkdownPath } from '../filesystem/markdown'
@@ -249,22 +249,7 @@ class App {
       this._startEditorWindows(_openFilesCache.splice(0), args['--new-window'] === true)
     }
 
-    if (isLinux) {
-      let windowCreated = false
-
-      const createWindowOnce = (): void => {
-        if (windowCreated) return
-        windowCreated = true
-        createWindow()
-      }
-
-      // Wait for theme to settle (Linux-specific issue?)
-      nativeTheme.once('updated', createWindowOnce)
-      // Fallback timeout in case 'updated' never fires (no theme change)
-      setTimeout(createWindowOnce, 150)
-    } else {
-      createWindow()
-    }
+    createWindow()
 
     // Repoint shortcuts left behind by the pre-rename executable.
     repairShortcuts()
@@ -553,7 +538,7 @@ class App {
             win.webContents.send('mt::screenshot-captured', savedPath)
         })
       } else {
-        // TODO: Do nothing, maybe we'll add screenCapture later on Linux and Windows.
+        // TODO: Do nothing, maybe we'll add screenCapture later on Windows.
         // if (this.shortcutCapture) {
         //   this.launchScreenshotWin = win
         //   this.shortcutCapture.shortcutCapture()

@@ -221,7 +221,7 @@
       "screenshot": "螢幕截圖",
       "lineEnding": "行結束符",
       "lineEndingCrlf": "CRLF(Windows)",
-      "lineEndingLf": "LF(Linux/Mac)"
+      "lineEndingLf": "LF(Mac)"
     },
     "paragraph": {
       "title": "段落",
@@ -754,7 +754,7 @@
         "endOfLine": {
           "default": "預設",
           "crlf": "CRLF（Windows）",
-          "lf": "LF（Linux/Mac）"
+          "lf": "LF（Mac）"
         }
       },
       "misc": {

@@ -2,11 +2,10 @@ import path from 'path'
 import fsPromises from 'fs/promises'
 import log from 'electron-log'
 import chokidar, { type FSWatcher } from 'chokidar'
-import { exists } from 'common/filesystem'
 import { hasMarkdownExtension, checkPathExcludePattern } from 'common/filesystem/paths'
 import { getUniqueId } from '../utils'
 import { loadMarkdownFile } from '../filesystem/markdown'
-import { isLinux, isOsx } from '../config'
+import { isOsx } from '../config'
 import type { BrowserWindow } from 'electron'
 import type { LineEnding } from '@shared/types/files'
 import type Preference from '../preferences'
@@ -356,7 +355,6 @@ class Watcher {
       if (initialScan) initialReads.push(guarded)
     }
     let enospcReached = false
-    let renameTimer: NodeJS.Timeout | null = null
 
     const handleFileEvent = async(pathname: string, event: 'add' | 'change'): Promise<void> => {
       if (disposed || await this._shouldIgnoreEvent(win.id, pathname, type, usePolling)) return
@@ -388,24 +386,6 @@ class Watcher {
           console.log('watcher: ', event, subpath, details)
         }
 
-        // Fix atomic rename on Linux (chokidar#591).
-        if (isLinux && type === 'file' && event === 'rename') {
-          if (renameTimer) {
-            clearTimeout(renameTimer)
-          }
-          renameTimer = setTimeout(async() => {
-            renameTimer = null
-            if (disposed) {
-              return
-            }
-
-            const fileExists = await exists(watchPath)
-            if (fileExists) {
-              watcher.unwatch(watchPath)
-              watcher.add(watchPath)
-            }
-          }, 150)
-        }
       })
       .on('error', (error: unknown) => {
         if (disposed) return
@@ -433,10 +413,6 @@ class Watcher {
       disposed = true
       if (this.watchers[id]) {
         delete this.watchers[id]
-      }
-      if (renameTimer) {
-        clearTimeout(renameTimer)
-        renameTimer = null
       }
       watcher.close()
     }

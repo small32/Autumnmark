@@ -6,7 +6,7 @@ import { isChildOfDirectory } from 'common/filesystem/paths'
 import BaseWindow, { WindowLifecycle, WindowType } from './base'
 import type Accessor from '../app/accessor'
 import { zoomIn, zoomOut } from './utils'
-import { TITLE_BAR_HEIGHT, editorWinOptions, isLinux, isOsx, isWindows } from '../config'
+import { TITLE_BAR_HEIGHT, editorWinOptions, isOsx, isWindows } from '../config'
 import { showEditorContextMenu } from '../contextMenu/editor'
 import { switchLanguage } from '../spellchecker'
 import type { TabOptions } from '@shared/types/files'
@@ -68,12 +68,6 @@ class EditorWindow extends BaseWindow {
       options,
       { show: false }
     )
-    if (isLinux) {
-      winOptions.icon = path.join(
-        (global as unknown as { __static: string }).__static,
-        'logo-96px.png'
-      )
-    }
     const initialPreferences = preferences.getAll()
     const { titleBarStyle, theme, spellcheckerEnabled, spellcheckerLanguage, sourceCodeModeEnabled } = initialPreferences
 

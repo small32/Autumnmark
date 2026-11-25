@@ -56,7 +56,7 @@ const registerSpellcheckerHandlers = (): void => {
     if (!win) return []
     return getAvailableDictionaries(win)
   })
-  // We have to set a language or call `switchLanguage` on Linux and Windows.
+  // We have to set a language or call `switchLanguage` on Windows.
   ipcMain.handle('mt::spellchecker-set-enabled', async(e, enabled: boolean) => {
     const win = BrowserWindow.fromWebContents(e.sender)
     if (!win) return false

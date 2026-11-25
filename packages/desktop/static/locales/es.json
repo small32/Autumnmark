@@ -221,7 +221,7 @@
       "screenshot": "Captura de Pantalla",
       "lineEnding": "Final de Línea",
       "lineEndingCrlf": "CRLF(Windows)",
-      "lineEndingLf": "LF(Linux/Mac)"
+      "lineEndingLf": "LF(Mac)"
     },
     "paragraph": {
       "title": "Párrafo",

@@ -1,6 +1,5 @@
 import { screen } from 'electron'
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron'
-import { isLinux } from '../config'
 
 export const zoomIn = (win: BrowserWindow | null | undefined): void => {
   if (!win) return
@@ -33,10 +32,8 @@ export const centerWindowOptions = (
     y?: number
   }
 ): void => {
-  // "workArea" doesn't work on Linux
-  const { bounds, workArea } = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
-  const screenArea = isLinux ? bounds : workArea
+  const { workArea } = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
   const { width, height } = options
-  options.x = Math.ceil(screenArea.x + (screenArea.width - width) / 2)
-  options.y = Math.ceil(screenArea.y + (screenArea.height - height) / 2)
+  options.x = Math.ceil(workArea.x + (workArea.width - width) / 2)
+  options.y = Math.ceil(workArea.y + (workArea.height - height) / 2)
 }

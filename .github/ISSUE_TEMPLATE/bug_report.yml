@@ -58,9 +58,6 @@ body:
       options:
         - macOS
         - Windows
-        - Linux (AppImage)
-        - Linux (Flatpak)
-        - Linux (Other)
     validations:
       required: true
 

@@ -10,7 +10,7 @@
 <div align="center">
   <strong>:high_brightness: Yeni nesil markdown editörü :crescent_moon:</strong><br>
   Sade ve zarif, açık kaynaklı, hız ve kullanılabilirliğe odaklı markdown editörü.<br>
-  <sub>Linux, macOS ve Windows için kullanılabilir.</sub>
+  <sub>macOS ve Windows için kullanılabilir.</sub>
 </div>
 
 <br>
@@ -136,11 +136,11 @@ MarkText, topluluğunun desteğiyle hayata geçirilmiş açık kaynaklı bir Mar
 
 ## İndirme ve Kurulum
 
-![Platform](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
+![Platform](https://img.shields.io/static/v1.svg?label=Platform&message=macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
 En son sürümün yeni özelliklerini görmek ister misiniz? Lütfen [CHANGELOG](https://marktext.me/docs/changelog)'a bakın.
 
@@ -168,13 +168,9 @@ Winget kullanmak için [Winget](https://docs.microsoft.com/en-us/windows/package
 winget install marktext
 ```
 
-#### Linux
-
-Lütfen [Linux kurulum talimatlarını](https://marktext.me/docs/installation) takip edin.
-
 #### Diğer
 
-Linux, macOS ve Windows için tüm ikili dosyalar [sürümler sayfasından](https://github.com/marktext/marktext/releases/latest) indirilebilir. Sisteminiz için bir sürüm mevcut değilse lütfen bir [issue](https://github.com/marktext/marktext/issues) açın.
+macOS ve Windows için tüm ikili dosyalar [sürümler sayfasından](https://github.com/marktext/marktext/releases/latest) indirilebilir. Sisteminiz için bir sürüm mevcut değilse lütfen bir [issue](https://github.com/marktext/marktext/issues) açın.
 
 ## Geliştirme
 

@@ -26,13 +26,6 @@ describe('patchEnvPath (#2751)', () => {
     expect(dirs).toContain('/Library/TeX/texbin')
   })
 
-  it('adds standard bin dirs on linux', () => {
-    setPlatform('linux')
-    process.env.PATH = '/snap/bin'
-    patchEnvPath()
-    expect((process.env.PATH ?? '').split(path.delimiter)).toContain('/usr/local/bin')
-  })
-
   it('does not duplicate an entry that is already present', () => {
     setPlatform('darwin')
     process.env.PATH = ['/opt/homebrew/bin', '/usr/bin'].join(path.delimiter)
@@ -88,22 +81,15 @@ describe('extraPathDirs: where a user-level package manager puts its global bins
     expect(dirs).toContain('/opt/homebrew/bin')
   })
 
-  it('covers pnpm and ~/.local/bin on linux', () => {
-    const home = '/home/someone'
-    const dirs = extraPathDirs('linux', { HOME: home })
-    expect(dirs).toContain(path.join(home, '.local', 'share', 'pnpm'))
-    expect(dirs).toContain(path.join(home, '.local', 'bin'))
-  })
-
   it('covers the npm prefix the user configured', () => {
-    const dirs = extraPathDirs('linux', { HOME: '/home/someone', npm_config_prefix: '/opt/node' })
+    const dirs = extraPathDirs('darwin', { HOME: '/Users/someone', npm_config_prefix: '/opt/node' })
     expect(dirs).toContain(path.join('/opt/node', 'bin'))
   })
 
   it('lists an npm prefix that is already covered only once', () => {
     // Its three common values are all dirs the lists above already carry.
-    for (const prefix of ['/usr/local', '/opt/homebrew', '/home/someone/.npm-global']) {
-      const dirs = extraPathDirs('linux', { HOME: '/home/someone', npm_config_prefix: prefix })
+    for (const prefix of ['/usr/local', '/opt/homebrew', '/Users/someone/.npm-global']) {
+      const dirs = extraPathDirs('darwin', { HOME: '/Users/someone', npm_config_prefix: prefix })
       const wanted = path.join(prefix, 'bin')
       expect(dirs.filter((dir) => dir === wanted), `duplicated ${wanted}`).toHaveLength(1)
     }
@@ -111,7 +97,7 @@ describe('extraPathDirs: where a user-level package manager puts its global bins
 
   it('drops an npm prefix that no process can look in', () => {
     // npm leaves `~` unexpanded when it is set that way in .npmrc.
-    const dirs = extraPathDirs('linux', { HOME: '/home/someone', npm_config_prefix: '~/.npm-glob' })
+    const dirs = extraPathDirs('darwin', { HOME: '/Users/someone', npm_config_prefix: '~/.npm-glob' })
     expect(dirs.every((dir) => path.isAbsolute(dir))).toBe(true)
   })
 

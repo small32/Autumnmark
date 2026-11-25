@@ -24,7 +24,6 @@ vi.mock('main_renderer/i18n', () => ({ t: (key: string) => key }))
 import { createSelectionFormatState } from '@/store/editor'
 import { updateFormatMenu } from 'main_renderer/menu/actions/format'
 import keybindingsWindows from 'main_renderer/keyboard/keybindingsWindows'
-import keybindingsLinux from 'main_renderer/keyboard/keybindingsLinux'
 import keybindingsDarwin from 'main_renderer/keyboard/keybindingsDarwin'
 import { isEqualAccelerator } from 'common/keybinding'
 import paragraphTemplate from 'main_renderer/menu/templates/paragraph'
@@ -156,7 +155,6 @@ describe('menu template accelerators match the platform keybinding tables (Parag
 
   const PLATFORMS: ReadonlyArray<readonly [string, Map<string, string>]> = [
     ['Windows', keybindingsWindows],
-    ['Linux', keybindingsLinux],
     ['Darwin', keybindingsDarwin]
   ]
 
@@ -224,8 +222,6 @@ describe('menu template accelerators match the platform keybinding tables (Parag
     expect(isEqualAccelerator(accel(keybindingsDarwin, 'paragraph.heading-1'), 'Command+1')).toBe(true)
     expect(keybindingsWindows.get('paragraph.heading-1')).toBe('')
     expect(isEqualAccelerator(accel(keybindingsDarwin, 'edit.duplicate'), 'Shift+Command+E')).toBe(true)
-    expect(isEqualAccelerator(accel(keybindingsLinux, 'edit.duplicate'), 'Ctrl+Shift+E')).toBe(true)
-    expect(isEqualAccelerator(accel(keybindingsLinux, 'edit.find-next'), 'F3')).toBe(true)
     expect(isEqualAccelerator(accel(keybindingsDarwin, 'edit.find-next'), 'Cmd+G')).toBe(true)
     expect(isEqualAccelerator(accel(keybindingsWindows, 'view.source-code-mode'), 'Ctrl+E')).toBe(true)
     expect(isEqualAccelerator(accel(keybindingsDarwin, 'view.source-code-mode'), 'Command+Option+S')).toBe(true)

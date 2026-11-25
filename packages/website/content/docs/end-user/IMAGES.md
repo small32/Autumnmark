@@ -60,7 +60,7 @@ For local videos of 32 MiB or more, the editor streams the original bytes into t
 
 ## Media viewer
 
-In the WYSIWYG editor, Command-click an image on macOS or Ctrl-click it on Linux/Windows to open the media viewer. The image preview action also opens this viewer. Rendered diagrams also have a **View** action in their hover toolbar. Use the mouse wheel or the zoom buttons to zoom, and drag to pan.
+In the WYSIWYG editor, Command-click an image on macOS or Ctrl-click it on Windows to open the media viewer. The image preview action also opens this viewer. Rendered diagrams also have a **View** action in their hover toolbar. Use the mouse wheel or the zoom buttons to zoom, and drag to pan.
 
 The viewer supports <kbd>+</kbd>/<kbd>-</kbd> for zoom, <kbd>0</kbd> to fit, <kbd>1</kbd> for actual size, arrow keys to pan, and <kbd>Esc</kbd> to close. Diagram controls offer PNG export and, when available, SVG export, plus copying as a PNG. Available actions depend on the content being viewed.
 
