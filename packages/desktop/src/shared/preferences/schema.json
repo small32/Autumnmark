@@ -393,6 +393,16 @@
     "type": "boolean",
     "default": false
   },
+  "embedDrawings": {
+    "description": "Markdown--Embed drawings in the document",
+    "type": "boolean",
+    "default": true
+  },
+  "newDrawingView": {
+    "description": "Markdown--New drawing view",
+    "default": "dialog",
+    "enum": ["dialog", "tab"]
+  },
   "sequenceTheme": {
     "description": "Markdown--Sequence diagram theme",
     "enum": ["hand", "simple"],
@@ -451,7 +461,7 @@
   "theme": {
     "description": "Theme--Select the theme used in MarkText",
     "type": "string",
-    "default": "light"
+    "default": "pine-ink"
   },
   "followSystemTheme": {
     "description": "Theme--Use separate theme in dark mode.",
@@ -461,7 +471,7 @@
   "lightModeTheme": {
     "description": "Theme--Theme to use when system is in light mode.",
     "type": "string",
-    "default": "light"
+    "default": "pine-ink"
   },
   "restoreEditors": {
     "description": "General--Restore opened files on startup.",

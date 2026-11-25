@@ -90,9 +90,9 @@ Invalid individual values fall back to defaults. An unreadable, malformed or non
 
 | Key               | Type    | Default           | Description                                                                                 |
 | ----------------- | ------- | ----------------- | ------------------------------------------------------------------------------------------- |
-| theme             | String  | System light/dark | Initial theme follows the system: `light` or `dark`. See [Themes](THEMES.md) for theme IDs. |
+| theme             | String  | System light/dark | Initial theme follows the system: `pine-ink` or `dark`. See [Themes](THEMES.md) for theme IDs. |
 | followSystemTheme | Boolean | `true`            | Follow the system light/dark mode and switch automatically.                                 |
-| lightModeTheme    | String  | `light`           | Theme id used when the system is in light mode (only when `followSystemTheme` is `true`).   |
+| lightModeTheme    | String  | `pine-ink`        | Theme id used when the system is in light mode (only when `followSystemTheme` is `true`).   |
 | darkModeTheme     | String  | `dark`            | Theme id used when the system is in dark mode (only when `followSystemTheme` is `true`).    |
 
 #### Spelling

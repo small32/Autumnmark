@@ -1,3 +1,4 @@
+import { pineInkTheme } from 'common/theme'
 import {
   dark,
   graphite,
@@ -33,9 +34,11 @@ import {
   rosePineDawn
 } from './themeColor'
 import lightTheme from '../assets/themes/light.theme.css?inline'
+import pineInkStyles from '../assets/themes/pine-ink.theme.css?inline'
 
 const builtinStyles: Record<string, () => string> = {
   light: () => lightTheme,
+  [pineInkTheme.id]: () => lightTheme + '\n' + pineInkStyles,
   'dark': dark,
   'material-dark': materialDark,
   'ulysses': ulysses,

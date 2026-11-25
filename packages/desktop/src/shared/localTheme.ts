@@ -1,9 +1,9 @@
-import { isDarkThemeId, oneDarkThemes, railscastsThemes } from '../common/theme'
+import { isDarkThemeId, oneDarkThemes, pineInkTheme, railscastsThemes } from '../common/theme'
 import { themeCssIssue } from './themeCss'
 import type { UserPreferences, UserPreferencesPatch } from './types/preferences'
 
 export const lightBases = ['ayu-light', 'catppuccin-latte', 'everforest-light', 'light', 'graphite', 'gruvbox-light',
-  'rose-pine-dawn', 'solarized-light', 'tokyo-night-light', 'ulysses']
+  pineInkTheme.id, 'rose-pine-dawn', 'solarized-light', 'tokyo-night-light', 'ulysses']
 export const themeBases = [...lightBases, ...railscastsThemes, ...oneDarkThemes].sort()
 
 export const themeSelectionPatch = (prefs: Pick<UserPreferences, 'followSystemTheme'>, id: string, systemIsDark: boolean): UserPreferencesPatch => {

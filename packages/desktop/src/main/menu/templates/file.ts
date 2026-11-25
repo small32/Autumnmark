@@ -24,6 +24,14 @@ export default function(
       }
     },
     {
+      id: 'newDrawingMenuItem',
+      label: t('drawing.new'),
+      click(_menuItem, browserWindow) {
+        const win = browserWindow as BrowserWindow | undefined
+        win?.webContents.send('mt::execute-command-by-id', 'drawing.new')
+      }
+    },
+    {
       label: t('menu.file.newWindow'),
       accelerator: keybindings.getAccelerator('file.new-window') ?? undefined,
       click() {

@@ -9,6 +9,7 @@ import type {
 } from '@shared/types/applicationState'
 import type { DiskBaseline } from '@shared/types/files'
 import { parseDocument, validIdentity } from './codec'
+import { emptyDocumentBody } from '@shared/applicationState/defaults'
 import { RecoveryStatus } from '@shared/types/applicationState'
 import { contentSha256 } from 'common/filesystem'
 
@@ -116,7 +117,8 @@ export class DocumentRegistry {
       throw new Error('Invalid content revision')
     if (
       document.content.kind === 'empty' &&
-      (markdown !== '' || (document.resource.kind === 'file' && !document.resource.pendingCreation))
+      (markdown !== emptyDocumentBody(document) ||
+        (document.resource.kind === 'file' && !document.resource.pendingCreation))
     )
       throw new Error('Invalid empty document')
     const textHash = contentSha256(markdown)
@@ -216,7 +218,7 @@ export class DocumentRegistry {
     const matchesEmpty =
       !current.saved &&
       (snapshot.resource.kind === 'untitled' || snapshot.resource.pendingCreation) &&
-      markdown === '' &&
+      markdown === emptyDocumentBody(snapshot) &&
       sameFormat(snapshot.saveFormat, current.emptyFormat)
     if (snapshot.content.kind !== 'recovery' && !matchesSaved && !matchesEmpty)
       throw new Error('Clean content does not match saved content')

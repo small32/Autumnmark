@@ -115,6 +115,8 @@ export interface PreferencesState {
   githubAlerts: boolean
   isHtmlEnabled: boolean
   softNewlineAsSpace: boolean
+  embedDrawings: boolean
+  newDrawingView: UserPreferences['newDrawingView']
   sequenceTheme: SequenceTheme | string
   mermaidLightTheme: string
   mermaidDarkTheme: string
@@ -253,6 +255,8 @@ export const usePreferencesStore = defineStore('preferences', {
     githubAlerts: false,
     isHtmlEnabled: true,
     softNewlineAsSpace: false,
+    embedDrawings: true,
+    newDrawingView: 'dialog',
     sequenceTheme: 'hand',
     mermaidLightTheme: 'default',
     mermaidDarkTheme: 'dark',

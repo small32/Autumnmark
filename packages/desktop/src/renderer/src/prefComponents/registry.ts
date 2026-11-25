@@ -291,6 +291,15 @@ export const preferenceDefinitions: Record<string, PreferenceDefinition> = {
     "category": "markdown",
     "label": "preferences.markdown.compatibility.softNewlineAsSpace"
   },
+  "embedDrawings": {
+    "category": "markdown",
+    "label": "preferences.markdown.diagrams.embedDrawings.title",
+    "notes": "preferences.markdown.diagrams.embedDrawings.description"
+  },
+  "newDrawingView": {
+    "category": "markdown",
+    "label": "preferences.markdown.diagrams.newDrawingView.title"
+  },
   "mermaidLightTheme": {
     "category": "markdown",
     "label": "preferences.markdown.diagrams.mermaidLightTheme.title"

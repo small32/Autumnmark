@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { sync as writeAtomic } from 'write-file-atomic'
+import { pineInkTheme } from 'common/theme'
 import {
   RECOVERY_DEFAULTS,
   type PreferenceSchemaEntry,
@@ -13,6 +14,7 @@ import schema from '@shared/preferences/schema.json'
 
 const schemaEntries: Record<string, PreferenceSchemaEntry> = schema
 const rules: Record<string, Rule> = schemaEntries
+const themeDefaultsVersion = 1
 const object = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value)
 const accepts = (value: unknown, rule: Rule): boolean => {
@@ -79,6 +81,12 @@ export class PreferenceFile {
       readOnly = (error as NodeJS.ErrnoException).code !== 'ENOENT'
     }
     this.readOnly = readOnly
+    if (!readOnly && this._raw.themeDefaultsVersion === undefined &&
+      this._value.followSystemTheme && this._value.lightModeTheme === 'light') {
+      this._value.lightModeTheme = pineInkTheme.id
+      if (this._value.theme === 'light') this._value.theme = pineInkTheme.id
+      this.update({})
+    }
   }
 
   get(): UserPreferences & Record<string, unknown> {
@@ -97,7 +105,12 @@ export class PreferenceFile {
     const next = { ...this._value, ...structuredClone(patch) }
     try {
       mkdirSync(path.dirname(this._pathname), { recursive: true })
-      this._write(this._pathname, JSON.stringify({ ...this._raw, ...next }, null, 2))
+      // Stamp manual selections too so a later restart respects a return to GitBook Teal.
+      this._write(this._pathname, JSON.stringify({
+        ...this._raw,
+        ...next,
+        themeDefaultsVersion: this._raw.themeDefaultsVersion ?? themeDefaultsVersion
+      }, null, 2))
     } catch {
       return { status: 'failed', reason: 'storage-unavailable' }
     }

@@ -1,5 +1,6 @@
 export type { IHeadingFoldState } from './block/folding';
 export type { IClipboardImageCopy } from './clipboard/image';
+export type { IDrawingInsertion } from './types';
 export { imageDocumentMarkdown } from './clipboard/markdownSource';
 export { embeddedImageDestination, findDocumentImages, findLinkedDocumentMedia, findPastedImageSources } from './clipboard/pastedImageSources';
 export type { ISerializedHistory } from './history';
@@ -10,6 +11,8 @@ export { linkedImageAt } from './inline/linkedImage';
 export { embeddedPictureSize } from './inline/imageDimensions';
 export { de, en, es, fr, it, ja, ko, nl, pt, ru, tr, zhCN, zhTW } from './locales';
 export { Muya } from './muya';
+export { decodeInlineDrawing, encodeInlineDrawing, isInlineDrawingSource } from './utils/diagram/drawingData';
+export { findEmbeddedDrawings, inlineDrawingToMarkdown } from './utils/diagram/drawingSource';
 export type { IMatch, IReplaceOption, ISearchOption } from './search/types';
 export type { IIndexCursor } from './selection/offsetCursor';
 export { SelectionDirection, SelectionType } from './selection/types';

@@ -9,6 +9,7 @@ const keybindings: Map<string, string> = new Map([
 
   ['file.new-window', 'Command+N'],
   ['file.new-tab', 'Command+T'],
+  ['drawing.insert', 'Command+Shift+A'],
   ['file.open-file', 'Command+O'],
   ['file.open-folder', 'Command+Shift+O'],
   ['file.save', 'Command+S'],

@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
 import { matchSupportedLanguage } from '../../../src/common/i18n'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 
 interface MockI18nUtils {
   loadTranslations: Mock
@@ -88,6 +91,30 @@ describe('renderer i18n language loading', () => {
     expect(win.i18nUtils!.loadTranslations).toHaveBeenCalledTimes(1)
     expect(win.i18nUtils!.loadTranslations).toHaveBeenCalledWith('zh-CN')
   })
+
+  it('fills missing Chinese UI strings when a running main process returns an older catalog', async() => {
+    const { setLanguage, t } = await import('../../../src/renderer/src/i18n')
+    await setLanguage('zh-CN')
+    expect(t('preferences.categories.ai')).toBe('AI 模型')
+    expect(t('ai.restartRequired')).toContain('重新启动')
+  })
+})
+
+it('loads current source translations in a checkout and minified translations in a packaged app', async() => {
+  vi.resetModules()
+  const { setLocalesDirectory, loadTranslations } = await import('../../../src/common/i18n')
+  const dir = mkdtempSync(path.join(tmpdir(), 'autumnmark-locales-'))
+  try {
+    writeFileSync(path.join(dir, 'zh-CN.json'), JSON.stringify({ ai: { add: '添加模型' } }))
+    writeFileSync(path.join(dir, 'zh-CN.min.json'), '{}')
+    writeFileSync(path.join(dir, 'zh-TW.min.json'), JSON.stringify({ ai: { add: '新增模型' } }))
+    setLocalesDirectory(dir)
+    expect(loadTranslations('zh-CN')).toEqual({ ai: { add: '添加模型' } })
+    expect(loadTranslations('zh-TW')).toEqual({ ai: { add: '新增模型' } })
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+    vi.resetModules()
+  }
 })
 
 // Issue #4046: exporting HTML/PDF surfaced an "Unexpected renderer process

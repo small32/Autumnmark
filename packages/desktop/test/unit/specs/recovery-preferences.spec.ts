@@ -78,6 +78,26 @@ describe('tolerant preference persistence', () => {
       JSON.parse(readFileSync(join(directory, 'preferences.json'), 'utf8')).startUpAction
     ).toBe('restoreLastWindow')
   })
+  it('upgrades the legacy system light theme once and allows switching back', () => {
+    const directory = profile()
+    const path = join(directory, 'preferences.json')
+    writeFileSync(path, JSON.stringify({
+      theme: 'light', followSystemTheme: true, lightModeTheme: 'light', darkModeTheme: 'nord', legacy: 4
+    }))
+    const file = new PreferenceFile(directory)
+    expect(file.get()).toMatchObject({ theme: 'pine-ink', lightModeTheme: 'pine-ink', darkModeTheme: 'nord' })
+    expect(JSON.parse(readFileSync(path, 'utf8'))).toMatchObject({ lightModeTheme: 'pine-ink', legacy: 4 })
+    expect(file.update({ theme: 'light', lightModeTheme: 'light' }).status).toBe('persisted')
+    expect(new PreferenceFile(directory).get()).toMatchObject({ theme: 'light', lightModeTheme: 'light', darkModeTheme: 'nord' })
+  })
+  it.each([
+    { theme: 'light', followSystemTheme: false, lightModeTheme: 'light', darkModeTheme: 'dark' },
+    { theme: 'nord', followSystemTheme: true, lightModeTheme: 'solarized-light', darkModeTheme: 'nord' }
+  ])('keeps an existing fixed or customized system choice: %j', (preferences) => {
+    const directory = profile()
+    writeFileSync(join(directory, 'preferences.json'), JSON.stringify(preferences))
+    expect(new PreferenceFile(directory).get()).toMatchObject(preferences)
+  })
   it('defaults invalid fields independently and keeps unknown keys without migrations', () => {
     const directory = profile()
     writeFileSync(

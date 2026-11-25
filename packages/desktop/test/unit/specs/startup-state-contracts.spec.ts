@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { mkdtempSync, mkdirSync, rmSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { parseWindowSnapshot } from '../../../src/main/applicationState/codec'
 import {
   createFileLocation,
   createStateId,
@@ -138,5 +139,8 @@ describe('window defaults and contract fixtures', () => {
     expect(first.workspace?.id).toBe(second.workspace?.id)
     expect(state.session.lastWindow).toBeNull()
     expect(JSON.parse(JSON.stringify(state))).toEqual(state)
+    const legacySidebar = { ...first.layout.sidebar, activeView: 'themeAi' }
+    const restored = parseWindowSnapshot({ ...first, layout: { ...first.layout, sidebar: legacySidebar } })
+    expect(restored?.layout.sidebar.activeView).toBe('documentChat')
   })
 })

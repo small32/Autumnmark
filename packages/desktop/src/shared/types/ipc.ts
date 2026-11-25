@@ -1,7 +1,9 @@
 import type { ProjectRootsSnapshot, ProjectTreeEvent, SidebarMoveRequest, SidebarMoveResult } from './project'
 import type { MarkdownEdit } from '../markdownEdits'
 import type { AiConnectionDraft, AiModelDraft, AiModelProfile } from '../aiModel'
+import type { DocumentChat, DocumentChatEffects, DocumentChatHistoryEntry, DocumentChatRequest, DocumentChatSummary, DocumentChatTarget, DocumentChatThemeEffect, DocumentChatTurn } from '../documentChat'
 import type { LocalTheme, PreparedPreview, ThemeGenerationResult, ThemeModelEvent, ThemeModelRequest } from '../localTheme'
+import type { AppliedThemeHistory, ThemeVersionChange } from '../themeVersion'
 import type { ThemeCatalogSnapshot } from '../themeCatalog'
 import type { ThemeCollaborationCapture, ThemeCollaborationConnection, ThemeCollaborationFiles, ThemeCollaborationState } from '../themeCollaboration'
 import type { UserPreferences } from './preferences'
@@ -74,6 +76,9 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::theme::preview': { args: [id: string, revision: number]; ret: LocalTheme }
   'mt::theme::install': { args: [id: string, revision: number, apply: boolean]; ret: UserPreferences | null }
   'mt::theme::save': { args: [theme: LocalTheme, apply: boolean]; ret: LocalTheme | null }
+  'mt::theme::active-history': { args: []; ret: AppliedThemeHistory }
+  'mt::theme::restore-active-version': { args: [themeId: string, revision: string, version: string]; ret: AppliedThemeHistory | null }
+  'mt::theme::apply-in-editor': { args: [theme: LocalTheme, sourceId: string, source: LocalTheme | null]; ret: LocalTheme | null }
   'mt::theme::delete': { args: [id: string]; ret: UserPreferences | null }
   'mt::theme::inspector-state': { args: []; ret: boolean }
   'mt::theme::set-inspector': { args: [open: boolean]; ret: void }
@@ -84,12 +89,25 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::theme::collaboration-stop': { args: [id: string]; ret: void }
   'mt::ai::list': { args: []; ret: AiModelProfile[] }
   'mt::ai::save': { args: [draft: AiModelDraft]; ret: AiModelProfile[] }
+  'mt::ai::copy': { args: [id: string]; ret: AiModelProfile[] }
   'mt::ai::delete': { args: [id: string]; ret: AiModelProfile[] }
   'mt::ai::discover': { args: [draft: AiConnectionDraft]; ret: string[] }
   'mt::ai::test': { args: [draft: AiModelDraft | string]; ret: void }
+  'mt::document-chat::list': { args: []; ret: DocumentChatSummary[] }
+  'mt::document-chat::read': { args: [id: string]; ret: (DocumentChat & { inFlight: boolean }) | null }
+  'mt::document-chat::history': { args: [target?: Pick<DocumentChatTarget, 'id' | 'pathname'>]; ret: DocumentChatHistoryEntry[] }
+  'mt::document-chat::new': { args: []; ret: string }
+  'mt::document-chat::send': { args: [request: DocumentChatRequest]; ret: DocumentChatTurn }
+  'mt::document-chat::stop': { args: [id: string]; ret: void }
+  'mt::document-chat::capture': { args: [id: string, turnId: string]; ret: void }
+  'mt::document-chat::effects': { args: [id: string, turnId: string, patch: DocumentChatEffects]; ret: void }
+  'mt::document-chat::delete': { args: [id: string, turnId?: string]; ret: void }
+  'mt::document-chat::apply-theme': { args: [theme: LocalTheme, sourceId: string, source: LocalTheme | null, beforeCss: string]; ret: DocumentChatThemeEffect | null }
+  'mt::document-chat::revert-theme': { args: [effect: DocumentChatThemeEffect]; ret: boolean }
   // Renderer hot reload can leave the earlier main handler running. Its string result is the final CSS.
   'mt::theme::generate': { args: [request: ThemeModelRequest]; ret: ThemeGenerationResult | string }
   'mt::theme::generate-with-tools': { args: [request: ThemeModelRequest]; ret: ThemeGenerationResult }
+  'mt::theme::summarize-version': { args: [profileId: string, locale: string, changes: ThemeVersionChange[]]; ret: string }
   'mt::theme::cancel': { args: [id: string]; ret: void }
   'mt::menu::application-categories': { args: []; ret: ApplicationMenuCategory[] }
   'mt::menu::popup-application-category': {
@@ -104,6 +122,8 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::project-remove-root': { args: [key: string]; ret: boolean }
   'mt::project-retry-root': { args: [key: string]; ret: boolean }
   'mt::project-open-containing-folder': { args: [documentId: string]; ret: string | null }
+  'mt::drawing::create': { args: [documentId: string, content: string, filename?: string]; ret: string }
+  'mt::drawing::write': { args: [pathname: string, content: string, expected?: string]; ret: void }
   'mt::clipboard::write-text': { args: [text: string]; ret: boolean }
   'mt::set-document-read-only': { args: [tabId: string, readOnly: boolean]; ret: void }
   'mt::ask-for-image-path': { args: [kind?: 'video']; ret: string }
@@ -134,6 +154,7 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
     ret: PlantumlFetchResult
   }
   'mt::dialog::show-save': { args: [request: SaveDialogRequest]; ret: string | null }
+  'mt::dialog::show-open-file': { args: [request: SaveDialogRequest]; ret: string | null }
   'mt::fonts::list': { args: []; ret: string[] }
   'mt::fs-trash-item': { args: [pathname: string]; ret: boolean }
   'mt::project-move-item': { args: [request: SidebarMoveRequest]; ret: SidebarMoveResult }
@@ -297,7 +318,9 @@ export interface IpcSyncChannels {
 
 export interface IpcMainEventChannels extends StateIpcMainEvents {
   'mt::ai::changed': [profiles: AiModelProfile[]]
+  'mt::document-chat::changed': []
   'mt::theme::show': [id: string, editing: boolean]
+  'mt::theme::show-active-history': []
   'mt::theme::progress': [id: string, change: ThemeModelEvent]
   'mt::theme::inspector-changed': [open: boolean]
   'mt::theme::collaboration-state': [id: string, state: ThemeCollaborationState]

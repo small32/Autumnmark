@@ -129,6 +129,8 @@ export interface UserPreferences extends RecoveryPreferences {
   multilineBlockquote: boolean
   isHtmlEnabled: boolean
   softNewlineAsSpace: boolean
+  embedDrawings: boolean
+  newDrawingView: 'dialog' | 'tab'
   sequenceTheme: 'hand' | 'simple'
   mermaidLightTheme:
     | 'default'

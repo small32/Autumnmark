@@ -3,7 +3,7 @@ import { _electron, type ElectronApplication, type Page } from 'playwright'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { enterSourceMode, getElectronPath, launchElectron, setSourceMarkdown, typeIntoEditor, waitForEditor } from './helpers'
+import { clickMenuById, enterSourceMode, getElectronPath, launchElectron, sendIpcToRenderer, setSourceMarkdown, typeIntoEditor, waitForEditor } from './helpers'
 
 interface TabSnapshot {
   pathname: string
@@ -75,7 +75,7 @@ const setup = async(draft: boolean) => {
   const savePath = draft ? join(directory, 'saved-draft.md') : filePath
   writeFileSync(filePath, original)
   const { app, page } = await launchElectron(draft ? [] : [filePath], { windowLayout: { showTabBar: true },
-    preferences: { language: 'en', autoSave: false, startUpAction: 'restoreAll', defaultOpenMode: 'edit',}
+    preferences: { language: 'en', autoSave: false, startUpAction: 'restoreAll', defaultOpenMode: 'edit', endOfLine: 'lf' }
   })
   apps.push(app)
   await waitForEditor(page)
@@ -111,6 +111,74 @@ test.afterEach(async() => {
     await app.close().catch(() => {})
   }
   for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true })
+})
+
+for (const closeTarget of ['tab', 'window'] as const) {
+  test(`closing a ${closeTarget} with untouched new documents skips the save prompt`, async() => {
+    const { app, page } = await launchElectron([], {
+      windowLayout: { showTabBar: true },
+      preferences: { language: 'en', autoSave: false, newDrawingView: 'tab', startUpAction: 'restoreAll', restoreEditors: true }
+    })
+    apps.push(app)
+    await mockDialogs(app, 2, '')
+    const tabs = page.locator('.tabs-container > li')
+    const activeTab = page.locator('.tabs-container > li.active')
+
+    await sendIpcToRenderer(app, 'mt::new-untitled-tab')
+    await expect(tabs).toHaveCount(2)
+    if (closeTarget === 'tab') {
+      await activeTab.locator('.close-icon').click()
+      await expect(tabs).toHaveCount(1)
+    }
+
+    await clickMenuById(app, 'newDrawingMenuItem')
+    await expect(activeTab).toHaveText('Untitled Drawing.excalidraw')
+    await expect(page.locator('.drawing-workspace').getByRole('button', { name: 'Save', exact: true })).toBeEnabled()
+    if (closeTarget === 'tab') {
+      await activeTab.locator('.close-icon').click()
+      await expect(tabs).toHaveCount(1)
+    } else {
+      const profile = await app.evaluate(({ app }) => app.getPath('userData'))
+      const closed = page.waitForEvent('close', { timeout: 5000 })
+      await closeWindow(app)
+      await closed
+      await app.close()
+
+      const { page: restored } = await restart(profile)
+      await expect(restored.locator('.tabs-container > li.active')).toHaveText('Untitled Drawing.excalidraw')
+      await expect(restored.locator('.drawing-workspace').getByRole('button', { name: 'Save', exact: true })).toBeEnabled()
+      await expect(restored.locator('.tabs-container > li.unsaved')).toHaveCount(0)
+    }
+  })
+
+  test(`closing a ${closeTarget} after clearing an untitled draft skips the save prompt`, async() => {
+    const { app, page, savePath } = await setup(true)
+    await mockDialogs(app, 2, savePath)
+    await page.keyboard.press('ControlOrMeta+a')
+    await page.keyboard.press('Backspace')
+    await expect(page.locator('.editor-component .mu-paragraph-content')).toHaveText('')
+
+    if (closeTarget === 'tab') {
+      await page.locator('.tabs-container > li.active .close-icon').click()
+      await expect(page.locator('.tabs-container > li')).toHaveCount(0)
+    } else {
+      const closed = page.waitForEvent('close', { timeout: 5000 })
+      await closeWindow(app)
+      await closed
+    }
+  })
+}
+
+test('a newline entered in source mode still prompts after switching to the visual editor', async() => {
+  const { app, page, savePath } = await setup(true)
+  await setSourceMarkdown(page, app, '\n')
+  await mockDialogs(app, 2, savePath)
+
+  await page.locator('.tabs-container > li.active .close-icon').click()
+  await expect.poll(() => app.evaluate(() =>
+    (globalThis as unknown as { closeDialogs: CloseDialogs }).closeDialogs.buttons.length
+  )).toBe(1)
+  expect((await readTabs(page))[0]).toMatchObject({ markdown: '\n', isSaved: false })
 })
 
 for (const draft of [false, true]) {

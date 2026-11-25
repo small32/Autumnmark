@@ -64,6 +64,17 @@ export const t = (key: string, ...args: unknown[]): string => {
 // don't fire duplicate IPCs for the same locale.
 const inflightLoads = new Map<string, Promise<Record<string, unknown> | undefined>>()
 
+// An open desktop process can serve an older catalog to a newly opened renderer.
+const bundledLocales = import.meta.glob<Record<string, unknown>>(
+  ['../../../../static/locales/*.json', '!../../../../static/locales/*.min.json', '!../../../../static/locales/en.json'],
+  { import: 'default' }
+)
+const hasMessages = (catalog: unknown, expected: unknown): boolean => {
+  if (typeof expected === 'string') return typeof catalog === 'string'
+  if (!catalog || typeof catalog !== 'object' || !expected || typeof expected !== 'object') return false
+  return Object.entries(expected).every(([key, value]) => hasMessages((catalog as Record<string, unknown>)[key], value))
+}
+
 export const setLanguage = async(locale: string): Promise<void> => {
   if (!locale) return
   const globalI18n = i18n.global
@@ -79,7 +90,13 @@ export const setLanguage = async(locale: string): Promise<void> => {
     if (!translation) return
 
     if (!globalI18n.availableLocales.includes(locale)) {
-      globalI18n.setLocaleMessage(locale, translation)
+      const source = bundledLocales[`../../../../static/locales/${locale}.json`]
+      if (source && !hasMessages(translation, enTranslations)) {
+        globalI18n.setLocaleMessage(locale, await source())
+        globalI18n.mergeLocaleMessage(locale, translation)
+      } else {
+        globalI18n.setLocaleMessage(locale, translation)
+      }
       console.log(`🌐 Loaded and set new locale: ${locale}`)
     }
   }

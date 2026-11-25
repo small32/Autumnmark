@@ -3,6 +3,7 @@ import fsPromises from 'fs/promises'
 import log from 'electron-log'
 import chokidar, { type FSWatcher } from 'chokidar'
 import { hasMarkdownExtension, checkPathExcludePattern } from 'common/filesystem/paths'
+import { isDrawingPath } from '@shared/drawing'
 import { getUniqueId } from '../utils'
 import { loadMarkdownFile } from '../filesystem/markdown'
 import { isOsx } from '../config'
@@ -100,7 +101,7 @@ const add = async(
     mtimeMs,
     isMarkdown
   }
-  if (isMarkdown) {
+  if (isMarkdown || (type === 'file' && isDrawingPath(pathname))) {
     // HACK: But this should be removed completely in #1034/#1035.
     try {
       const data = await loadMarkdownFile(
@@ -165,7 +166,7 @@ const change = async(
   }
 
   const isMarkdown = hasMarkdownExtension(pathname)
-  if (isMarkdown) {
+  if (isMarkdown || isDrawingPath(pathname)) {
     try {
       const [data, stats] = await Promise.all([
         loadMarkdownFile(
@@ -301,7 +302,7 @@ class Watcher {
         if (fileInfo.isDirectory()) {
           return false
         }
-        return !hasMarkdownExtension(pathname)
+        return !hasMarkdownExtension(pathname) && !isDrawingPath(pathname)
       },
       ignoreInitial: type === 'file',
       persistent: true,

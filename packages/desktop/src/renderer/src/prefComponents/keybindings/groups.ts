@@ -14,6 +14,7 @@ export const getCommandGroup = (id: string): CommandGroup => {
   if (['file.new-window', 'file.close-window', 'file.quit'].includes(id)) return 'window'
   if (id === 'edit.create-paragraph' || id === 'edit.delete-paragraph') return 'paragraph'
   const prefix = id.split('.')[0]
+  if (prefix === 'drawing') return 'file'
   if (prefix === 'spellchecker') return 'edit'
   return commandGroups.includes(prefix as CommandGroup) ? prefix as CommandGroup : 'window'
 }
