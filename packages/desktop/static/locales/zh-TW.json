@@ -708,7 +708,7 @@
         "onlineUpdateEnabled": "允許應用程式內更新",
         "onlineUpdateEnabledNote": "從 GitHub Release 下載並安裝新版本；關閉後僅顯示發布頁面。",
         "checkNow": "立即檢查",
-        "unavailable": "目前安裝方式不支援應用程式內更新。"
+        "unavailable": "目前為免安裝版（ZIP）或未簽署版本，無法於應用程式內更新。請下載安裝包手動更新。"
       }
     },
     "editor": {

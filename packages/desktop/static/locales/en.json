@@ -708,7 +708,7 @@
         "onlineUpdateEnabled": "Allow in-app updates",
         "onlineUpdateEnabledNote": "Download and install new versions from GitHub Releases inside the app. Turn off to view the release page only.",
         "checkNow": "Check now",
-        "unavailable": "In-app updates are not available for this installation."
+        "unavailable": "This portable or unsigned build cannot update in place. Download the installer to update manually."
       }
     },
     "editor": {
