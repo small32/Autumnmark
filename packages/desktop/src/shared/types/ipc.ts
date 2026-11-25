@@ -55,7 +55,7 @@ export type UpdateState =
   | { phase: 'available'; version: string }
   | { phase: 'downloading'; version: string; progress: UpdateProgress | null }
   | { phase: 'ready' | 'installing'; version: string }
-  | { phase: 'error'; stage: 'check' | 'download' | 'install'; version?: string }
+  | { phase: 'error'; stage: 'check' | 'download' | 'prepare' | 'install'; version?: string }
 
 export interface RecentDocument {
   pathname: string

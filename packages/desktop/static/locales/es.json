@@ -1322,6 +1322,7 @@
     "background": "Continuar en segundo plano",
     "retry": "Reintentar",
     "downloadFailed": "La descarga ha fallado. Comprueba la conexión y vuelve a intentarlo.",
+    "prepareFailed": "No se pudieron preparar los archivos de actualización. Inténtalo de nuevo o descarga la versión manualmente.",
     "waiting": "Esperando una respuesta…",
     "available": "La versión {version} está disponible en GitHub Release.",
     "openRelease": "Ver lanzamiento",

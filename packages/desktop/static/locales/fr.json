@@ -1322,6 +1322,7 @@
     "background": "Continuer en arrière-plan",
     "retry": "Réessayer",
     "downloadFailed": "Le téléchargement a échoué. Vérifiez votre connexion et réessayez.",
+    "prepareFailed": "Impossible de préparer les fichiers de mise à jour. Réessayez ou téléchargez la version manuellement.",
     "waiting": "Toujours en attente d’une réponse…",
     "available": "La version {version} est disponible sur GitHub Release.",
     "openRelease": "Voir la version",

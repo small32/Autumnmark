@@ -35,7 +35,7 @@ export const useAutoUpdatesStore = defineStore('autoUpdates', () => {
       case 'ready': return t('updates.ready', { version: s.version })
       case 'installing': return t('updates.downloaded')
       case 'current': return t('updates.upToDate')
-      case 'error': return t({ check: 'updates.checkFailed', download: 'updates.downloadFailed', install: 'updates.installFailed' }[s.stage])
+      case 'error': return t({ check: 'updates.checkFailed', download: 'updates.downloadFailed', prepare: 'updates.prepareFailed', install: 'updates.installFailed' }[s.stage])
       default: return ''
     }
   })

@@ -12,7 +12,8 @@ vi.mock('electron', () => ({
 }))
 
 import {
-  parseChecksums, releaseAssetName, resolveInstallTarget, resolveReleaseAssets, verifyChecksum
+  createUpdateAttemptDirectory, isLocalFileError, parseChecksums, releaseAssetName,
+  resolveInstallTarget, resolveReleaseAssets, verifyChecksum
 } from '../../../src/main/inPlaceUpdate'
 
 describe('release assets', () => {
@@ -79,6 +80,31 @@ describe('checksums', () => {
     } finally {
       await fs.rm(directory, { recursive: true, force: true })
     }
+  })
+})
+
+describe('update staging', () => {
+  it('creates an isolated directory for each attempt', async() => {
+    const parent = await fs.mkdtemp(path.join(os.tmpdir(), 'autumnmark-attempts-'))
+    try {
+      const first = await createUpdateAttemptDirectory(parent)
+      const second = await createUpdateAttemptDirectory(parent)
+      expect(first).not.toBe(second)
+      expect(path.dirname(first)).toBe(parent)
+      expect((await fs.stat(first)).isDirectory()).toBe(true)
+      expect((await fs.stat(second)).isDirectory()).toBe(true)
+    } finally {
+      await fs.rm(parent, { recursive: true, force: true })
+    }
+  })
+
+  it('classifies locked files as local errors, not network failures', () => {
+    const locked = new Error('resource busy') as NodeJS.ErrnoException
+    locked.code = 'EBUSY'
+    expect(isLocalFileError(locked)).toBe(true)
+    expect(isLocalFileError(Object.assign(new Error('denied'), { code: 'EACCES' }))).toBe(true)
+    expect(isLocalFileError(new Error('fetch failed'))).toBe(false)
+    expect(isLocalFileError('EBUSY')).toBe(false)
   })
 })
 

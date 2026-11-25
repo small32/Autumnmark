@@ -7,9 +7,9 @@ import { APP_NAME, GITHUB_REPO_SLUG } from '@shared/brand'
 import { canCheckForUpdates, canInstallInPlace } from './utils/isUpdatable'
 import { isNewerRelease } from './utils/releaseVersion'
 import {
-  downloadFile, extractArchive, launchApplyScript, parseChecksums,
-  resolveApplyScript, resolveInstallTarget, resolveReleaseAssets,
-  stagedBundlePath, verifyChecksum, type ApplyMode
+  createUpdateAttemptDirectory, downloadFile, extractArchive, isLocalFileError,
+  launchApplyScript, parseChecksums, resolveApplyScript, resolveInstallTarget,
+  resolveReleaseAssets, stagedBundlePath, verifyChecksum, type ApplyMode
 } from './inPlaceUpdate'
 import { onInternalChannel } from './utils/internalIpc'
 
@@ -29,7 +29,13 @@ let dismissedNoticeGeneration = 0
 let getActiveWindow: (() => BrowserWindow | null) | undefined
 let readPreferences: (() => PreferenceReader | null) | null = null
 let downloadAbort: AbortController | null = null
-let staged: { version: string; staging: string; archive: string } | null = null
+interface StagedUpdate {
+  version: string
+  root: string
+  staging: string
+  archive: string
+}
+let staged: StagedUpdate | null = null
 
 interface PreferenceReader {
   getItem(key: string): unknown
@@ -129,13 +135,19 @@ const fetchLatestRelease = async(): Promise<string> => {
 const updateRoot = (version: string): string =>
   path.join(app.getPath('temp'), 'autumnmark-update', version)
 
+// Each attempt gets a fresh directory. Reusing a fixed path means a previous
+// staging tree that is still locked (an antivirus scan or a half-finished
+// install) makes the *next* download fail with EBUSY — reported to the user as
+// a network error. Failed directories are left for the OS temp cleaner rather
+// than deleting something another process may still be reading.
+const freshUpdateRoot = (version: string): Promise<string> =>
+  createUpdateAttemptDirectory(updateRoot(version))
+
 const downloadRelease = async(version: string): Promise<void> => {
   const assets = resolveReleaseAssets(version)
   if (!assets.length) throw new Error('This platform has no release archive')
   const [archiveAsset, sumsAsset] = assets
-  const directory = updateRoot(version)
-  await fs.rm(directory, { recursive: true, force: true })
-  await fs.mkdir(directory, { recursive: true })
+  const directory = await freshUpdateRoot(version)
 
   const archive = path.join(directory, archiveAsset.name)
   downloadAbort = new AbortController()
@@ -154,11 +166,11 @@ const downloadRelease = async(version: string): Promise<void> => {
 
     if (process.platform === 'linux') {
       // An AppImage is the artifact itself; there is nothing to unpack.
-      staged = { version, staging: archive, archive }
+      staged = { version, root: directory, staging: archive, archive }
     } else {
       const staging = path.join(directory, 'staging')
       await extractArchive(archive, staging)
-      staged = { version, staging, archive }
+      staged = { version, root: directory, staging, archive }
     }
     publish({ phase: 'ready', version })
     if (announceDownload && getActiveWindow) showDialog(getActiveWindow())
@@ -180,7 +192,7 @@ const applyUpdate = async(version: string): Promise<void> => {
   const scriptSource = await resolveApplyScript(staged.staging, bundle)
   // Run a copy outside the staged tree: the script must not be read from a
   // directory that the swap is about to overwrite.
-  const runDirectory = path.join(updateRoot(version), 'run')
+  const runDirectory = path.join(staged.root, 'run')
   await fs.mkdir(runDirectory, { recursive: true })
   const script = path.join(runDirectory, path.basename(scriptSource))
   await fs.copyFile(scriptSource, script)
@@ -193,7 +205,7 @@ const applyUpdate = async(version: string): Promise<void> => {
   } else {
     source = staged.staging
   }
-  const cleanup = path.dirname(staged.staging)
+  const cleanup = staged.root
   const logPath = path.join(app.getPath('logs'), 'update.log')
   const mode: ApplyMode = install.mode
 
@@ -247,7 +259,8 @@ const runCheck = async(automatic: boolean, getWindow: () => BrowserWindow | null
 
 const reportFailure = (stage: 'download' | 'install', version: string, error: unknown): void => {
   log.warn(`Software update ${stage} failed:`, error)
-  publish({ phase: 'error', stage, version })
+  const reported = stage === 'download' && isLocalFileError(error) ? 'prepare' : stage
+  publish({ phase: 'error', stage: reported, version })
 }
 
 ipcMain.on('mt::update-download', (_event, version: string) => {

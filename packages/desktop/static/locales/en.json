@@ -1322,6 +1322,7 @@
     "background": "Continue in background",
     "retry": "Retry",
     "downloadFailed": "The download failed. Check your connection and try again.",
+    "prepareFailed": "Could not prepare the update files. Try again, or download the release manually.",
     "waiting": "Still waiting for a response…",
     "available": "Version {version} is available on GitHub Release.",
     "openRelease": "View release",

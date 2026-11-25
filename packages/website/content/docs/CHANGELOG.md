@@ -1,3 +1,9 @@
+## AutumnMark+ 0.1.9
+
+- Fixed in-app updates that appeared to download but never installed: on Windows the updater script is now started through a separate launcher, so the swap script actually runs after the application closes.
+- Fixed repeated update checks failing with a misleading "check your network" error. A locked leftover in the temporary folder no longer blocks the next download; each attempt now uses its own staging directory.
+- Local file errors during an update are reported as a preparation problem instead of a network failure, with guidance to retry or download the release manually.
+
 ## AutumnMark+ 0.1.8
 
 - Software updates now has its own category in Preferences, listed separately in the left sidebar instead of being buried at the bottom of General.

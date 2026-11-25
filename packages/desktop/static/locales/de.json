@@ -1322,6 +1322,7 @@
     "background": "Im Hintergrund fortfahren",
     "retry": "Erneut versuchen",
     "downloadFailed": "Download fehlgeschlagen. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "prepareFailed": "Die Update-Dateien konnten nicht vorbereitet werden. Bitte erneut versuchen oder das Release manuell herunterladen.",
     "waiting": "Es wird noch auf eine Antwort gewartet…",
     "available": "Version {version} ist auf GitHub Release verfügbar.",
     "openRelease": "Release ansehen",

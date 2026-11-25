@@ -1322,6 +1322,7 @@
     "background": "Arka planda devam et",
     "retry": "Yeniden dene",
     "downloadFailed": "İndirme başarısız oldu. Bağlantınızı kontrol edip yeniden deneyin.",
+    "prepareFailed": "Güncelleme dosyaları hazırlanamadı. Yeniden deneyin veya sürümü elle indirin.",
     "waiting": "Yanıt bekleniyor…",
     "available": "GitHub Release sürüm {version} kullanıma sunuldu.",
     "openRelease": "Sürümü görüntüle",

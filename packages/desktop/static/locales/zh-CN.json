@@ -1322,6 +1322,7 @@
     "background": "在后台继续",
     "retry": "重试",
     "downloadFailed": "下载失败，请检查网络连接后重试。",
+    "prepareFailed": "更新文件准备失败，可能是本地文件被占用。请重试；若仍失败，请在发布页手动下载。",
     "waiting": "仍在等待响应…",
     "available": "GitHub Release 已发布新版本 {version}。",
     "openRelease": "查看发布页",

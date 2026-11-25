@@ -1322,6 +1322,7 @@
     "background": "在背景繼續",
     "retry": "重試",
     "downloadFailed": "下載失敗，請檢查網路連線後重試。",
+    "prepareFailed": "更新檔案準備失敗，可能是本機檔案被佔用。請重試；若仍失敗，請至發布頁手動下載。",
     "waiting": "仍在等待回應…",
     "available": "GitHub Release 已發布新版本 {version}。",
     "openRelease": "查看發布頁",

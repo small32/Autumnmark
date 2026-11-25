@@ -17,6 +17,22 @@ const PROGRESS_INTERVAL_MS = 200
 const ASSET_ROOT = `https://github.com/${GITHUB_REPO_SLUG}/releases/download`
 const CHECKSUM_ASSET = 'SHA256SUMS.txt'
 
+// A fresh directory for every download attempt: a locked leftover from a
+// previous attempt must never make the next download fail.
+export const createUpdateAttemptDirectory = async(parent: string): Promise<string> => {
+  await fs.mkdir(parent, { recursive: true })
+  return fs.mkdtemp(path.join(parent, 'attempt-'))
+}
+
+// Local filesystem failures are not connectivity problems. Keeping them apart
+// avoids telling the user to check their network when a file is simply locked.
+export const isLocalFileError = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return false
+  const code = (error as NodeJS.ErrnoException).code
+  return code === 'EBUSY' || code === 'EPERM' || code === 'EACCES' ||
+    code === 'ENOTEMPTY' || code === 'EEXIST'
+}
+
 export interface DownloadProgress {
   transferred: number
   total: number
@@ -211,18 +227,16 @@ export const launchApplyScript = async(request: ApplyRequest): Promise<{ elevate
       '-LogPath', `"${request.logPath}"`,
       '-Cleanup', `"${request.cleanup}"`
     ].join(' ')
-    const child = elevated
-      ? spawn('powershell', ['-NoProfile', '-Command',
-        `Start-Process -FilePath 'powershell.exe' -ArgumentList '${quoteForPowerShell(inner)}' -Verb RunAs`],
-      { detached: true, stdio: 'ignore', windowsHide: true })
-      : spawn('powershell', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
-        '-File', request.script,
-        '-ParentPid', String(process.pid),
-        '-Source', request.source,
-        '-Target', request.target,
-        '-Launch', request.launch,
-        '-LogPath', request.logPath,
-        '-Cleanup', request.cleanup], { detached: true, stdio: 'ignore', windowsHide: true })
+    // Launch through a short-lived, attached launcher that asks Windows to
+    // start the real updater as a separate process. A detached PowerShell
+    // started directly by Node can exit before its -File script is read on
+    // some Windows setups, which leaves the update silently unapplied.
+    // `Start-Process` hands the script to Windows itself, so it survives the
+    // app quitting even though the launcher is not detached.
+    const start = elevated ? '-Verb RunAs' : '-WindowStyle Hidden'
+    const launcher = `Start-Process -FilePath 'powershell.exe' -ArgumentList '${quoteForPowerShell(inner)}' ${start}`
+    const child = spawn('powershell', ['-NoProfile', '-NonInteractive', '-Command', launcher],
+      { stdio: 'ignore', windowsHide: true })
     child.unref()
     return { elevated }
   }

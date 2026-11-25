@@ -1322,6 +1322,7 @@
     "background": "バックグラウンドで続行",
     "retry": "再試行",
     "downloadFailed": "ダウンロードに失敗しました。接続を確認して再試行してください。",
+    "prepareFailed": "更新ファイルを準備できませんでした。再試行するか、リリースを手動でダウンロードしてください。",
     "waiting": "応答を待っています…",
     "available": "GitHub Release に新しいバージョン {version} があります。",
     "openRelease": "リリースを表示",

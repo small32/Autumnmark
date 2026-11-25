@@ -1322,6 +1322,7 @@
     "background": "Doorgaan op de achtergrond",
     "retry": "Opnieuw proberen",
     "downloadFailed": "Downloaden is mislukt. Controleer de verbinding en probeer het opnieuw.",
+    "prepareFailed": "De updatebestanden konden niet worden voorbereid. Probeer het opnieuw of download de release handmatig.",
     "waiting": "Nog steeds aan het wachten op een antwoord…",
     "available": "Versie {version} is beschikbaar op GitHub Release.",
     "openRelease": "Release bekijken",
