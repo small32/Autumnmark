@@ -599,7 +599,8 @@
       "files": "Files & saving",
       "markdown": "Markdown",
       "images": "Images & export",
-      "keybindings": "Keyboard shortcuts"
+      "keybindings": "Keyboard shortcuts",
+      "updates": "Software updates"
     },
     "general": {
       "title": "General",

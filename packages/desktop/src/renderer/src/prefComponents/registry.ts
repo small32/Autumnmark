@@ -84,12 +84,12 @@ export const preferenceDefinitions: Record<string, PreferenceDefinition> = {
     "label": "preferences.general.pandoc.description"
   },
   "checkUpdatesOnStartup": {
-    "category": "general",
+    "category": "updates",
     "label": "preferences.general.updates.checkUpdatesOnStartup",
     "notes": "preferences.general.updates.checkUpdatesOnStartupNote"
   },
   "onlineUpdateEnabled": {
-    "category": "general",
+    "category": "updates",
     "label": "preferences.general.updates.onlineUpdateEnabled",
     "notes": "preferences.general.updates.onlineUpdateEnabledNote"
   },

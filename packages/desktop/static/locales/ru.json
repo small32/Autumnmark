@@ -599,7 +599,8 @@
       "files": "Файлы и сохранение",
       "markdown": "Markdown",
       "images": "Изображения и экспорт",
-      "keybindings": "Сочетания клавиш"
+      "keybindings": "Сочетания клавиш",
+      "updates": "Обновления ПО"
     },
     "general": {
       "title": "Общие",

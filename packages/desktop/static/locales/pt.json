@@ -599,7 +599,8 @@
       "files": "Arquivos e salvamento",
       "markdown": "Markdown",
       "images": "Imagens e exportação",
-      "keybindings": "Atalhos de teclado"
+      "keybindings": "Atalhos de teclado",
+      "updates": "Atualizações de software"
     },
     "general": {
       "title": "Geral",

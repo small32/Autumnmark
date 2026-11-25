@@ -599,7 +599,8 @@
       "files": "파일 및 저장",
       "markdown": "Markdown",
       "images": "이미지 및 내보내기",
-      "keybindings": "키보드 단축키"
+      "keybindings": "키보드 단축키",
+      "updates": "소프트웨어 업데이트"
     },
     "general": {
       "title": "일반",

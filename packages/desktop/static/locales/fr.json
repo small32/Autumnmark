@@ -599,7 +599,8 @@
       "files": "Fichiers et enregistrement",
       "markdown": "Markdown",
       "images": "Images et exportation",
-      "keybindings": "Raccourcis clavier"
+      "keybindings": "Raccourcis clavier",
+      "updates": "Mises à jour"
     },
     "general": {
       "title": "Général",

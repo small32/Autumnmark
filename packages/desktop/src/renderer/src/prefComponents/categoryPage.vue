@@ -3,8 +3,11 @@
     class="pref-category"
     :class="`pref-${category}`"
   >
-    <h4 v-if="category !== 'theme'">{{ t(`preferences.categories.${category}`) }}</h4>
+    <h4 v-if="category !== 'theme'">
+      {{ t(`preferences.categories.${category}`) }}
+    </h4>
     <ai-models v-if="category === 'ai'" />
+    <update-settings v-if="category === 'updates'" />
     <theme-settings v-if="category === 'theme'" />
     <general-settings
       v-if="generalGroups[category]"
@@ -50,6 +53,7 @@ import { usePreferencesStore } from '@/store/preferences'
 
 const EditorSettings = defineAsyncComponent(() => import('./editor/index.vue'))
 const AiModels = defineAsyncComponent(() => import('./ai/index.vue'))
+const UpdateSettings = defineAsyncComponent(() => import('./updates/index.vue'))
 const ThemeSettings = defineAsyncComponent(() => import('./theme/index.vue'))
 const SpellcheckerSettings = defineAsyncComponent(() => import('./spellchecker/index.vue'))
 const ImageSettings = defineAsyncComponent(() => import('./image/index.vue'))

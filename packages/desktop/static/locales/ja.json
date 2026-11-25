@@ -599,7 +599,8 @@
       "files": "ファイルと保存",
       "markdown": "Markdown",
       "images": "画像とエクスポート",
-      "keybindings": "キーボードショートカット"
+      "keybindings": "キーボードショートカット",
+      "updates": "ソフトウェア更新"
     },
     "general": {
       "title": "全般",

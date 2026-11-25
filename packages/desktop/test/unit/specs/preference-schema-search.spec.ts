@@ -34,6 +34,16 @@ it('routes the fancy-list search result to Markdown preferences', () => {
   })
 })
 
+it('routes the update switches to the standalone software updates category', () => {
+  const entries = getTranslatedSearchContent()
+  for (const key of ['checkUpdatesOnStartup', 'onlineUpdateEnabled']) {
+    expect(entries.find(entry => entry.key === key)).toMatchObject({
+      routeCategory: 'updates',
+      categoryEn: 'Updates'
+    })
+  }
+})
+
 it('finds CJK compatibility by its key, label and CommonMark explanation', () => {
   const entry = getTranslatedSearchContent().find(entry => entry.key === 'cjkEmphasis')
   expect(entry).toMatchObject({

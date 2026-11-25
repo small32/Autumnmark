@@ -1,5 +1,5 @@
 import {
-  Setting, Brush, MagicStick, Edit, FolderOpened, Document, Picture, VideoCamera, Operation, Cpu
+  Setting, Brush, MagicStick, Edit, FolderOpened, Document, Picture, VideoCamera, Operation, Cpu, Refresh
 } from '@element-plus/icons-vue'
 
 export const preferenceCategories = [
@@ -12,12 +12,13 @@ export const preferenceCategories = [
   { id: 'images', icon: Picture },
   { id: 'video', icon: VideoCamera },
   { id: 'keybindings', icon: Operation },
-  { id: 'ai', icon: Cpu }
+  { id: 'ai', icon: Cpu },
+  { id: 'updates', icon: Refresh }
 ] as const
 export type PreferenceCategoryId = (typeof preferenceCategories)[number]['id']
 
 export const generalGroups: Partial<Record<PreferenceCategoryId, readonly string[]>> = {
-  general: ['language', 'opening', 'windowOpening', 'navigation', 'updates'],
+  general: ['language', 'opening', 'windowOpening', 'navigation'],
   appearance: ['windowAppearance'],
   files: ['save', 'recovery'],
   images: ['pandoc']

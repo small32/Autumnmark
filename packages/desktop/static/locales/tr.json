@@ -599,7 +599,8 @@
       "files": "Dosyalar ve kaydetme",
       "markdown": "Markdown",
       "images": "Görseller ve dışa aktarma",
-      "keybindings": "Klavye kısayolları"
+      "keybindings": "Klavye kısayolları",
+      "updates": "Yazılım güncellemeleri"
     },
     "general": {
       "title": "Genel",
