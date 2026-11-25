@@ -26,24 +26,13 @@
           </div>
         </el-col>
         <el-col :span="24">
-          <div
-            class="text"
-            style="min-height: auto"
-          >
-            {{ copyright }}
-          </div>
-        </el-col>
-        <el-col :span="24">
-          <div class="text">
-            {{ copyrightContributors }}
-          </div>
+          <a
+            class="repo-link"
+            :href="repositoryUrl"
+            @click.prevent="openRepository"
+          >{{ repositoryUrl }}</a>
         </el-col>
       </el-row>
-      <remote-content
-        class="about-remote-content"
-        kind="about"
-        :active="showAboutDialog"
-      />
     </el-dialog>
   </div>
 </template>
@@ -53,18 +42,17 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useMainStore } from '@/store'
 import bus from '../../bus'
 import AppLogo from '../../assets/images/logo.png'
-import { useI18n } from 'vue-i18n'
-import { APP_NAME } from '@shared/brand'
-import RemoteContent from '@/components/remoteContent/index.vue'
-
-const { t } = useI18n()
+import { APP_NAME, GITHUB_REPO_URL } from '@shared/brand'
 
 const name = `${APP_NAME} · 秋笺`
-const copyright = t('about.copyright', { year: new Date().getFullYear() })
-const copyrightContributors = t('about.copyrightContributors')
+const repositoryUrl = GITHUB_REPO_URL
 const showAboutDialog = ref(false)
 
 const store = useMainStore()
+
+const openRepository = (): void => {
+  window.electron.shell.openExternal(repositoryUrl)
+}
 
 const showDialog = () => {
   showAboutDialog.value = true
@@ -107,8 +95,17 @@ onBeforeUnmount(() => {
   color: var(--floatFontColor);
 }
 
-.about-remote-content {
-  border-top: 1px solid var(--floatBorderColor);
-  padding-top: 16px;
+.about-dialog .repo-link {
+  display: block;
+  text-align: center;
+  color: var(--themeColor);
+  text-decoration: none;
+  min-height: 32px;
+  line-height: 32px;
+}
+
+.about-dialog .repo-link:hover,
+.about-dialog .repo-link:focus-visible {
+  text-decoration: underline;
 }
 </style>

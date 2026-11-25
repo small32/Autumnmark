@@ -1033,10 +1033,6 @@
       "failed": "Rilevamento non riuscito. Riprova."
     }
   },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Creato con <3 dai Collaboratori di GitHub"
-  },
   "remoteContent": {
     "about": "Informazioni aggiornate",
     "loading": "Caricamento dei contenuti più recenti…",

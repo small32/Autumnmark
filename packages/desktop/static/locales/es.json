@@ -1033,10 +1033,6 @@
       "failed": "La detección ha fallado. Vuelve a comprobar."
     }
   },
-  "about": {
-    "copyright": "Derechos de autor © Luo Ran 2017-{year}",
-    "copyrightContributors": "Derechos de Autor Contribuidores"
-  },
   "remoteContent": {
     "about": "Información actualizada",
     "loading": "Cargando el contenido más reciente…",

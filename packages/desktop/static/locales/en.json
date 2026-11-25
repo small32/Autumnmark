@@ -1033,10 +1033,6 @@
       "failed": "Detection failed. Please check again."
     }
   },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Made with <3 by Github Contributors"
-  },
   "remoteContent": {
     "about": "Live information",
     "loading": "Fetching the latest content…",

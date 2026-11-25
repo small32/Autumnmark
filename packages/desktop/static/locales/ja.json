@@ -1033,10 +1033,6 @@
       "failed": "検出に失敗しました。再検出してください。"
     }
   },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "著作権貢献者"
-  },
   "remoteContent": {
     "about": "最新情報",
     "loading": "最新の内容を取得しています…",

@@ -1033,10 +1033,6 @@
       "failed": "Erkennung fehlgeschlagen. Bitte erneut prüfen."
     }
   },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Urheberrecht Mitwirkende"
-  },
   "remoteContent": {
     "about": "Aktuelle Informationen",
     "loading": "Aktuelle Inhalte werden geladen…",

@@ -1,3 +1,7 @@
+## AutumnMark+ 0.2.0
+
+- The About dialog now shows only the application name, version and a link to the GitHub repository. The copyright notice and the dynamically fetched community links (QQ group, Telegram channel, video channel) have been removed.
+
 ## AutumnMark+ 0.1.9
 
 - Fixed in-app updates that appeared to download but never installed: on Windows the updater script is now started through a separate launcher, so the swap script actually runs after the application closes.

@@ -1033,10 +1033,6 @@
       "failed": "偵測失敗，請重新偵測。"
     }
   },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "版權貢獻者"
-  },
   "remoteContent": {
     "about": "動態資訊",
     "loading": "正在取得最新內容…",
