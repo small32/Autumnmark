@@ -113,7 +113,7 @@ test('download URLs include only published installers from the displayed version
     assert.equal(url.origin, 'https://github.com')
     assert.ok(
       url.pathname.startsWith(
-        `/small32/Antumnmark-Plus/releases/download/${PROJECT_INFO.releaseVersion}/`
+        `/small32/Autumnmark/releases/download/${PROJECT_INFO.releaseVersion}/`
       )
     )
     assert.ok(

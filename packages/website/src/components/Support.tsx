@@ -11,9 +11,9 @@ export default function Support() {
       <div className="wrap">
         <div className="sec-head center reveal">
           <span className="kicker">OPEN SOURCE</span>
-          <h2 className="sec-title">Keep Antumnmark+ free and open source.</h2>
+          <h2 className="sec-title">Keep AutumnMark+ free and open source.</h2>
           <p className="sec-desc">
-            Antumnmark+ is free for everyone. Stars, bug reports and pull requests keep the
+            AutumnMark+ is free for everyone. Stars, bug reports and pull requests keep the
             project moving.
           </p>
           <div className="hero-cta hero-cta--center">

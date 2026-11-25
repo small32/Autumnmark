@@ -253,7 +253,7 @@ test('keeps visual feedback when a hot-reloaded studio receives the legacy CSS r
     await studio.getByRole('combobox', { name: 'Model', exact: true }).selectOption('vision')
     await prompt.fill('Inspect the preview using the screenshot tool')
     await prompt.press('Enter')
-    await expect(studio.getByRole('log').locator('.assistant').last()).toContainText('Restart Antumnmark+')
+    await expect(studio.getByRole('log').locator('.assistant').last()).toContainText('Restart AutumnMark+')
     await studio.reload()
     await expect(first).toContainText('The heading looks like a button.')
     await expect(second).toContainText('The heading looks like a button.')

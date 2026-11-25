@@ -1,31 +1,31 @@
-## Antumnmark+ 0.1.5
+## AutumnMark+ 0.1.5
 
-- Antumnmark+ can update itself on every installation type, not only Windows installers and Linux AppImages. Portable ZIPs, macOS builds and Linux packages now check GitHub Releases, download the matching archive, verify it against `SHA256SUMS.txt` and unpack it into the temporary folder.
+- AutumnMark+ can update itself on every installation type, not only Windows installers and Linux AppImages. Portable ZIPs, macOS builds and Linux packages now check GitHub Releases, download the matching archive, verify it against `SHA256SUMS.txt` and unpack it into the temporary folder.
 - The swap is performed by an updater script that ships inside the new version: it waits for the app to close, keeps a timestamped backup of the previous build, copies the new files into place, restarts, and rolls the backup back automatically when copying fails.
 - Administrators are only asked for permission when the program folder is not writable, and macOS builds lose their quarantine flag after the swap so the new version opens normally.
 - Settings → General → Updates now offers Check now, Download and install, Cancel download, Retry and View release, and explains when an installation has to be updated by hand.
 
-## Antumnmark+ 0.1.3
+## AutumnMark+ 0.1.3
 
 - Multi-select in the sidebar: Ctrl/Cmd-click files, folders and project roots to add or remove single items, and Shift-click to extend the selection across a range. A plain click on a folder still expands or collapses it and reduces the selection to that folder.
 - Ranges follow the rows currently on screen, so collapsed and hidden rows are skipped, and Windows paths keep working when their letter case differs.
 - Right-click hide now writes the whole selection in one go instead of one item at a time.
-- Antumnmark+ checks GitHub Releases for new versions and can download and install them from inside the app. Turn the startup check or the in-app update off separately in Settings → General → Updates.
+- AutumnMark+ checks GitHub Releases for new versions and can download and install them from inside the app. Turn the startup check or the in-app update off separately in Settings → General → Updates.
 - Fixed assorted bugs across the editor, file handling, sidebar drag and drop, and update flow.
 
-## Antumnmark+ 0.1.2
+## AutumnMark+ 0.1.2
 
 - Fixed rapid hide/restore actions dropping each other's updates in the sidebar.
 - Hidden files and folders now follow their item when it is renamed, moved or deleted.
 - Hide failures now show an error instead of failing silently.
 
-## Antumnmark+ 0.1.1
+## AutumnMark+ 0.1.1
 
 - Right-click a folder in the sidebar to hide the folder and its contents. Restore hidden folders and files from Settings → General → Sidebar.
 
-## Antumnmark+ 0.1.0
+## AutumnMark+ 0.1.0
 
-- Rebranded the application as Antumnmark+ across the window title, menus, installers, themes and documentation.
+- Rebranded the application as AutumnMark+ across the window title, menus, installers, themes and documentation.
 - Removed the title-bar announcement bell and its remote announcement feed.
 - Right-click a file in the sidebar to hide it; restore hidden files individually or all at once from Settings → General → Sidebar.
 

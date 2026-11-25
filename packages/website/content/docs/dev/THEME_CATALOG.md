@@ -1,6 +1,6 @@
 # Online theme catalog
 
-Antumnmark+ reads `catalog.json` and its assets from the public `main` branch of
+AutumnMark+ reads `catalog.json` and its assets from the public `main` branch of
 [`Autumn-one/autumnmark-theme`](https://github.com/Autumn-one/autumnmark-theme).
 Commit the catalog and any new assets together. The app loads the catalog when the user opens
 **Preferences → Theme → Online themes**.

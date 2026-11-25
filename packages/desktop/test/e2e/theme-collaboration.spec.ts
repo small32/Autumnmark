@@ -23,7 +23,7 @@ test('a file-based agent can edit a draft and request a screenshot through the s
     const status = footer.getByText('Collaboration active', { exact: true })
     await external.click()
     await menu.getByRole('button', { name: 'Install Skill' }).click()
-    await expect(menu.getByRole('status')).toContainText('Antumnmark+ Skill installed')
+    await expect(menu.getByRole('status')).toContainText('AutumnMark+ Skill installed')
     const skill = join(home, '.agents', 'skills', 'autumnmark-theme', 'SKILL.md')
     expect(await readFile(skill, 'utf8')).toContain('requests/<uuid>.json')
     await writeFile(skill, 'Locally customized Skill')

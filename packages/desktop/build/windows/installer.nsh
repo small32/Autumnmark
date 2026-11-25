@@ -1,7 +1,7 @@
 ; Windows can keep a UserChoice pointing to this ProgId across upgrades.
 !define AUTUMNMARK_PROGID "AutumnMark.Document"
 
-; OpenWithProgids lets Explorer offer Antumnmark+ while preserving the user's default app.
+; OpenWithProgids lets Explorer offer AutumnMark+ while preserving the user's default app.
 !macro autumnmarkAssociateExtension EXT
   WriteRegNone SHELL_CONTEXT "Software\Classes\${EXT}\OpenWithProgids" "${AUTUMNMARK_PROGID}"
 !macroend
@@ -26,7 +26,7 @@
   !insertmacro autumnmarkAssociateExtension ".mdx"
 
   WriteRegStr SHELL_CONTEXT "Software\Classes\${AUTUMNMARK_PROGID}" \
-    "" "Antumnmark+ Markdown Document"
+    "" "AutumnMark+ Markdown Document"
   WriteRegExpandStr SHELL_CONTEXT "Software\Classes\${AUTUMNMARK_PROGID}\DefaultIcon" \
     "" "$INSTDIR\resources\icons\md.ico,0"
   WriteRegExpandStr SHELL_CONTEXT "Software\Classes\${AUTUMNMARK_PROGID}\shell\open\command" \

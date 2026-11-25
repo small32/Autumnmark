@@ -1,9 +1,9 @@
 {
   "name": "autumnmark-monorepo",
   "version": "0.1.5",
-  "description": "Antumnmark+ monorepo root",
+  "description": "AutumnMark+ monorepo root",
   "private": true,
-  "homepage": "https://github.com/small32/Antumnmark-Plus",
+  "homepage": "https://github.com/small32/Autumnmark",
   "packageManager": "pnpm@10.33.4",
   "engines": {
     "node": ">=22.12.0",

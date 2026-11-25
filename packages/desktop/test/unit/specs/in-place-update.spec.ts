@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 vi.mock('electron', () => ({
   app: {
     getVersion: () => '0.1.3',
-    getAppPath: () => '/Applications/Antumnmark+.app/Contents/Resources/app.asar',
+    getAppPath: () => '/Applications/AutumnMark+.app/Contents/Resources/app.asar',
     getPath: () => os.tmpdir()
   }
 }))
@@ -49,7 +49,7 @@ describe('release assets', () => {
       'SHA256SUMS.txt'
     ])
     expect(assets[0].url).toBe(
-      'https://github.com/small32/Antumnmark-Plus/releases/download/v0.2.0/autumnmark-win-x64-0.2.0.zip'
+      'https://github.com/small32/Autumnmark/releases/download/v0.2.0/autumnmark-win-x64-0.2.0.zip'
     )
   })
 })
@@ -88,7 +88,7 @@ describe('install target', () => {
     Object.defineProperty(process, 'platform', { configurable: true, value: 'darwin' })
     try {
       // Resolve with the host path rules so the assertion also holds on Windows.
-      const bundle = path.resolve('/Applications/Antumnmark+.app/Contents/Resources/app.asar', '../../..')
+      const bundle = path.resolve('/Applications/AutumnMark+.app/Contents/Resources/app.asar', '../../..')
       expect(resolveInstallTarget()).toEqual({ target: bundle, launch: bundle, mode: 'app' })
     } finally {
       if (platform) Object.defineProperty(process, 'platform', platform)

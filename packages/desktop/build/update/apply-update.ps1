@@ -1,4 +1,4 @@
-# Antumnmark+ in-place updater (Windows / portable ZIP).
+# AutumnMark+ in-place updater (Windows / portable ZIP).
 #
 # Runs detached from the app so the program directory is no longer locked:
 # waits for the old process to exit, moves the current install aside, copies
@@ -107,8 +107,39 @@ if (-not $copyOk) {
 }
 
 Remove-OldBackups
-if (Test-Path -LiteralPath $Launch) {
-  Start-Process -FilePath $Launch -WorkingDirectory (Split-Path -Parent $Launch)
+
+# The executable was renamed from autumnmark-editor.exe to AutumnMark+.exe, so
+# the recorded launch path can be gone after the swap. Fall back to the
+# newest executable in the folder instead of leaving the user with nothing.
+function Resolve-LaunchPath {
+  if (Test-Path -LiteralPath $Launch) { return $Launch }
+  $candidate = Get-ChildItem -LiteralPath $Target -Filter '*.exe' -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -notlike 'Uninstall*' } |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1
+  if ($candidate) {
+    Write-UpdateLog "launch path missing; falling back to $($candidate.Name)"
+    return $candidate.FullName
+  }
+  Write-UpdateLog 'no executable found after the swap'
+  return $null
+}
+
+$resolvedLaunch = Resolve-LaunchPath
+
+# Keep one executable only, so a stale shortcut cannot start the previous build.
+$legacy = Join-Path $Target 'autumnmark-editor.exe'
+if ($resolvedLaunch -and (Split-Path -Leaf $resolvedLaunch) -ne 'autumnmark-editor.exe' -and (Test-Path -LiteralPath $legacy)) {
+  try {
+    Remove-Item -LiteralPath $legacy -Force -ErrorAction Stop
+    Write-UpdateLog 'removed the pre-rename executable'
+  } catch {
+    Write-UpdateLog "could not remove the pre-rename executable: $_"
+  }
+}
+
+if ($resolvedLaunch) {
+  Start-Process -FilePath $resolvedLaunch -WorkingDirectory (Split-Path -Parent $resolvedLaunch)
   Write-UpdateLog 'restarted the application'
 }
 if ($Cleanup) { try { Remove-Item -LiteralPath $Cleanup -Recurse -Force } catch { } }

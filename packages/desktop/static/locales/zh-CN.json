@@ -1,6 +1,6 @@
 {
   "ai": {
-    "restartTools": "请重新启动 Antumnmark+，以启用模型按需截图。",
+    "restartTools": "请重新启动 AutumnMark+，以启用模型按需截图。",
     "inputTypes": "支持的输入类型",
     "image": "图片",
     "systemPrompt": "主题助手系统提示词",
@@ -16,7 +16,7 @@
     "requestType": "请求类型",
     "classic": "Chat Completions（经典）",
     "loadFailed": "无法读取本地模型配置。",
-    "restartRequired": "请重新启动 Antumnmark+ 以加载新版模型设置。",
+    "restartRequired": "请重新启动 AutumnMark+ 以加载新版模型设置。",
     "contextTooSmall": "主题和最新消息所需的 Token 超出了预估上下文预算。请增大上下文或调低最大输出。",
     "add": "添加模型",
     "edit": "编辑模型",
@@ -44,9 +44,9 @@
     "copy": "复制目录路径",
     "stop": "停止协作",
     "install": "安装 Skill",
-    "installed": "Antumnmark+ Skill 已安装到共用技能目录。",
+    "installed": "AutumnMark+ Skill 已安装到共用技能目录。",
     "skillConflict": "共用技能目录里已有一个不同版本的 autumnmark-theme Skill。",
-    "skillError": "无法安装 Antumnmark+ Skill。",
+    "skillError": "无法安装 AutumnMark+ Skill。",
     "openError": "无法打开协作目录。",
     "copied": "目录路径已复制。",
     "copyError": "无法复制目录路径。",
@@ -74,7 +74,7 @@
     "deleteTheme": "删除主题",
     "cancel": "取消",
     "confirmDelete": "永久删除“{name}”？相关修改、示例 Markdown 和 AI 对话也会一并删除。",
-    "deleteApplied": "Antumnmark+ 将切回此主题的内置基础主题。",
+    "deleteApplied": "AutumnMark+ 将切回此主题的内置基础主题。",
     "deleteFailed": "未能完成删除，请检查主题库后重试。"
   },
   "studio": {
@@ -271,15 +271,15 @@
       "checkUpdates": "检查更新"
     },
     "marktext": {
-      "title": "Antumnmark+",
-      "about": "关于 Antumnmark+",
+      "title": "AutumnMark+",
+      "about": "关于 AutumnMark+",
       "checkUpdates": "检查更新…",
       "preferences": "偏好设置",
       "services": "服务",
-      "hide": "隐藏 Antumnmark+",
+      "hide": "隐藏 AutumnMark+",
       "hideOthers": "隐藏其他",
       "showAll": "显示全部",
-      "quit": "退出 Antumnmark+"
+      "quit": "退出 AutumnMark+"
     },
     "view": {
       "view": "视图",
@@ -464,7 +464,7 @@
       "conflict": "目标位置已存在同名项目，请先重命名后重试。",
       "missing": "源或目标已不存在，请刷新文件夹后重试。",
       "permission": "无法移动，请检查目录权限或是否有其他应用正在占用。",
-      "openElsewhere": "移动前，请先在其他 Antumnmark+ 窗口关闭此文件或此文件夹中的文档。",
+      "openElsewhere": "移动前，请先在其他 AutumnMark+ 窗口关闭此文件或此文件夹中的文档。",
       "destinationOpen": "目标路径已有打开的文档，请先关闭后重试。"
     }
   },
@@ -582,7 +582,7 @@
   },
   "import": {
     "title": "导入或打开",
-    "description": "拖放到这里将您的内容导入 Antumnmark+"
+    "description": "拖放到这里将您的内容导入 AutumnMark+"
   },
   "preferences": {
     "title": "偏好设置",
@@ -828,7 +828,7 @@
         "scriptPath": "脚本路径",
         "invalidScript": "请输入存在且可执行的脚本路径。"
       },
-      "defaultBehavior": "粘贴或拖拽图片到 Antumnmark+ 后的默认行为"
+      "defaultBehavior": "粘贴或拖拽图片到 AutumnMark+ 后的默认行为"
     },
     "markdown": {
       "title": "Markdown",
@@ -859,10 +859,10 @@
           "simple": "简单"
         },
         "mermaidLightTheme": {
-          "title": "Antumnmark+ 使用浅色主题时的 Mermaid 主题"
+          "title": "AutumnMark+ 使用浅色主题时的 Mermaid 主题"
         },
         "mermaidDarkTheme": {
-          "title": "Antumnmark+ 使用深色主题时的 Mermaid 主题"
+          "title": "AutumnMark+ 使用深色主题时的 Mermaid 主题"
         },
         "plantumlServer": {
           "title": "PlantUML 服务器 URL"
@@ -936,7 +936,7 @@
       "applied": "已应用「{name}」。",
       "installedNotice": "已安装「{name}」，可在本机主题中找到。",
       "updated": "已更新「{name}」。",
-      "incompatible": "需要 Antumnmark+ {version}",
+      "incompatible": "需要 AutumnMark+ {version}",
       "changeFailed": "无法保存主题设置。",
       "installFailed": "无法下载或保存这个主题。",
       "deleteTheme": "删除主题",
@@ -1046,7 +1046,7 @@
   },
   "commands": {
     "mt": {
-      "hide": "隐藏 Antumnmark+",
+      "hide": "隐藏 AutumnMark+",
       "hideOthers": "隐藏其他"
     },
     "file": {
@@ -1281,7 +1281,7 @@
     "fileExists": "文件已存在：{filename}",
     "files": "文件",
     "importWarning": "导入警告",
-    "installPandoc": "未找到 Pandoc。请先安装，或将环境变量 MARKTEXT_PANDOC 设为 pandoc 可执行文件的路径后重启 Antumnmark+。",
+    "installPandoc": "未找到 Pandoc。请先安装，或将环境变量 MARKTEXT_PANDOC 设为 pandoc 可执行文件的路径后重启 AutumnMark+。",
     "exportWarning": "导出提示",
     "exportWarningMore": "…另有 {count} 条",
     "keepOpen": "保持打开",
@@ -1298,7 +1298,7 @@
     "configSchemaViolation": "配置架构违规",
     "copyError": "复制错误",
     "initializationFailed": "初始化失败 {hint}",
-    "otherInstanceDetected": "检测到 Antumnmark+ 的另一个实例正在运行",
+    "otherInstanceDetected": "检测到 AutumnMark+ 的另一个实例正在运行",
     "report": "报告",
     "startupError": "启动错误",
     "terminatedDueToError": "由于错误而终止",

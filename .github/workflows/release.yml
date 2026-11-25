@@ -1,4 +1,4 @@
-name: Release Antumnmark+
+name: Release AutumnMark+
 
 on:
   push:
@@ -210,12 +210,12 @@ jobs:
           const { existsSync } = require('node:fs')
           const { join } = require('node:path')
           const { execFileSync } = require('node:child_process')
-          const contents = 'dist/mac-arm64/Antumnmark+.app/Contents'
+          const contents = 'dist/mac-arm64/AutumnMark+.app/Contents'
           const verify = path => {
             execFileSync('lipo', [path, '-verify_arch', 'arm64'], { stdio: 'inherit' })
             console.log('Verified ARM64: ' + path)
           }
-          verify(join(contents, 'MacOS/Antumnmark+'))
+          verify(join(contents, 'MacOS/AutumnMark+'))
           const modules = join(contents, 'Resources/app.asar.unpacked/node_modules')
           for (const path of [
             'ced/build/Release/ced.node',
@@ -241,7 +241,7 @@ jobs:
           $version = $env:GITHUB_REF_NAME.Substring(1)
           $target = Join-Path $env:RUNNER_TEMP 'autumnmark-release-check'
           Expand-Archive -LiteralPath "dist/autumnmark-win-x64-$version.zip" -DestinationPath $target
-          $env:AUTUMNMARK_PACKAGED_EXE = (Get-Item "$target/autumnmark-editor.exe").FullName
+          $env:AUTUMNMARK_PACKAGED_EXE = (Get-Item "$target/AutumnMark+.exe").FullName
           pnpm -C packages/desktop exec playwright test packaged-table-layout.spec.ts --reporter=github
 
       - name: Upload artifact
@@ -307,13 +307,13 @@ jobs:
           IS_PRERELEASE: ${{ contains(github.ref_name, '-') }}
         run: |
           # RC tags (e.g. v0.1.2-rc.1) use the stable version as the CHANGELOG
-          # heading (## Antumnmark+ 0.1.2), so strip any -/+ prerelease suffix.
+          # heading (## AutumnMark+ 0.1.2), so strip any -/+ prerelease suffix.
           release_version="${GITHUB_REF_NAME#v}"
           stable_version="${release_version%%[-+]*}"
           highlights=$(awk -v version="${stable_version}" '
             # Accept both the current product heading and the legacy one so a
             # hotfix on an older version still finds its notes.
-            $0 == "## Antumnmark+ " version || $0 == "## AutumnMark " version { found = 1; next }
+            $0 == "## AutumnMark+ " version || $0 == "## AutumnMark " version { found = 1; next }
             found && /^## / { exit }
             found { print }
           ' packages/website/content/docs/CHANGELOG.md)
@@ -327,14 +327,14 @@ jobs:
               printf '## What’s new\n%s\n\n' "$highlights"
             fi
             echo "## First installation"
-            echo "Download the installer for your platform below. Antumnmark+ keeps using the existing AutumnMark profile directory, so settings and recent files from an earlier installation are preserved."
+            echo "Download the installer for your platform below. AutumnMark+ keeps using the existing AutumnMark profile directory, so settings and recent files from an earlier installation are preserved."
             echo ""
-            echo "首次安装请下载对应平台的安装包。Antumnmark+ 继续使用原有 AutumnMark 设置目录，已有配置和最近文件会保留。"
+            echo "首次安装请下载对应平台的安装包。AutumnMark+ 继续使用原有 AutumnMark 设置目录，已有配置和最近文件会保留。"
             echo ""
             echo "## ⚠️ Note for macOS users"
-            echo "Builds are unsigned (no Apple Developer ID). After dragging Antumnmark+ into Applications, clear the quarantine flag once:"
+            echo "Builds are unsigned (no Apple Developer ID). After dragging AutumnMark+ into Applications, clear the quarantine flag once:"
             echo '```'
-            echo 'xattr -d com.apple.quarantine /Applications/Antumnmark+.app'
+            echo 'xattr -d com.apple.quarantine /Applications/AutumnMark+.app'
             echo '```'
             echo ""
             echo "## Verifying downloads"

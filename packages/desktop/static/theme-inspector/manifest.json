@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Antumnmark+ Theme Inspector",
+  "name": "AutumnMark+ Theme Inspector",
   "version": "1.0.0",
   "devtools_page": "inspector.html"
 }

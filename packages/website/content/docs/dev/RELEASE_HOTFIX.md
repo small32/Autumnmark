@@ -17,6 +17,6 @@ git cherry-pick <commit>
 
 When branching from an older tag, bring the current three-target release configuration onto the hotfix branch before tagging. GitHub runs the workflow from the tagged commit.
 
-Follow the hosted verification steps in [Releasing Antumnmark+](RELEASE.md). Update both application package versions, record release highlights, push the hotfix branch and use its name for any required E2E dispatch. All hotfix testing runs on GitHub-hosted runners. The tag workflow builds the platform packages and publishes the release once verification succeeds.
+Follow the hosted verification steps in [Releasing AutumnMark+](RELEASE.md). Update both application package versions, record release highlights, push the hotfix branch and use its name for any required E2E dispatch. All hotfix testing runs on GitHub-hosted runners. The tag workflow builds the platform packages and publishes the release once verification succeeds.
 
 Bring applicable fixes back to `develop` through a PR so later releases retain them.

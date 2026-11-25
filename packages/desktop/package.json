@@ -1,7 +1,7 @@
 {
   "name": "marktext",
   "version": "0.1.5",
-  "description": "Antumnmark+ — a Markdown editor based on MarkText",
+  "description": "AutumnMark+ — a Markdown editor based on MarkText",
   "main": "./out/main/index.js",
   "author": {
     "name": "Jocs",
@@ -25,10 +25,10 @@
       "url": "https://github.com/Tkaixiang"
     }
   ],
-  "homepage": "https://github.com/small32/Antumnmark-Plus",
+  "homepage": "https://github.com/small32/Autumnmark",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/small32/Antumnmark-Plus.git"
+    "url": "git+https://github.com/small32/Autumnmark.git"
   },
   "scripts": {
     "minify-locales": "tsx ../../scripts/minify-locales.ts",

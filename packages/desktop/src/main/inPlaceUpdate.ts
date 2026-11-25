@@ -141,7 +141,7 @@ export const resolveInstallTarget = (): InstallTarget => {
     return { target: path.dirname(launch), launch, mode: 'dir' }
   }
   if (process.platform === 'darwin') {
-    // …/Antumnmark+.app/Contents/Resources/app.asar → …/Antumnmark+.app
+    // …/AutumnMark+.app/Contents/Resources/app.asar → …/AutumnMark+.app
     const bundle = path.resolve(app.getAppPath(), '../../..')
     return { target: bundle, launch: bundle, mode: 'app' }
   }

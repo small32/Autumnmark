@@ -1,5 +1,5 @@
 #!/bin/bash
-# Antumnmark+ in-place updater (macOS .app bundle and Linux AppImage).
+# AutumnMark+ in-place updater (macOS .app bundle and Linux AppImage).
 #
 # Runs detached from the app: waits for the old process to exit, moves the
 # current bundle/AppImage aside, copies the staged build over it, restarts,

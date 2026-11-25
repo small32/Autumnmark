@@ -114,7 +114,7 @@ test.describe('Tab management', () => {
         }
         await expect(lastPage.locator(tabSelector)).toHaveCount(0)
         const welcome = lastPage.locator('.recent-files-projects')
-        await expect(welcome.getByRole('heading', { name: '秋笺 Antumnmark+' })).toBeVisible()
+        await expect(welcome.getByRole('heading', { name: '秋笺 AutumnMark+' })).toBeVisible()
         const logo = welcome.locator('img')
         await expect(logo).toHaveCSS('width', '48px')
         await expect.poll(() => logo.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0)

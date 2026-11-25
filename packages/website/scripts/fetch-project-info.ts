@@ -1,6 +1,6 @@
 import { getReleaseDownloads } from '../src/lib/downloads'
 
-const REPOSITORY_API = 'https://api.github.com/repos/small32/Antumnmark-Plus'
+const REPOSITORY_API = 'https://api.github.com/repos/small32/Autumnmark'
 
 export type ProjectInfo = {
   releaseVersion?: string

@@ -1,6 +1,6 @@
 # NSIS derives the Windows uninstall key from appId. Keep it in sync with APP_ID in src/shared/brand.ts.
 appId: io.github.autumn-one.autumnmark
-productName: Antumnmark+
+productName: AutumnMark+
 # The packaged name determines the updater cache and Linux package name.
 extraMetadata:
   name: autumnmark
@@ -97,7 +97,9 @@ asarUnpack:
   - resources/**
 win:
   # NSIS uses the executable name for its default directory. Older releases used autumnmark.
-  executableName: autumnmark-editor
+  # The release builds ship AutumnMark+.exe; the updater script falls back to
+  # any executable in the folder so 0.1.5 installs can still restart.
+  executableName: 'AutumnMark+'
   artifactName: 'autumnmark-win-${arch}-${version}.${ext}'
   target:
     - target: 'nsis'
@@ -158,7 +160,7 @@ linux:
   icon: 'static/icon.png'
   desktop:
     entry:
-      StartupWMClass: 'Antumnmark+'
+      StartupWMClass: 'AutumnMark+'
       Keywords: 'autumnmark;markdown;'
   target:
     - target: AppImage

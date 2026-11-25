@@ -353,7 +353,7 @@ test('online themes install, apply, update and uninstall through the local theme
         name: 'Evening Paper', base: 'nord', values: { accent: revision === 1 ? '#aa8855' : '#aabbcc' }
       })
       const entry = {
-        id: 'evening-paper', revision, name: 'Evening Paper', author: 'Antumnmark+', base: 'nord',
+        id: 'evening-paper', revision, name: 'Evening Paper', author: 'AutumnMark+', base: 'nord',
         path: `themes/evening-paper/${revision}/theme.theme.json`,
         sha256: createHash('sha256').update(file).digest('hex')
       }
@@ -364,7 +364,7 @@ test('online themes install, apply, update and uninstall through the local theme
       name: 'Morning Paper', base: 'light', values: { accent: '#32805e' }
     })
     const morning = { file: morningFile, entry: {
-      id: 'morning-paper', revision: 1, name: 'Morning Paper', author: 'Antumnmark+', base: 'light',
+      id: 'morning-paper', revision: 1, name: 'Morning Paper', author: 'AutumnMark+', base: 'light',
       path: 'themes/morning-paper/1/theme.theme.json',
       sha256: createHash('sha256').update(morningFile).digest('hex')
     } }

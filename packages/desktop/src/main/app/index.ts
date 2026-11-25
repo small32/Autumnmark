@@ -13,6 +13,7 @@ import { normalizeCliMarkdownPath, normalizeMarkdownPath } from '../filesystem/m
 import { confirmAndTrashItem } from '../filesystem/trash'
 import { registerKeyboardListeners } from '../keyboard'
 import { startAutomaticUpdateChecks } from '../menu/actions/marktext'
+import { repairShortcuts } from '../shortcuts'
 import { dockMenu } from '../menu/templates'
 import registerSpellcheckerListeners from '../spellchecker'
 import { watchers } from '../utils/imagePathAutoComplement'
@@ -264,6 +265,9 @@ class App {
     } else {
       createWindow()
     }
+
+    // Repoint shortcuts left behind by the pre-rename executable.
+    repairShortcuts()
 
     startAutomaticUpdateChecks(
       () => this._windowManager.getActiveEditor()?.browserWindow ?? null,

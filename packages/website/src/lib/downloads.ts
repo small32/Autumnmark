@@ -1,10 +1,10 @@
 export const DOWNLOAD = {
-  releases: 'https://github.com/small32/Antumnmark-Plus/releases',
-  repo: 'https://github.com/small32/Antumnmark-Plus',
-  contributing: 'https://github.com/small32/Antumnmark-Plus/blob/develop/.github/CONTRIBUTING.md',
-  issues: 'https://github.com/small32/Antumnmark-Plus/issues',
+  releases: 'https://github.com/small32/Autumnmark/releases',
+  repo: 'https://github.com/small32/Autumnmark',
+  contributing: 'https://github.com/small32/Autumnmark/blob/develop/.github/CONTRIBUTING.md',
+  issues: 'https://github.com/small32/Autumnmark/issues',
   // Share intent only: no upstream account handle, campaign tag or hashtag.
-  twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent('https://github.com/small32/Antumnmark-Plus')}&text=${encodeURIComponent('Antumnmark+ — a Markdown editor that gets out of your way')}`
+  twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent('https://github.com/small32/Autumnmark')}&text=${encodeURIComponent('AutumnMark+ — a Markdown editor that gets out of your way')}`
 }
 
 export type Platform = 'mac' | 'windows' | 'linux'

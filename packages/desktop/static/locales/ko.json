@@ -1,6 +1,6 @@
 {
   "ai": {
-    "restartTools": "모델이 스크린샷을 요청할 수 있도록 Antumnmark+를 다시 시작하세요.",
+    "restartTools": "모델이 스크린샷을 요청할 수 있도록 AutumnMark+를 다시 시작하세요.",
     "inputTypes": "지원하는 입력 유형",
     "image": "이미지",
     "systemPrompt": "테마 도우미 시스템 프롬프트",
@@ -16,7 +16,7 @@
     "requestType": "요청 유형",
     "classic": "Chat Completions (기본 방식)",
     "loadFailed": "저장된 모델 설정을 읽을 수 없습니다.",
-    "restartRequired": "업데이트된 모델 설정을 불러오려면 Antumnmark+를 다시 시작하세요.",
+    "restartRequired": "업데이트된 모델 설정을 불러오려면 AutumnMark+를 다시 시작하세요.",
     "contextTooSmall": "테마와 최근 메시지가 예상 컨텍스트 한도를 초과합니다. 컨텍스트 크기를 늘리거나 출력 한도를 줄이세요.",
     "add": "모델 추가",
     "edit": "모델 편집",
@@ -44,9 +44,9 @@
     "copy": "Copy folder path",
     "stop": "Stop collaboration",
     "install": "Install Skill",
-    "installed": "Antumnmark+ Skill installed in the shared skills folder.",
+    "installed": "AutumnMark+ Skill installed in the shared skills folder.",
     "skillConflict": "A different autumnmark-theme Skill already exists in the shared skills folder.",
-    "skillError": "The Antumnmark+ Skill could not be installed.",
+    "skillError": "The AutumnMark+ Skill could not be installed.",
     "openError": "The collaboration folder could not be opened.",
     "copied": "Folder path copied.",
     "copyError": "The folder path could not be copied.",
@@ -74,7 +74,7 @@
     "deleteTheme": "Delete theme",
     "cancel": "Cancel",
     "confirmDelete": "Permanently delete “{name}”, along with its draft changes, example Markdown, and AI chats?",
-    "deleteApplied": "Antumnmark+ will switch to this theme’s built-in base theme.",
+    "deleteApplied": "AutumnMark+ will switch to this theme’s built-in base theme.",
     "deleteFailed": "Could not complete theme deletion. Check the library and try again."
   },
   "studio": {
@@ -271,15 +271,15 @@
       "checkUpdates": "업데이트 확인"
     },
     "marktext": {
-      "title": "Antumnmark+",
-      "about": "Antumnmark+ 정보",
+      "title": "AutumnMark+",
+      "about": "AutumnMark+ 정보",
       "checkUpdates": "업데이트 확인...",
       "preferences": "환경설정",
       "services": "서비스",
-      "hide": "Antumnmark+ 숨기기",
+      "hide": "AutumnMark+ 숨기기",
       "hideOthers": "다른 앱 숨기기",
       "showAll": "모두 보기",
-      "quit": "Antumnmark+ 종료"
+      "quit": "AutumnMark+ 종료"
     },
     "view": {
       "view": "보기",
@@ -464,7 +464,7 @@
       "conflict": "The destination already contains an item with this name. Rename it before trying again.",
       "missing": "The source or destination no longer exists. Refresh the folder and try again.",
       "permission": "The item could not be moved. Check folder permissions and whether another application is using it.",
-      "openElsewhere": "Close this file and any documents inside this folder in other Antumnmark+ windows before moving it.",
+      "openElsewhere": "Close this file and any documents inside this folder in other AutumnMark+ windows before moving it.",
       "destinationOpen": "A document is already open at the destination path. Close it before trying again."
     }
   },
@@ -582,7 +582,7 @@
   },
   "import": {
     "title": "가져오기 또는 열기",
-    "description": "여기에 드롭하여 Antumnmark+로 가져오세요"
+    "description": "여기에 드롭하여 AutumnMark+로 가져오세요"
   },
   "preferences": {
     "title": "환경설정",
@@ -828,7 +828,7 @@
         "lastSuccessTime": "마지막 성공 시간",
         "invalidScript": "실행 가능한 기존 스크립트의 경로를 입력하세요."
       },
-      "defaultBehavior": "이미지를 Antumnmark+에 붙여넣거나 드래그한 후의 기본 동작"
+      "defaultBehavior": "이미지를 AutumnMark+에 붙여넣거나 드래그한 후의 기본 동작"
     },
     "markdown": {
       "title": "마크다운",
@@ -859,10 +859,10 @@
           "simple": "간단"
         },
         "mermaidLightTheme": {
-          "title": "Antumnmark+ 라이트 테마용 Mermaid 테마"
+          "title": "AutumnMark+ 라이트 테마용 Mermaid 테마"
         },
         "mermaidDarkTheme": {
-          "title": "Antumnmark+ 다크 테마용 Mermaid 테마"
+          "title": "AutumnMark+ 다크 테마용 Mermaid 테마"
         },
         "plantumlServer": {
           "title": "PlantUML 서버 URL"
@@ -936,7 +936,7 @@
       "applied": "{name} 테마를 적용했습니다.",
       "installedNotice": "{name} 테마를 설치했습니다. 로컬 테마에서 찾을 수 있습니다.",
       "updated": "{name} 테마를 업데이트했습니다.",
-      "incompatible": "Antumnmark+ {version} 필요",
+      "incompatible": "AutumnMark+ {version} 필요",
       "changeFailed": "테마 설정을 저장할 수 없습니다.",
       "installFailed": "이 테마를 다운로드하거나 저장할 수 없습니다.",
       "deleteTheme": "테마 삭제",
@@ -1046,7 +1046,7 @@
   },
   "commands": {
     "mt": {
-      "hide": "Antumnmark+ 숨기기",
+      "hide": "AutumnMark+ 숨기기",
       "hideOthers": "다른 앱 숨기기"
     },
     "file": {
@@ -1281,7 +1281,7 @@
     "fileExists": "파일이 이미 존재합니다: {filename}",
     "files": "파일",
     "importWarning": "가져오기 경고",
-    "installPandoc": "Pandoc를 찾을 수 없습니다. 설치하거나 환경 변수 MARKTEXT_PANDOC에 pandoc 실행 파일 경로를 설정한 뒤 Antumnmark+를 다시 시작하세요.",
+    "installPandoc": "Pandoc를 찾을 수 없습니다. 설치하거나 환경 변수 MARKTEXT_PANDOC에 pandoc 실행 파일 경로를 설정한 뒤 AutumnMark+를 다시 시작하세요.",
     "exportWarning": "내보내기 경고",
     "exportWarningMore": "…외 {count}건",
     "keepOpen": "열어두기",
@@ -1298,7 +1298,7 @@
     "configSchemaViolation": "구성 스키마 위반",
     "copyError": "복사 오류",
     "initializationFailed": "초기화 실패 {hint}",
-    "otherInstanceDetected": "Antumnmark+의 다른 인스턴스가 이미 실행 중입니다",
+    "otherInstanceDetected": "AutumnMark+의 다른 인스턴스가 이미 실행 중입니다",
     "report": "신고",
     "startupError": "시작 오류",
     "terminatedDueToError": "오류로 인해 종료됨",

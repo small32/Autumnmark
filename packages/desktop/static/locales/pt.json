@@ -1,6 +1,6 @@
 {
   "ai": {
-    "restartTools": "Reinicie o Antumnmark+ para ativar as capturas solicitadas pelo modelo.",
+    "restartTools": "Reinicie o AutumnMark+ para ativar as capturas solicitadas pelo modelo.",
     "inputTypes": "Entradas compatíveis",
     "image": "Imagem",
     "systemPrompt": "Instruções de sistema do assistente de temas",
@@ -16,7 +16,7 @@
     "requestType": "Tipo de solicitação",
     "classic": "Chat Completions (clássico)",
     "loadFailed": "Não foi possível ler as configurações de modelos salvas.",
-    "restartRequired": "Reinicie o Antumnmark+ para carregar as configurações de modelos atualizadas.",
+    "restartRequired": "Reinicie o AutumnMark+ para carregar as configurações de modelos atualizadas.",
     "contextTooSmall": "O tema e a última mensagem excedem o contexto estimado. Aumente o contexto ou reduza o limite de saída.",
     "add": "Adicionar modelo",
     "edit": "Editar modelo",
@@ -44,9 +44,9 @@
     "copy": "Copy folder path",
     "stop": "Stop collaboration",
     "install": "Install Skill",
-    "installed": "Antumnmark+ Skill installed in the shared skills folder.",
+    "installed": "AutumnMark+ Skill installed in the shared skills folder.",
     "skillConflict": "A different autumnmark-theme Skill already exists in the shared skills folder.",
-    "skillError": "The Antumnmark+ Skill could not be installed.",
+    "skillError": "The AutumnMark+ Skill could not be installed.",
     "openError": "The collaboration folder could not be opened.",
     "copied": "Folder path copied.",
     "copyError": "The folder path could not be copied.",
@@ -74,7 +74,7 @@
     "deleteTheme": "Delete theme",
     "cancel": "Cancel",
     "confirmDelete": "Permanently delete “{name}”, along with its draft changes, example Markdown, and AI chats?",
-    "deleteApplied": "Antumnmark+ will switch to this theme’s built-in base theme.",
+    "deleteApplied": "AutumnMark+ will switch to this theme’s built-in base theme.",
     "deleteFailed": "Could not complete theme deletion. Check the library and try again."
   },
   "studio": {
@@ -271,15 +271,15 @@
       "checkUpdates": "Verificar Atualizações"
     },
     "marktext": {
-      "title": "Antumnmark+",
-      "about": "Sobre Antumnmark+",
+      "title": "AutumnMark+",
+      "about": "Sobre AutumnMark+",
       "checkUpdates": "Verificar Atualizações...",
       "preferences": "Preferências",
       "services": "Serviços",
-      "hide": "Ocultar Antumnmark+",
+      "hide": "Ocultar AutumnMark+",
       "hideOthers": "Ocultar Outros",
       "showAll": "Mostrar Todos",
-      "quit": "Sair do Antumnmark+"
+      "quit": "Sair do AutumnMark+"
     },
     "view": {
       "view": "Visualizar",
@@ -464,7 +464,7 @@
       "conflict": "The destination already contains an item with this name. Rename it before trying again.",
       "missing": "The source or destination no longer exists. Refresh the folder and try again.",
       "permission": "The item could not be moved. Check folder permissions and whether another application is using it.",
-      "openElsewhere": "Close this file and any documents inside this folder in other Antumnmark+ windows before moving it.",
+      "openElsewhere": "Close this file and any documents inside this folder in other AutumnMark+ windows before moving it.",
       "destinationOpen": "A document is already open at the destination path. Close it before trying again."
     }
   },
@@ -582,7 +582,7 @@
   },
   "import": {
     "title": "Importar ou Abrir",
-    "description": "Solte aqui para colocar suas coisas no Antumnmark+"
+    "description": "Solte aqui para colocar suas coisas no AutumnMark+"
   },
   "preferences": {
     "title": "Preferências",
@@ -828,7 +828,7 @@
         "lastSuccessTime": "Última vez bem-sucedida",
         "invalidScript": "Introduza o caminho de um script existente e executável."
       },
-      "defaultBehavior": "O comportamento padrão após colar ou arrastar a imagem para o Antumnmark+"
+      "defaultBehavior": "O comportamento padrão após colar ou arrastar a imagem para o AutumnMark+"
     },
     "markdown": {
       "title": "Markdown",
@@ -859,10 +859,10 @@
           "simple": "Simples"
         },
         "mermaidLightTheme": {
-          "title": "Tema do Mermaid para temas claros do Antumnmark+"
+          "title": "Tema do Mermaid para temas claros do AutumnMark+"
         },
         "mermaidDarkTheme": {
-          "title": "Tema do Mermaid para temas escuros do Antumnmark+"
+          "title": "Tema do Mermaid para temas escuros do AutumnMark+"
         },
         "plantumlServer": {
           "title": "URL do servidor PlantUML"
@@ -936,7 +936,7 @@
       "applied": "Tema {name} aplicado.",
       "installedNotice": "Tema {name} instalado. Ele está disponível em Temas locais.",
       "updated": "Tema {name} atualizado.",
-      "incompatible": "Requer Antumnmark+ {version}",
+      "incompatible": "Requer AutumnMark+ {version}",
       "changeFailed": "Não foi possível salvar a configuração do tema.",
       "installFailed": "Não foi possível baixar ou salvar este tema.",
       "deleteTheme": "Excluir tema",
@@ -1046,7 +1046,7 @@
   },
   "commands": {
     "mt": {
-      "hide": "Ocultar Antumnmark+",
+      "hide": "Ocultar AutumnMark+",
       "hideOthers": "Ocultar Outros"
     },
     "file": {
@@ -1281,7 +1281,7 @@
     "fileExists": "O arquivo já existe: {filename}",
     "files": "Arquivos",
     "importWarning": "Aviso de importação",
-    "installPandoc": "Pandoc não foi encontrado. Instale-o, ou defina a variável de ambiente MARKTEXT_PANDOC com o caminho do executável do pandoc e reinicie o Antumnmark+.",
+    "installPandoc": "Pandoc não foi encontrado. Instale-o, ou defina a variável de ambiente MARKTEXT_PANDOC com o caminho do executável do pandoc e reinicie o AutumnMark+.",
     "exportWarning": "Aviso de exportação",
     "exportWarningMore": "…e mais {count}",
     "keepOpen": "Manter aberto",
@@ -1298,7 +1298,7 @@
     "configSchemaViolation": "Violação do esquema de configuração",
     "copyError": "Erro de cópia",
     "initializationFailed": "Falha na inicialização {hint}",
-    "otherInstanceDetected": "Outra instância do Antumnmark+ já está em execução",
+    "otherInstanceDetected": "Outra instância do AutumnMark+ já está em execução",
     "report": "Reportar",
     "startupError": "Erro de inicialização",
     "terminatedDueToError": "Terminado devido a erro",
