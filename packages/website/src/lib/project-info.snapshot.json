@@ -1,17 +1,17 @@
 {
-  "releaseVersion": "v0.2.2",
+  "releaseVersion": "v0.2.3",
   "githubStars": 0,
   "contributors": 0,
   "releaseAssets": [
     "SHA256SUMS.txt",
-    "autumnmark-mac-arm64-0.2.2.dmg",
-    "autumnmark-mac-arm64-0.2.2.dmg.blockmap",
-    "autumnmark-mac-arm64-0.2.2.zip",
-    "autumnmark-mac-arm64-0.2.2.zip.blockmap",
+    "autumnmark-mac-arm64-0.2.3.dmg",
+    "autumnmark-mac-arm64-0.2.3.dmg.blockmap",
+    "autumnmark-mac-arm64-0.2.3.zip",
+    "autumnmark-mac-arm64-0.2.3.zip.blockmap",
     "autumnmark-mac.yml",
-    "autumnmark-win-x64-0.2.2-setup.exe",
-    "autumnmark-win-x64-0.2.2-setup.exe.blockmap",
-    "autumnmark-win-x64-0.2.2.zip",
+    "autumnmark-win-x64-0.2.3-setup.exe",
+    "autumnmark-win-x64-0.2.3-setup.exe.blockmap",
+    "autumnmark-win-x64-0.2.3.zip",
     "autumnmark.yml",
     "builder-debug.yml"
   ]
