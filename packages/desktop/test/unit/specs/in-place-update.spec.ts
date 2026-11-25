@@ -30,26 +30,26 @@ describe('release assets', () => {
 
   it('maps each platform to the archive the release actually ships', () => {
     setPlatform('win32', 'x64')
-    expect(releaseAssetName('0.1.4')).toBe('autumnmark-win-x64-0.1.4.zip')
+    expect(releaseAssetName('0.2.0')).toBe('autumnmark-win-x64-0.2.0.zip')
     setPlatform('darwin', 'arm64')
-    expect(releaseAssetName('0.1.4')).toBe('autumnmark-mac-arm64-0.1.4.zip')
+    expect(releaseAssetName('0.2.0')).toBe('autumnmark-mac-arm64-0.2.0.zip')
     setPlatform('linux', 'x64')
-    expect(releaseAssetName('0.1.4')).toBe('autumnmark-linux-0.1.4.AppImage')
+    expect(releaseAssetName('0.2.0')).toBe('autumnmark-linux-0.2.0.AppImage')
     // No published artifact for these combinations.
     setPlatform('win32', 'arm64')
-    expect(releaseAssetName('0.1.4')).toBeNull()
-    expect(resolveReleaseAssets('0.1.4')).toEqual([])
+    expect(releaseAssetName('0.2.0')).toBeNull()
+    expect(resolveReleaseAssets('0.2.0')).toEqual([])
   })
 
   it('builds versioned download URLs plus the checksum file', () => {
     setPlatform('win32', 'x64')
-    const assets = resolveReleaseAssets('0.1.4')
+    const assets = resolveReleaseAssets('0.2.0')
     expect(assets.map(asset => asset.name)).toEqual([
-      'autumnmark-win-x64-0.1.4.zip',
+      'autumnmark-win-x64-0.2.0.zip',
       'SHA256SUMS.txt'
     ])
     expect(assets[0].url).toBe(
-      'https://github.com/small32/Autumnmark/releases/download/v0.1.4/autumnmark-win-x64-0.1.4.zip'
+      'https://github.com/small32/Autumnmark/releases/download/v0.2.0/autumnmark-win-x64-0.2.0.zip'
     )
   })
 })
@@ -57,12 +57,12 @@ describe('release assets', () => {
 describe('checksums', () => {
   it('parses sha256sum output, including the binary-mode marker', () => {
     const sums = parseChecksums([
-      'a'.repeat(64) + '  autumnmark-win-x64-0.1.4.zip',
-      'b'.repeat(64) + ' *autumnmark-mac-arm64-0.1.4.zip',
+      'a'.repeat(64) + '  autumnmark-win-x64-0.2.0.zip',
+      'b'.repeat(64) + ' *autumnmark-mac-arm64-0.2.0.zip',
       'not a checksum line'
     ].join('\n'))
-    expect(sums.get('autumnmark-win-x64-0.1.4.zip')).toBe('a'.repeat(64))
-    expect(sums.get('autumnmark-mac-arm64-0.1.4.zip')).toBe('b'.repeat(64))
+    expect(sums.get('autumnmark-win-x64-0.2.0.zip')).toBe('a'.repeat(64))
+    expect(sums.get('autumnmark-mac-arm64-0.2.0.zip')).toBe('b'.repeat(64))
     expect(sums.size).toBe(2)
   })
 
