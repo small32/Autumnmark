@@ -1324,7 +1324,8 @@
     "waiting": "Toujours en attente d’une réponse…",
     "available": "La version {version} est disponible sur GitHub Release.",
     "openRelease": "Voir la version",
-    "download": "Télécharger et installer"
+    "download": "Télécharger et installer",
+    "cancel": "Annuler le téléchargement"
   },
   "notifications": {
     "defaultMessage": "Message par défaut",

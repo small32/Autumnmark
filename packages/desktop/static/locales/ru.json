@@ -1324,7 +1324,8 @@
     "waiting": "Ожидание ответа…",
     "available": "Версия {version} доступна в GitHub Release.",
     "openRelease": "Открыть выпуск",
-    "download": "Скачать и установить"
+    "download": "Скачать и установить",
+    "cancel": "Отменить загрузку"
   },
   "notifications": {
     "defaultMessage": "Сообщение по умолчанию",

@@ -73,6 +73,16 @@ export const useAutoUpdatesStore = defineStore('autoUpdates', () => {
     }
   }
 
+  function download(): void {
+    if (!onlineEnabled.value) return
+    if (state.value.phase !== 'available') return
+    window.electron.ipcRenderer.send('mt::update-download', state.value.version)
+  }
+
+  function cancel(): void {
+    window.electron.ipcRenderer.send('mt::update-cancel')
+  }
+
   function openRelease(): void {
     window.electron.ipcRenderer.send('mt::shell::open-external', releaseUrl.value)
   }
@@ -80,6 +90,6 @@ export const useAutoUpdatesStore = defineStore('autoUpdates', () => {
   return {
     state, progress, percent, status, showProgressButton, visible,
     noticesEnabled, onlineEnabled, releaseVersion, releaseUrl,
-    listen, hide, retry, install, openRelease
+    listen, hide, retry, install, download, cancel, openRelease
   }
 })

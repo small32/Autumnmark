@@ -123,5 +123,41 @@ describe('release-only update checks', () => {
     await vi.waitFor(() => {
       expect(fetchMock).toHaveBeenCalledOnce()
     })
+    // A manual check never opens a dialog while notices are off.
+    expect(send.mock.calls.some(call => call[2] === true)).toBe(false)
+  })
+
+  it('announces a new release once and keeps the notice after a background dismissal', async() => {
+    fetchMock = vi.fn(async() => release('v0.2.0'))
+    vi.stubGlobal('fetch', fetchMock)
+    updates.startAutomaticUpdateChecks(() => win)
+    await vi.waitFor(() => {
+      expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version: '0.2.0' }, true)
+    })
+    send.mockClear()
+
+    // Re-checking the same release must not re-open the dialog on its own.
+    updates.checkUpdates(win)
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+    expect(send.mock.calls.filter(call => call[2] === true)).toHaveLength(1)
+  })
+
+  it('retries a failed check', async() => {
+    fetchMock = vi.fn(async() => { throw new Error('offline') })
+    vi.stubGlobal('fetch', fetchMock)
+    updates.checkUpdates(win)
+    await vi.waitFor(() => {
+      expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'error', stage: 'check' })
+    })
+
+    fetchMock = vi.fn(async() => release('v0.2.0'))
+    vi.stubGlobal('fetch', fetchMock)
+    updates.checkUpdates(win)
+    await vi.waitFor(() => {
+      // A manual check reports the version without an unsolicited notice.
+      expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version: '0.2.0' })
+    })
   })
 })

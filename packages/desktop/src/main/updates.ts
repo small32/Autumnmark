@@ -1,10 +1,16 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { app, ipcMain, BrowserWindow, type WebContents } from 'electron'
-import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import type { UpdateState } from '@shared/types/ipc'
 import { APP_NAME, GITHUB_REPO_SLUG } from '@shared/brand'
-import { isUpdatable, canCheckForUpdates } from './utils/isUpdatable'
+import { canCheckForUpdates, canInstallInPlace } from './utils/isUpdatable'
 import { isNewerRelease } from './utils/releaseVersion'
+import {
+  downloadFile, extractArchive, launchApplyScript, parseChecksums,
+  resolveApplyScript, resolveInstallTarget, resolveReleaseAssets,
+  stagedBundlePath, verifyChecksum, type ApplyMode
+} from './inPlaceUpdate'
 import { onInternalChannel } from './utils/internalIpc'
 
 const LATEST_RELEASE_URL = `https://api.github.com/repos/${GITHUB_REPO_SLUG}/releases/latest`
@@ -22,6 +28,8 @@ let startupCheckDone = false
 let dismissedNoticeGeneration = 0
 let getActiveWindow: (() => BrowserWindow | null) | undefined
 let readPreferences: (() => PreferenceReader | null) | null = null
+let downloadAbort: AbortController | null = null
+let staged: { version: string; staging: string; archive: string } | null = null
 
 interface PreferenceReader {
   getItem(key: string): unknown
@@ -37,11 +45,6 @@ const readBooleanPreference = (key: string, fallback: boolean): boolean => {
 // are wired up (and in the update specs, which do not construct the accessor).
 const noticesEnabled = (): boolean => readBooleanPreference('checkUpdatesOnStartup', true)
 export const onlineUpdatesEnabled = (): boolean => readBooleanPreference('onlineUpdateEnabled', true)
-
-autoUpdater.allowPrerelease = false
-autoUpdater.autoDownload = false
-// Prefetching a package must not turn a normal exit into consent to install it.
-autoUpdater.autoInstallOnAppQuit = false
 
 const publish = (next: UpdateState): void => {
   state = next
@@ -73,41 +76,8 @@ ipcMain.on('mt::update-listen', ({ sender }) => {
   sender.send('mt::update-state', state, show)
 })
 
-autoUpdater.on('download-progress', ({ transferred, total, bytesPerSecond }) => {
-  if (state.phase === 'downloading') {
-    publish({ ...state, progress: { transferred, total, bytesPerSecond } })
-  }
-})
-
-const reportInstallError = (error: unknown): void => {
-  if (state.phase === 'installing') {
-    log.warn('Update installation failed:', error)
-    publish({ phase: 'error', stage: 'install', version: state.version })
-  }
-}
-// Platform installers can report launch errors after quitAndInstall returns.
-autoUpdater.on('error', reportInstallError)
-
-ipcMain.on('mt::update-install', (_event, version: string) => {
-  if (!onlineUpdatesEnabled()) return
-  if (state.phase !== 'ready' && !(state.phase === 'error' && state.stage === 'install')) return
-  if (!version || state.version !== version) return
-  publish({ phase: 'installing', version })
-  try {
-    autoUpdater.quitAndInstall()
-  } catch (error) {
-    reportInstallError(error)
-  }
-})
-
-ipcMain.on('mt::update-background', () => {
-  announceDownload = false
-  pendingDialog = undefined
-})
-
-// Portable ZIPs, unsigned macOS builds and Linux packages without AppImage
-// support cannot replace themselves in place. They can still ask GitHub for the
-// latest release and point the user at the download page.
+const isAbortError = (error: unknown): boolean =>
+  error instanceof Error && (error.name === 'AbortError' || error.message.includes('aborted'))
 
 const fetchLatestRelease = async(): Promise<string> => {
   const response = await fetch(LATEST_RELEASE_URL, {
@@ -130,17 +100,84 @@ const fetchLatestRelease = async(): Promise<string> => {
   return payload.tag_name
 }
 
-// Resolve only the presence of a newer release; never touch the filesystem.
-const checkLatestRelease = async(generation: number, getWindow: () => BrowserWindow | null): Promise<void> => {
-  const tag = await fetchLatestRelease()
-  if (generation !== dismissedNoticeGeneration) return
-  const version = tag.replace(/^v/, '')
-  if (!isNewerRelease(version, app.getVersion())) {
-    publish({ phase: 'current' })
-    return
+const updateRoot = (version: string): string =>
+  path.join(app.getPath('temp'), 'autumnmark-update', version)
+
+const downloadRelease = async(version: string): Promise<void> => {
+  const assets = resolveReleaseAssets(version)
+  if (!assets.length) throw new Error('This platform has no release archive')
+  const [archiveAsset, sumsAsset] = assets
+  const directory = updateRoot(version)
+  await fs.rm(directory, { recursive: true, force: true })
+  await fs.mkdir(directory, { recursive: true })
+
+  const archive = path.join(directory, archiveAsset.name)
+  downloadAbort = new AbortController()
+  publish({ phase: 'downloading', version, progress: { transferred: 0, total: 0, bytesPerSecond: 0 } })
+  try {
+    await downloadFile(archiveAsset.url, archive, progress => {
+      if (state.phase === 'downloading') publish({ ...state, progress })
+    }, downloadAbort.signal)
+
+    const sumsPath = path.join(directory, sumsAsset.name)
+    await downloadFile(sumsAsset.url, sumsPath, () => {}, downloadAbort.signal)
+    const sums = parseChecksums(await fs.readFile(sumsPath, 'utf8'))
+    const expected = sums.get(archiveAsset.name)
+    if (!expected) throw new Error('The release has no checksum for this archive')
+    await verifyChecksum(archive, expected)
+
+    if (process.platform === 'linux') {
+      // An AppImage is the artifact itself; there is nothing to unpack.
+      staged = { version, staging: archive, archive }
+    } else {
+      const staging = path.join(directory, 'staging')
+      await extractArchive(archive, staging)
+      staged = { version, staging, archive }
+    }
+    publish({ phase: 'ready', version })
+    if (announceDownload && getActiveWindow) showDialog(getActiveWindow())
+  } catch (error) {
+    if (isAbortError(error)) {
+      publish({ phase: 'available', version })
+      return
+    }
+    throw error
+  } finally {
+    downloadAbort = null
   }
-  publish({ phase: 'available', version })
-  if (announceDownload) showDialog(getWindow())
+}
+
+const applyUpdate = async(version: string): Promise<void> => {
+  if (!staged || staged.version !== version) throw new Error('The update archive is not staged')
+  const install = resolveInstallTarget()
+  const bundle = install.mode === 'app' ? await stagedBundlePath(staged.staging) : null
+  const scriptSource = await resolveApplyScript(staged.staging, bundle)
+  // Run a copy outside the staged tree: the script must not be read from a
+  // directory that the swap is about to overwrite.
+  const runDirectory = path.join(updateRoot(version), 'run')
+  await fs.mkdir(runDirectory, { recursive: true })
+  const script = path.join(runDirectory, path.basename(scriptSource))
+  await fs.copyFile(scriptSource, script)
+  let source: string
+  if (install.mode === 'app') {
+    if (!bundle) throw new Error('The update archive has no application bundle')
+    source = bundle
+  } else if (install.mode === 'file') {
+    source = staged.archive
+  } else {
+    source = staged.staging
+  }
+  const cleanup = path.dirname(staged.staging)
+  const logPath = path.join(app.getPath('logs'), 'update.log')
+  const mode: ApplyMode = install.mode
+
+  publish({ phase: 'installing', version })
+  const { elevated } = await launchApplyScript({
+    script, source, target: install.target, launch: install.launch, mode, cleanup, logPath
+  })
+  log.info(`Update ${version} handed to ${path.basename(script)} (elevated: ${elevated})`)
+  // Let the renderer paint the installing state before the process goes away.
+  setTimeout(() => app.quit(), 800)
 }
 
 const runCheck = async(automatic: boolean, getWindow: () => BrowserWindow | null): Promise<void> => {
@@ -158,52 +195,21 @@ const runCheck = async(automatic: boolean, getWindow: () => BrowserWindow | null
   if (busy || state.phase === 'installing' || (!automatic && cached)) return
   busy = true
   announceDownload = automatic && noticesEnabled()
-  let version: string | undefined
   try {
-    if (!isUpdatable()) {
-      await checkLatestRelease(generation, getWindow)
-      return
-    }
-    const result = await autoUpdater.checkForUpdates()
+    const tag = await fetchLatestRelease()
     if (generation !== dismissedNoticeGeneration) return
-    // A cached installer may have been launched during a startup release check.
     if (cached && state !== previous) return
-    if (!result) {
-      if (!cached) publish({ phase: 'error', stage: 'check' })
-      return
-    }
-    if (!result.isUpdateAvailable) {
+    const version = tag.replace(/^v/, '')
+    if (!isNewerRelease(version, app.getVersion())) {
       publish({ phase: 'current' })
       return
     }
-    version = result.updateInfo.version
-    if (cached && previous.version === version) return
-
-    // Online updates are optional. With the switch off we still report the new
-    // version, but never fetch or install a package in the background.
-    if (!onlineUpdatesEnabled()) {
-      publish({ phase: 'available', version })
-      if (announceDownload) showDialog(getWindow())
-      return
-    }
-
-    publish({ phase: 'downloading', version, progress: null })
-    await autoUpdater.downloadUpdate()
-    if (generation !== dismissedNoticeGeneration) return
-    // Switching to release-page-only updates mid-download must not present a
-    // ready-to-install package the installer switch now refuses to install.
-    if (!onlineUpdatesEnabled()) {
-      publish({ phase: 'available', version })
-      if (announceDownload) showDialog(getWindow())
-      return
-    }
-    publish({ phase: 'ready', version })
+    publish({ phase: 'available', version })
     if (announceDownload) showDialog(getWindow())
   } catch (error) {
-    log.warn('Software update failed:', error)
+    log.warn('Software update check failed:', error)
     if (generation !== dismissedNoticeGeneration) return
-    if (version) publish({ phase: 'error', stage: 'download', version })
-    else if (!cached) publish({ phase: 'error', stage: 'check' })
+    if (!cached) publish({ phase: 'error', stage: 'check' })
   } finally {
     busy = false
     // An in-flight check discarded by a dismissed notice (or a quick
@@ -213,6 +219,37 @@ const runCheck = async(automatic: boolean, getWindow: () => BrowserWindow | null
   }
 }
 
+const reportFailure = (stage: 'download' | 'install', version: string, error: unknown): void => {
+  log.warn(`Software update ${stage} failed:`, error)
+  publish({ phase: 'error', stage, version })
+}
+
+ipcMain.on('mt::update-download', (_event, version: string) => {
+  if (!onlineUpdatesEnabled()) return
+  if (state.phase !== 'available' || state.version !== version) return
+  if (busy || downloadAbort) return
+  if (!canInstallInPlace()) {
+    publish({ phase: 'error', stage: 'download', version })
+    return
+  }
+  void downloadRelease(version).catch(error => reportFailure('download', version, error))
+})
+
+ipcMain.on('mt::update-cancel', () => {
+  downloadAbort?.abort()
+})
+
+ipcMain.on('mt::update-install', (_event, version: string) => {
+  if (!onlineUpdatesEnabled()) return
+  if (state.phase !== 'ready' || state.version !== version) return
+  void applyUpdate(version).catch(error => reportFailure('install', version, error))
+})
+
+ipcMain.on('mt::update-background', () => {
+  announceDownload = false
+  pendingDialog = undefined
+})
+
 const handlePreferenceChange = (patch: Record<string, unknown>): void => {
   const windowGetter = getActiveWindow ?? (() => null)
   if ('checkUpdatesOnStartup' in patch) {
@@ -220,13 +257,12 @@ const handlePreferenceChange = (patch: Record<string, unknown>): void => {
       announceDownload = false
       pendingDialog = undefined
       dismissedNoticeGeneration += 1
-      if (state.phase !== 'idle') publish({ phase: 'idle' })
+      if (state.phase !== 'idle' && state.phase !== 'downloading' && state.phase !== 'installing') {
+        publish({ phase: 'idle' })
+      }
     } else if (!busy && state.phase === 'idle') {
       void runCheck(true, windowGetter)
     }
-  }
-  if ('onlineUpdateEnabled' in patch && onlineUpdatesEnabled() && state.phase === 'available') {
-    void runCheck(false, windowGetter)
   }
 }
 

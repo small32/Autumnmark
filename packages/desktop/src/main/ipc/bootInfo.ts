@@ -2,7 +2,7 @@ import { app, ipcMain } from 'electron'
 import { rgPath } from '@vscode/ripgrep'
 import { MARKDOWN_INCLUSIONS } from 'common/filesystem/paths'
 import type { BootInfo } from '@shared/types/ipc'
-import { canCheckForUpdates, isUpdatable } from '../utils/isUpdatable'
+import { canCheckForUpdates, canInstallInPlace, isUpdatable } from '../utils/isUpdatable'
 
 const ENV_ALLOWLIST = [
   'NODE_ENV',
@@ -47,6 +47,7 @@ const buildBootInfo = (): BootInfo => ({
   },
   isUpdatable: isUpdatable(),
   canCheckForUpdates: canCheckForUpdates(),
+  canInstallInPlace: canInstallInPlace(),
   MARKDOWN_INCLUSIONS: [...MARKDOWN_INCLUSIONS]
 })
 

@@ -15,3 +15,8 @@ export const isUpdatable = (): boolean => {
 // `process.defaultApp` is set only while Electron runs unpackaged.
 export const canCheckForUpdates = (): boolean =>
   isUpdatable() || (process as NodeJS.Process & { defaultApp?: boolean }).defaultApp !== true
+
+// Windows and macOS bundles, plus Linux AppImages, can be replaced in place by
+// the updater script. deb/rpm/snap installs belong to the package manager.
+export const canInstallInPlace = (): boolean =>
+  process.platform === 'win32' || process.platform === 'darwin' || Boolean(process.env.APPIMAGE)

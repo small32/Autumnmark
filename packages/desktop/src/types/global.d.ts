@@ -106,6 +106,7 @@ declare global {
     paths: Partial<BootInfo['paths']>
     isUpdatable: boolean
     canCheckForUpdates: boolean
+    canInstallInPlace: boolean
     windowControl: ElectronWindowControlAPI
     dialog: ElectronDialogAPI
   }

@@ -708,7 +708,7 @@
         "onlineUpdateEnabled": "Allow in-app updates",
         "onlineUpdateEnabledNote": "Download and install new versions from GitHub Releases inside the app. Turn off to view the release page only.",
         "checkNow": "Check now",
-        "unavailable": "This portable or unsigned build cannot update in place. Download the installer to update manually."
+        "unavailable": "This installation is managed by the system package manager. Download the installer to update manually."
       }
     },
     "editor": {
@@ -1324,7 +1324,8 @@
     "waiting": "Still waiting for a response…",
     "available": "Version {version} is available on GitHub Release.",
     "openRelease": "View release",
-    "download": "Download and install"
+    "download": "Download and install",
+    "cancel": "Cancel download"
   },
   "notifications": {
     "defaultMessage": "Default message",

@@ -1324,7 +1324,8 @@
     "waiting": "Yanıt bekleniyor…",
     "available": "GitHub Release sürüm {version} kullanıma sunuldu.",
     "openRelease": "Sürümü görüntüle",
-    "download": "İndir ve yükle"
+    "download": "İndir ve yükle",
+    "cancel": "İndirmeyi iptal et"
   },
   "notifications": {
     "defaultMessage": "Varsayılan mesaj",

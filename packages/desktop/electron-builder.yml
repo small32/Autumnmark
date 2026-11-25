@@ -46,6 +46,12 @@ extraResources:
     to: icons
     filter:
       - '*.ico'
+  # In-place updater scripts ship with every build so an update is always
+  # applied by the script that belongs to the version being installed.
+  - from: build/update
+    to: update
+    filter:
+      - '**/*'
   - from: static
     to: static
     filter:

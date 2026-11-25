@@ -1324,7 +1324,8 @@
     "waiting": "応答を待っています…",
     "available": "GitHub Release に新しいバージョン {version} があります。",
     "openRelease": "リリースを表示",
-    "download": "ダウンロードしてインストール"
+    "download": "ダウンロードしてインストール",
+    "cancel": "ダウンロードをキャンセル"
   },
   "notifications": {
     "defaultMessage": "デフォルトメッセージ",

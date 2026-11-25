@@ -65,6 +65,19 @@
         {{ t('updates.openRelease') }}
       </el-button>
       <el-button
+        v-if="canCancel"
+        @click="updates.cancel"
+      >
+        {{ t('updates.cancel') }}
+      </el-button>
+      <el-button
+        v-else-if="canDownload"
+        type="primary"
+        @click="updates.download"
+      >
+        {{ t('updates.download') }}
+      </el-button>
+      <el-button
         v-if="canInstall"
         type="primary"
         @click="updates.install"
@@ -101,7 +114,10 @@ const size = computed(() => new Intl.NumberFormat(locale.value, {
 const speed = computed(() => new Intl.NumberFormat(locale.value, {
   style: 'unit', unit: 'megabyte-per-second', maximumFractionDigits: 2
 }))
-const canInstall = computed(() => onlineEnabled.value && (
+const installable = window.electron.canInstallInPlace === true
+const canDownload = computed(() => installable && onlineEnabled.value && state.value.phase === 'available')
+const canCancel = computed(() => state.value.phase === 'downloading')
+const canInstall = computed(() => installable && onlineEnabled.value && (
   state.value.phase === 'ready' ||
   (state.value.phase === 'error' && state.value.stage === 'install')
 ))

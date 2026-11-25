@@ -292,6 +292,7 @@ const electronAPI = {
   paths: bootInfo?.paths || {},
   isUpdatable: !!bootInfo?.isUpdatable,
   canCheckForUpdates: !!bootInfo?.canCheckForUpdates,
+  canInstallInPlace: !!bootInfo?.canInstallInPlace,
   windowControl: windowControlAPI,
   dialog: dialogAPI
 }

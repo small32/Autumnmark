@@ -218,10 +218,10 @@
           :bool="checkUpdatesOnStartup"
           :on-change="(value) => onSelectChange('checkUpdatesOnStartup', value)"
         />
-        <!-- Portable and unsigned builds cannot install updates in place, so the
-             download switch would have nothing to control. -->
+        <!-- Package-manager installs (deb/rpm/snap) cannot replace themselves,
+             so the download switch would have nothing to control. -->
         <bool
-          v-if="updatable"
+          v-if="installable"
           id="setting-onlineUpdateEnabled"
           :description="preferenceLabel('onlineUpdateEnabled')"
           :notes="preferenceNotes('onlineUpdateEnabled')"
@@ -238,7 +238,20 @@
             {{ t('preferences.general.updates.checkNow') }}
           </el-button>
           <!-- The update dialog is suppressed when notices are off, so the
-               settings page must offer the install/release actions itself. -->
+               settings page must offer every update action itself. -->
+          <el-button
+            v-if="updateDownloadable"
+            type="primary"
+            @click="updates.download()"
+          >
+            {{ t('updates.download') }}
+          </el-button>
+          <el-button
+            v-if="updateCancellable"
+            @click="updates.cancel()"
+          >
+            {{ t('updates.cancel') }}
+          </el-button>
           <el-button
             v-if="updateInstallable"
             type="primary"
@@ -252,10 +265,17 @@
           >
             {{ t('updates.openRelease') }}
           </el-button>
+          <el-button
+            v-if="updateRetryable"
+            type="primary"
+            @click="updates.retry()"
+          >
+            {{ t('updates.retry') }}
+          </el-button>
           <span v-if="updateStatus">{{ updateStatus }}</span>
         </div>
         <p
-          v-if="!updatable"
+          v-if="checkable && !installable"
           class="update-note"
         >
           {{ t('preferences.general.updates.unavailable') }}
@@ -334,16 +354,20 @@ const {
 
 const updates = useAutoUpdatesStore()
 const { status: updateStatus } = storeToRefs(updates)
-const updatable = window.electron.isUpdatable === true
-// Portable ZIPs, unsigned macOS builds and non-AppImage Linux packages can
-// still ask GitHub for the latest release, they just cannot install it.
+// Portable ZIPs and unsigned macOS builds are replaced by the bundled updater
+// script, so they can install in place; deb/rpm/snap cannot.
+const installable = window.electron.canInstallInPlace === true
 const checkable = window.electron.canCheckForUpdates === true
 const updateChecking = computed(() => updates.state.phase === 'checking')
-// A ready package can be installed from here even when the update dialog is
+const updateDownloadable = computed(() =>
+  installable && updates.state.phase === 'available' && updates.onlineEnabled)
+const updateCancellable = computed(() => updates.state.phase === 'downloading')
+// A staged package can be applied from here even when the update dialog is
 // suppressed by the "check on startup" switch.
 const updateInstallable = computed(() =>
-  updates.state.phase === 'ready' && updates.onlineEnabled)
+  installable && updates.state.phase === 'ready' && updates.onlineEnabled)
 const updateReleaseAvailable = computed(() => updates.state.phase === 'available')
+const updateRetryable = computed(() => updates.state.phase === 'error')
 const checkForUpdates = (): void => {
   window.electron.ipcRenderer.send('mt::check-for-update')
 }

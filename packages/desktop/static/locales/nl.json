@@ -1324,7 +1324,8 @@
     "waiting": "Nog steeds aan het wachten op een antwoord…",
     "available": "Versie {version} is beschikbaar op GitHub Release.",
     "openRelease": "Release bekijken",
-    "download": "Downloaden en installeren"
+    "download": "Downloaden en installeren",
+    "cancel": "Download annuleren"
   },
   "notifications": {
     "defaultMessage": "Standaardbericht",

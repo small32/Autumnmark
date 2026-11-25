@@ -1324,7 +1324,8 @@
     "waiting": "응답을 기다리는 중…",
     "available": "GitHub Release에 새 버전 {version}이 있습니다.",
     "openRelease": "릴리스 보기",
-    "download": "다운로드 및 설치"
+    "download": "다운로드 및 설치",
+    "cancel": "다운로드 취소"
   },
   "notifications": {
     "defaultMessage": "기본 메시지",

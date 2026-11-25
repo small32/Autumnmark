@@ -208,6 +208,8 @@ export interface IpcSendChannels {
   'mt::check-for-update': []
   'mt::update-listen': []
   'mt::update-background': []
+  'mt::update-download': [version: string]
+  'mt::update-cancel': []
   'mt::update-install': [version: string]
   'mt::cancel-pending-preview': [requestId: number]
   'mt::cmd-close-window': []
@@ -384,5 +386,6 @@ export interface BootInfo {
   }
   isUpdatable: boolean
   canCheckForUpdates: boolean
+  canInstallInPlace: boolean
   MARKDOWN_INCLUSIONS: string[]
 }
