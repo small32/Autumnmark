@@ -1,3 +1,7 @@
+## AutumnMark+ 0.2.1
+
+- Fixed an update that could stop at "cannot move the current build aside" when the previous instance had just closed. The updater now waits for all processes running from the install folder to exit and retries the swap for a few seconds if a file is briefly still in use.
+
 ## AutumnMark+ 0.2.0
 
 - The About dialog now shows only the application name, version and a link to the GitHub repository. The copyright notice and the dynamically fetched community links (QQ group, Telegram channel, video channel) have been removed.

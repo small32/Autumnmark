@@ -41,6 +41,22 @@ function Wait-ForOldProcess {
   }
 }
 
+# The main process can be gone while its helper processes (GPU, renderer,
+# crash handler) still hold files under the install directory. Rename-Item
+# fails with "item is in use" until those handles are released, so wait for
+# every process running from this directory before touching it.
+function Wait-ForInstalledProcesses {
+  $deadline = (Get-Date).AddSeconds(20)
+  $prefix = $Target.TrimEnd('\') + '\'
+  while ((Get-Date) -lt $deadline) {
+    $running = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+      Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) })
+    if ($running.Count -eq 0) { return }
+    Start-Sleep -Milliseconds 400
+  }
+  Write-UpdateLog 'some processes under the install directory are still running; continuing'
+}
+
 function Remove-OldBackups {
   $parent = Split-Path -Parent $Target
   $leaf = Split-Path -Leaf $Target
@@ -55,6 +71,7 @@ function Remove-OldBackups {
 
 Write-UpdateLog "start (source=$Source, target=$Target, pid=$ParentPid)"
 Wait-ForOldProcess
+Wait-ForInstalledProcesses
 
 if (-not (Test-Path -LiteralPath $Source)) {
   Write-UpdateLog 'staged build is missing; aborting'
@@ -62,19 +79,34 @@ if (-not (Test-Path -LiteralPath $Source)) {
   exit 2
 }
 
-$stamp = Get-Date -Format 'yyyyMMddHHmmss'
-$backup = "$Target.backup-$stamp"
 $moved = $false
 
 if (Test-Path -LiteralPath $Target) {
-  try {
-    Move-Item -LiteralPath $Target -Destination $backup -Force
-    $moved = $true
-    Write-UpdateLog "current build moved to $backup"
-  } catch {
-    Write-UpdateLog "cannot move the current build aside (permission or lock): $_"
-    exit 3
+  # Antivirus, the shell or a dying helper can hold a handle for a moment
+  # after the processes exit. A failed Move-Item may already have relocated
+  # part of the directory, so each attempt uses a fresh backup name and drops
+  # incomplete leftovers before retrying.
+  $moveOk = $false
+  for ($attempt = 1; $attempt -le 15; $attempt++) {
+    $backup = '{0}.backup-{1}-{2}' -f $Target, (Get-Date -Format 'yyyyMMddHHmmss'), $attempt
+    try {
+      Move-Item -LiteralPath $Target -Destination $backup -Force -ErrorAction Stop
+      $moveOk = $true
+      $moved = $true
+      Write-UpdateLog "current build moved to $backup (attempt $attempt)"
+      break
+    } catch {
+      if (Test-Path -LiteralPath $backup) {
+        try { Remove-Item -LiteralPath $backup -Recurse -Force -ErrorAction Stop } catch { }
+      }
+      if ($attempt -eq 15) {
+        Write-UpdateLog "cannot move the current build aside after $attempt attempts (permission or lock): $_"
+        exit 3
+      }
+      Start-Sleep -Milliseconds 800
+    }
   }
+  if (-not $moveOk) { exit 3 }
 }
 
 $copyOk = $false
