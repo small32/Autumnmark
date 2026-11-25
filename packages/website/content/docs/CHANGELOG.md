@@ -1,3 +1,11 @@
+## AutumnMark+ 0.2.5
+
+- Integrated recent upstream editor improvements, including document chat, theme versions and history, assistant context and reversible text handling, while keeping the AutumnMark+ interface and the self-hosted update flow intact.
+- Fixed simultaneous window and tab close requests blocking each other, and restored theme assistant prompt settings so they are saved and loaded correctly.
+- Completed translations for all supported languages and removed menu items and shortcuts that did not lead to a working action.
+- Hardened the renderer bridge so every exposed IPC API validates its channel, including event listeners.
+- Fixed the document file picker still offering Excalidraw drawings after drawing support was disabled.
+
 ## AutumnMark+ 0.2.3
 
 - Removed Linux support. Official packages are now published for Windows x64 and macOS ARM64 only; Linux-specific code, build targets, downloads and documentation have been dropped.
