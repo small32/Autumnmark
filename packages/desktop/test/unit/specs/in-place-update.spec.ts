@@ -49,7 +49,7 @@ describe('release assets', () => {
       'SHA256SUMS.txt'
     ])
     expect(assets[0].url).toBe(
-      'https://github.com/small32/Autumnmark/releases/download/v0.2.0/autumnmark-win-x64-0.2.0.zip'
+      'https://github.com/small32/Antumnmark-Plus/releases/download/v0.2.0/autumnmark-win-x64-0.2.0.zip'
     )
   })
 })

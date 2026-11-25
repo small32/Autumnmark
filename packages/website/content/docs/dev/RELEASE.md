@@ -6,13 +6,13 @@ All pre-release testing takes place on GitHub-hosted runners. During release pre
 
 Release notes explicitly compare against the highest published stable `vX.Y.Z` version below the new version, selected from all release pages by `scripts/select-release-base.py`. Drafts, prereleases, and the current version are excluded. RCs compare against the previous stable cycle; hotfixes exclude newer versions. For example, `v0.22.0` compares against `v0.21.2` even if that tag is on a separate release branch. A repository with no published stable releases may publish its first release cycle without a comparison base. Otherwise, the workflow fails if no earlier stable release exists. Verify the `Full Changelog` link during release review.
 
-Antumnmark+ checks published stable releases in `small32/Autumnmark` on the `autumnmark` channel configured in `packages/desktop/electron-builder.yml`. Upload the generated installers, blockmaps, and `autumnmark*.yml` files together. Keep both package versions equal to the pushed tag (without `v`), and increase the version for each update. Users upgrading from 0.24.8 or earlier need to install an independent release manually before receiving updates on this channel. In-app updates are available for Windows setup and Linux AppImage installations.
+Antumnmark+ checks published stable releases in `small32/Antumnmark-Plus` on the `autumnmark` channel configured in `packages/desktop/electron-builder.yml`. Upload the generated installers, blockmaps, and `autumnmark*.yml` files together. Keep both package versions equal to the pushed tag (without `v`), and increase the version for each update. Users upgrading from 0.24.8 or earlier need to install an independent release manually before receiving updates on this channel. In-app updates are available for Windows setup and Linux AppImage installations.
 
 The flow below covers both release candidates and stable releases — same steps, only the version string differs.
 
 ## Prerequisites
 
-- Push access to `small32/Autumnmark`
+- Push access to `small32/Antumnmark-Plus`
 - `gh` CLI authenticated (`gh auth status`)
 - A clean checkout of the latest `develop`
 

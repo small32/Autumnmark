@@ -25,10 +25,10 @@
       "url": "https://github.com/Tkaixiang"
     }
   ],
-  "homepage": "https://github.com/small32/Autumnmark",
+  "homepage": "https://github.com/small32/Antumnmark-Plus",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/small32/Autumnmark.git"
+    "url": "git+https://github.com/small32/Antumnmark-Plus.git"
   },
   "scripts": {
     "minify-locales": "tsx ../../scripts/minify-locales.ts",

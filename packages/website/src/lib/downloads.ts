@@ -1,11 +1,11 @@
 export const DOWNLOAD = {
-  releases: 'https://github.com/small32/Autumnmark/releases',
-  repo: 'https://github.com/small32/Autumnmark',
-  contributing: 'https://github.com/small32/Autumnmark/blob/develop/.github/CONTRIBUTING.md',
-  issues: 'https://github.com/small32/Autumnmark/issues',
+  releases: 'https://github.com/small32/Antumnmark-Plus/releases',
+  repo: 'https://github.com/small32/Antumnmark-Plus',
+  contributing: 'https://github.com/small32/Antumnmark-Plus/blob/develop/.github/CONTRIBUTING.md',
+  issues: 'https://github.com/small32/Antumnmark-Plus/issues',
   sponsor: 'https://github.com/sponsors/marktext',
   twitter:
-    'https://twitter.com/intent/tweet?via=marktextme&url=https://github.com/small32/Autumnmark/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkText',
+    'https://twitter.com/intent/tweet?via=marktextme&url=https://github.com/small32/Antumnmark-Plus/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkText',
   serpapi: 'https://serpapi.com/?utm_source=marktext'
 }
 

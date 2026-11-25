@@ -4,7 +4,7 @@
 
 秋笺是一款开源桌面 Markdown 编辑器。写教程时，可以让读者切换不同平台的步骤，把补充说明折起来，在代码里点出关键几行。插图也能直接存进同一份 `.md`，离线打开或发给别人都不需要图床。
 
-[访问官网](https://autumn-one.github.io/autumnmark/) · [下载正式版](https://github.com/small32/Autumnmark/releases/latest) · [查看发布记录](https://github.com/small32/Autumnmark/releases)
+[访问官网](https://autumn-one.github.io/autumnmark/) · [下载正式版](https://github.com/small32/Antumnmark-Plus/releases/latest) · [查看发布记录](https://github.com/small32/Antumnmark-Plus/releases)
 
 ![秋笺编辑《雾岭山脊观测手记》：左侧是文档大纲，正文中有内嵌海拔图、三个地点的选项卡、折叠的观测说明和带高亮行的 Python 代码。](docs/assets/autumnmark-ridge-notes.webp)
 
@@ -74,11 +74,11 @@ print(f"{direction} {abs(rise)} 米")
 ```
 ````
 
-[完整扩展语法](https://github.com/small32/Autumnmark/blob/develop/packages/website/content/docs/end-user/MARKDOWN_SYNTAX.md#content-tabs) · [图片嵌入与转换](https://github.com/small32/Autumnmark/blob/develop/packages/website/content/docs/end-user/IMAGES.md#embed-in-markdown-base64)
+[完整扩展语法](https://github.com/small32/Antumnmark-Plus/blob/develop/packages/website/content/docs/end-user/MARKDOWN_SYNTAX.md#content-tabs) · [图片嵌入与转换](https://github.com/small32/Antumnmark-Plus/blob/develop/packages/website/content/docs/end-user/IMAGES.md#embed-in-markdown-base64)
 
 ## 下载与开发
 
-正式版提供 Windows x64、macOS ARM64（Apple 芯片）和 Linux x64 安装包。编辑器支持可视化和源码编辑、数学公式、Mermaid 图表，以及 HTML 和 PDF 导出。[下载安装包](https://github.com/small32/Autumnmark/releases/latest)
+正式版提供 Windows x64、macOS ARM64（Apple 芯片）和 Linux x64 安装包。编辑器支持可视化和源码编辑、数学公式、Mermaid 图表，以及 HTML 和 PDF 导出。[下载安装包](https://github.com/small32/Antumnmark-Plus/releases/latest)
 
 从仓库根目录运行 `pnpm install` 安装依赖，再用 `pnpm run dev` 启动桌面端。Windows x64 安装包可用 `pnpm run build:win:x64` 构建。[贡献指南](.github/CONTRIBUTING.md)
 
