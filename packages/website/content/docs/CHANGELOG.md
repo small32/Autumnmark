@@ -1,3 +1,8 @@
+## AutumnMark+ 0.2.6
+
+- Updated the application icon across every platform and file association, plus the in-app logos, to the new AutumnMark+ mark with a plus sign.
+- Removed Shift-click range selection from the sidebar. Ctrl/Cmd-click for adding or removing individual files and folders is unchanged.
+
 ## AutumnMark+ 0.2.5
 
 - Integrated recent upstream editor improvements, including document chat, theme versions and history, assistant context and reversible text handling, while keeping the AutumnMark+ interface and the self-hosted update flow intact.
