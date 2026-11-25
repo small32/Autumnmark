@@ -132,25 +132,6 @@ describe('sidebar multi-selection', () => {
     expect(store.activeItem.pathname).toBe('C:\\Notes\\C.md')
   })
 
-  it('selects a contiguous range and keeps its anchor', () => {
-    const store = useProjectStore()
-    const target = file('C:\\Notes\\B.md')
-
-    store.SELECT_RANGE(
-      ['C:\\Notes\\A.md', 'c:/notes/A.MD', 'C:\\Notes\\Archive', 'C:\\Notes\\B.md'],
-      target
-    )
-
-    expect(store.selectedPaths).toEqual([
-      'C:\\Notes\\A.md',
-      'C:\\Notes\\Archive',
-      'C:\\Notes\\B.md'
-    ])
-    expect(store.selectionAnchor).toBe('C:\\Notes\\B.md')
-    expect(store.activeItem).toEqual(target)
-    expect(store.IS_MULTI_SELECTED('c:/notes/archive')).toBe(true)
-  })
-
   it('collapses to one row on a plain click', () => {
     const store = useProjectStore()
     store.TOGGLE_SELECTION(file('C:\\Notes\\A.md'))
@@ -160,18 +141,7 @@ describe('sidebar multi-selection', () => {
     store.SELECT_SINGLE(target)
 
     expect(store.selectedPaths).toEqual([])
-    expect(store.selectionAnchor).toBe('C:\\Notes\\Archive')
     expect(store.activeItem).toEqual(target)
-  })
-
-  it('drops a stale anchor when a right-click lands outside the selection', () => {
-    const store = useProjectStore()
-    store.SELECT_RANGE(['C:\\Notes\\A.md', 'C:\\Notes\\B.md'], file('C:\\Notes\\B.md'))
-
-    store.CHANGE_ACTIVE_ITEM(file('C:\\Notes\\C.md'))
-
-    expect(store.selectedPaths).toEqual([])
-    expect(store.selectionAnchor).toBeNull()
   })
 
   it('clears the selection explicitly', () => {

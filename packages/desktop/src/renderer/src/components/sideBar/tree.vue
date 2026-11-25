@@ -234,7 +234,6 @@ import { usePreferencesStore } from '@/store/preferences'
 import Folder from './treeFolder.vue'
 import File from './treeFile.vue'
 import { useHiddenSidebarFiles } from './useHiddenSidebarFiles'
-import { useTreeSelection } from './useTreeSelection'
 import OpenedFile from './treeOpenedTab.vue'
 import { MIN_VISIBLE_ROWS, useOpenedFilesResize } from './useOpenedFilesResize'
 import { useTabReorder } from '../useTabReorder'
@@ -273,7 +272,6 @@ const rowRegistry: TreeRowRegistry = new Map()
 provide(TREE_ROW_REGISTRY_KEY, rowRegistry)
 
 const projectStore = useProjectStore()
-const { selectRange } = useTreeSelection()
 const editorStore = useEditorStore()
 const layoutStore = useLayoutStore()
 const showOpenedFiles = computed({
@@ -345,8 +343,6 @@ const toggleRoot = (root: RootView): void => {
 }
 
 const handleRootClick = (event: MouseEvent, root: RootView): void => {
-  // Shift+click selects a range across roots; plain click still folds the root.
-  if (selectRange(event, root.tree)) return
   // Roots are single-select targets and cannot join a multi-selection, so
   // Ctrl/Cmd+click must not drop the current selection either.
   if (event.ctrlKey || event.metaKey) return
@@ -610,7 +606,7 @@ watch(
 )
 
 const hideSelectedItems = async (): Promise<void> => {
-  // Hide the whole Ctrl/Cmd/Shift+click selection in one write, or just the active row.
+  // Hide the whole Ctrl/Cmd+click selection in one write, or just the active row.
   const paths = projectStore.SELECTION_PATHS()
   if (!paths.length) return
   try {

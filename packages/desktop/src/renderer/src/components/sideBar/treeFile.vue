@@ -45,7 +45,6 @@ import { showContextMenu } from '../../contextMenu/sideBar'
 import bus from '../../bus'
 import { renameSelectionEnd } from './renameKey'
 import { useTreeRow } from './rowRegistry'
-import { useTreeSelection } from './useTreeSelection'
 import type { TreeFileNode } from './types'
 
 const props = defineProps<{
@@ -68,11 +67,8 @@ const { clipboard } = storeToRefs(projectStore)
 const { currentFile, tabs } = storeToRefs(editorStore)
 
 const multiSelected = computed(() => projectStore.IS_MULTI_SELECTED(props.file.pathname))
-const { selectRange } = useTreeSelection()
 
 const handleFileClick = (event: MouseEvent): void => {
-  // Shift+click selects the visible range without opening the file.
-  if (selectRange(event, props.file)) return
   // Ctrl/Cmd+click toggles the row into the multi-selection without opening it.
   if (event.ctrlKey || event.metaKey) {
     projectStore.TOGGLE_SELECTION(props.file)
@@ -178,7 +174,7 @@ onBeforeUnmount(() => {
 .side-bar-file.active > span {
   color: var(--sideBarTitleColor);
 }
-/* Ctrl/Cmd/Shift+click multi-selection: outline keeps the active row distinguishable. */
+/* Ctrl/Cmd+click multi-selection: outline keeps the active row distinguishable. */
 .side-bar-file.multi-selected {
   background: var(--themeColor20);
   box-shadow: inset 0 0 0 1px var(--focusColor);

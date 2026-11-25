@@ -97,11 +97,9 @@ export const useProjectStore = defineStore('project', () => {
   // union breaks both the assignments and the field reads, so it stays a hatch.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activeItem = ref<any>({})
-  // Ctrl/Cmd+click and Shift+click multi-selection. Stores pathnames (not
-  // nodes) so the selection survives tree rebuilds; the last clicked item
-  // stays `activeItem`, and `selectionAnchor` is the origin of Shift ranges.
+  // Ctrl/Cmd+click multi-selection. Stores pathnames (not nodes) so the
+  // selection survives tree rebuilds; the last clicked item stays `activeItem`.
   const selectedPaths = ref<string[]>([])
-  const selectionAnchor = ref<string | null>(null)
   const createCache = ref<CreateCacheEntry | Record<string, never>>({})
   const newFileNameCache = ref<string>('')
   const renameCache = ref<string | null>(null)
@@ -410,31 +408,24 @@ export const useProjectStore = defineStore('project', () => {
   function CHANGE_ACTIVE_ITEM(item: any): void {
     activeItem.value = item
     // Right-clicking an already selected row keeps the multi-selection; a row
-    // outside it falls back to single-select and drops the stale Shift anchor.
+    // outside it falls back to single-select.
     const pathname = item?.pathname
     if (
       selectedPaths.value.length &&
       (typeof pathname !== 'string' || !selectedPaths.value.some(path => isSameSelectionPath(path, pathname)))
     ) {
       selectedPaths.value = []
-      selectionAnchor.value = null
     }
   }
 
-  /** Plain row click: collapse to that row and reset both selection anchors. */
+  /** Plain row click: collapse to that row. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function SELECT_SINGLE(item: any): void {
     activeItem.value = item
     selectedPaths.value = []
-    const pathname = item?.pathname
-    selectionAnchor.value = typeof pathname === 'string' && pathname ? pathname : null
   }
 
-  function SET_SELECTION_ANCHOR(pathname: string): void {
-    selectionAnchor.value = pathname
-  }
-
-  /** Whether a row belongs to the current Ctrl/Cmd/Shift multi-selection. */
+  /** Whether a row belongs to the current Ctrl/Cmd multi-selection. */
   function IS_MULTI_SELECTED(pathname: string): boolean {
     return selectedPaths.value.length > 1 && selectedPaths.value.some(path => isSameSelectionPath(path, pathname))
   }
@@ -479,9 +470,7 @@ export const useProjectStore = defineStore('project', () => {
       return
     }
     selectedPaths.value.push(pathname)
-    // Keep the clicked row as the single-selection anchor for other actions.
     activeItem.value = item
-    selectionAnchor.value = pathname
   }
 
   /** Rebuilds a row payload for actions that only have a pathname at hand. */
@@ -496,31 +485,9 @@ export const useProjectStore = defineStore('project', () => {
     return preferencesStore.hiddenSidebarPaths.some(path => normalizeHiddenSidebarPath(path) === key)
   }
 
-  /** Shift+click: replace the selection with a contiguous range of rows. */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function SELECT_RANGE(pathnames: readonly string[], item: any): void {
-    const unique: string[] = []
-    const seen = new Set<string>()
-    for (const pathname of pathnames) {
-      // Project roots never join a range: they are not hideable or trashable.
-      if (isRootSelectionPath(pathname)) continue
-      const key = normalizeHiddenSidebarPath(pathname)
-      if (seen.has(key)) continue
-      seen.add(key)
-      unique.push(pathname)
-    }
-    selectedPaths.value = unique
-    activeItem.value = item
-    const pathname = item?.pathname
-    selectionAnchor.value = typeof pathname === 'string' && pathname
-      ? pathname
-      : (unique[unique.length - 1] ?? null)
-  }
-
   function CLEAR_SELECTION(): void {
     activeItem.value = {}
     selectedPaths.value = []
-    selectionAnchor.value = null
   }
 
   /** Paths to act on: the whole multi-selection, or the single active item. */
@@ -539,7 +506,6 @@ export const useProjectStore = defineStore('project', () => {
     const isRemoved = (pathname: string): boolean =>
       pathnames.some(path => isSameSelectionPath(path, pathname) || isStrictlyWithin(path, pathname))
     selectedPaths.value = selectedPaths.value.filter(path => !isRemoved(path))
-    if (selectionAnchor.value && isRemoved(selectionAnchor.value)) selectionAnchor.value = null
     const active = activeItem.value?.pathname
     if (typeof active === 'string' && active && isRemoved(active)) {
       const last = selectedPaths.value[selectedPaths.value.length - 1]
@@ -822,7 +788,7 @@ export const useProjectStore = defineStore('project', () => {
             name: window.path.basename(dest)
           }
         }
-        // Carry the multi-selection (and its Shift anchor) to the new path too.
+        // Carry the multi-selection to the new path too.
         const normalizedSrc = window.path.normalize(src)
         selectedPaths.value = selectedPaths.value.map((path) => {
           if (isSameSelectionPath(path, src)) return dest
@@ -830,8 +796,6 @@ export const useProjectStore = defineStore('project', () => {
             return dest + window.path.normalize(path).slice(normalizedSrc.length)
           return path
         })
-        if (selectionAnchor.value && isSameSelectionPath(selectionAnchor.value, src))
-          selectionAnchor.value = dest
         // Carry hidden state over to the new path (including descendants when
         // a hidden folder is renamed), otherwise it silently reappears.
         await usePreferencesStore().RENAME_HIDDEN_SIDEBAR_ITEM(src, dest)
@@ -853,7 +817,6 @@ export const useProjectStore = defineStore('project', () => {
   return {
     activeItem,
     selectedPaths,
-    selectionAnchor,
     createCache,
     newFileNameCache,
     renameCache,
@@ -879,10 +842,8 @@ export const useProjectStore = defineStore('project', () => {
     LISTEN_FOR_UPDATE_PROJECT,
     CHANGE_ACTIVE_ITEM,
     SELECT_SINGLE,
-    SET_SELECTION_ANCHOR,
     IS_MULTI_SELECTED,
     TOGGLE_SELECTION,
-    SELECT_RANGE,
     CLEAR_SELECTION,
     SELECTION_PATHS,
     REVEAL_PATH,

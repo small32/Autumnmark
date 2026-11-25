@@ -76,7 +76,6 @@ import { useHiddenSidebarFiles } from './useHiddenSidebarFiles'
 import { ArrowRight, Folder } from '@element-plus/icons-vue'
 import type { TreeFolderNode } from './types'
 import { useTreeRow } from './rowRegistry'
-import { useTreeSelection } from './useTreeSelection'
 
 const props = defineProps<{
   folder: TreeFolderNode
@@ -108,7 +107,6 @@ const { activeItem } = storeToRefs(projectStore)
 const { clipboard } = storeToRefs(projectStore)
 
 const multiSelected = computed(() => projectStore.IS_MULTI_SELECTED(props.folder.pathname))
-const { selectRange } = useTreeSelection()
 
 const handleInputFocus = (): void => {
   // Expand the create target before waiting for its input to mount.
@@ -126,8 +124,6 @@ const handleInputEnter = (): void => {
 }
 
 const folderNameClick = (event: MouseEvent): void => {
-  // Shift+click selects the visible range; plain click still folds the folder.
-  if (selectRange(event, props.folder)) return
   // Ctrl/Cmd+click toggles the row into the multi-selection without expanding it.
   if (event.ctrlKey || event.metaKey) {
     projectStore.TOGGLE_SELECTION(props.folder)
@@ -207,7 +203,7 @@ onBeforeUnmount(() => {
     &.active {
       background: var(--themeColor20);
     }
-    /* Ctrl/Cmd/Shift+click multi-selection: outline keeps the active row distinguishable. */
+    /* Ctrl/Cmd+click multi-selection: outline keeps the active row distinguishable. */
     &.multi-selected {
       background: var(--themeColor20);
       box-shadow: inset 0 0 0 1px var(--focusColor);
