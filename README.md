@@ -6,6 +6,8 @@
 
 [访问官网](https://autumn-one.github.io/autumnmark/) · [下载正式版](https://github.com/small32/Antumnmark-Plus/releases/latest) · [查看发布记录](https://github.com/small32/Antumnmark-Plus/releases)
 
+<!-- 上一条“访问官网”链接指向上游仓库（Autumn-one/autumnmark）的站点，本仓库未部署官网。 -->
+
 ![秋笺编辑《雾岭山脊观测手记》：左侧是文档大纲，正文中有内嵌海拔图、三个地点的选项卡、折叠的观测说明和带高亮行的 Python 代码。](docs/assets/autumnmark-ridge-notes.webp)
 
 [查看截图中的示例 Markdown](docs/examples/ridge-notes.md) · [在官网切换浅色、源码和深色视图](https://autumn-one.github.io/autumnmark/#preview)
