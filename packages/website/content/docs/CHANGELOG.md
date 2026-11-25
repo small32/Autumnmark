@@ -1,3 +1,10 @@
+## AutumnMark+ 0.1.6
+
+- The application is now called AutumnMark+ everywhere: window title, menus, installers, shortcuts, documentation and the website.
+- The Windows executable shipped in the release is `AutumnMark+.exe` instead of `autumnmark-editor.exe`. Existing installs update in place as before: the updater starts the renamed executable, removes the old one, and repairs shortcuts that still point at it.
+- Download links, the release page and the documentation now point at this repository instead of the upstream project.
+- Removed the upstream sponsor wall, the GitHub Sponsors link and the search-API referral link from the website and the README badges.
+
 ## AutumnMark+ 0.1.5
 
 - AutumnMark+ can update itself on every installation type, not only Windows installers and Linux AppImages. Portable ZIPs, macOS builds and Linux packages now check GitHub Releases, download the matching archive, verify it against `SHA256SUMS.txt` and unpack it into the temporary folder.
