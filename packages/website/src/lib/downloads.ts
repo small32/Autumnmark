@@ -3,10 +3,8 @@ export const DOWNLOAD = {
   repo: 'https://github.com/small32/Antumnmark-Plus',
   contributing: 'https://github.com/small32/Antumnmark-Plus/blob/develop/.github/CONTRIBUTING.md',
   issues: 'https://github.com/small32/Antumnmark-Plus/issues',
-  sponsor: 'https://github.com/sponsors/marktext',
-  twitter:
-    'https://twitter.com/intent/tweet?via=marktextme&url=https://github.com/small32/Antumnmark-Plus/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkText',
-  serpapi: 'https://serpapi.com/?utm_source=marktext'
+  // Share intent only: no upstream account handle, campaign tag or hashtag.
+  twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent('https://github.com/small32/Antumnmark-Plus')}&text=${encodeURIComponent('Antumnmark+ — a Markdown editor that gets out of your way')}`
 }
 
 export type Platform = 'mac' | 'windows' | 'linux'

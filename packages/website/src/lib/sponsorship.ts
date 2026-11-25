@@ -1,4 +1,3 @@
-import { DOWNLOAD } from './downloads'
 
 export const CORPORATE_EMAIL = 'ransixi@gmail.com'
 export const CORPORATE_CONTACT = `mailto:${CORPORATE_EMAIL}?subject=MarkText%20Corporate%20Sponsorship`
@@ -68,19 +67,8 @@ type Sponsor = {
   permanent: boolean
 }
 
-// SerpApi's one-time agreement guarantees permanent display, independent of monthly sponsorship status.
-export const sponsors: Sponsor[] = [
-  {
-    name: 'SerpApi',
-    logo: { src: '/assets/serpapi.png', width: 1765, height: 440 },
-    url: DOWNLOAD.serpapi,
-    tier: 'early',
-    placements: ['home', 'sponsors'],
-    order: 0,
-    active: false,
-    permanent: true
-  }
-]
+// No third-party sponsors are bundled with this build.
+export const sponsors: Sponsor[] = []
 
 export const fundingUses = [
   {

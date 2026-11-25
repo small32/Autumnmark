@@ -10,6 +10,9 @@ export default function SponsorWall({ placement }: { placement: 'home' | 'sponso
     )
     .sort((a, b) => rank[a.tier] - rank[b.tier] || a.order - b.order)
 
+  // A fork without sponsors should not render an empty "Sponsored by" strip.
+  if (!visible.length) return null
+
   return (
     <div className="sponsors-wall">
       {placement === 'home' && <span className="sponsors-label">Sponsored by</span>}

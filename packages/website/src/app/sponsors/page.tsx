@@ -55,7 +55,7 @@ const fundingIcons = {
 
 function SponsorLink({ children }: { children: React.ReactNode }) {
   return (
-    <a className="btn btn-primary btn-lg" href={DOWNLOAD.sponsor} {...EXT_LINK}>
+    <a className="btn btn-primary btn-lg" href={DOWNLOAD.repo} {...EXT_LINK}>
       {children}
     </a>
   )
@@ -137,7 +137,7 @@ export default function SponsorsPage() {
           </div>
           <p className="sponsorship-note">
             Prefer a{' '}
-            <a href={DOWNLOAD.sponsor} {...EXT_LINK}>
+            <a href={DOWNLOAD.repo} {...EXT_LINK}>
               one-time contribution
             </a>
             ? One-time sponsorships are also welcome.
