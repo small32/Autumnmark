@@ -1,3 +1,10 @@
+## AutumnMark+ 0.1.7
+
+- Update checks and downloads now use the same network stack as the rest of the app, so they follow the system proxy and certificate settings. Previously a machine whose browser could open GitHub could still fail with "Could not check for updates".
+- Temporary network failures are retried twice before an error is shown, and the check waits up to 30 seconds for a slow proxy instead of 15.
+- The check failure message now points at the network or proxy settings instead of only saying "try again later".
+- Settings → General → Updates shows the download progress bar with percentage, transferred size and speed, matching the update dialog.
+
 ## AutumnMark+ 0.1.6
 
 - The application is now called AutumnMark+ everywhere: window title, menus, installers, shortcuts, documentation and the website.

@@ -1,6 +1,6 @@
 {
   "name": "marktext",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "AutumnMark+ — a Markdown editor based on MarkText",
   "main": "./out/main/index.js",
   "author": {
