@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "介面語言"
       },
-      "openingMode": "開啟模式"
+      "openingMode": "開啟模式",
+      "updates": {
+        "title": "軟體更新",
+        "checkUpdatesOnStartup": "自動檢查 GitHub Release",
+        "checkUpdatesOnStartupNote": "啟動時檢查一次，發現新版本時顯示更新提示。",
+        "onlineUpdateEnabled": "允許應用程式內更新",
+        "onlineUpdateEnabledNote": "從 GitHub Release 下載並安裝新版本；關閉後僅顯示發布頁面。",
+        "checkNow": "立即檢查",
+        "unavailable": "目前安裝方式不支援應用程式內更新。"
+      }
     },
     "editor": {
       "title": "編輯器",
@@ -1312,7 +1321,10 @@
     "background": "在背景繼續",
     "retry": "重試",
     "downloadFailed": "下載失敗，請檢查網路連線後重試。",
-    "waiting": "仍在等待回應…"
+    "waiting": "仍在等待回應…",
+    "available": "GitHub Release 已發布新版本 {version}。",
+    "openRelease": "查看發布頁",
+    "download": "下載並安裝"
   },
   "notifications": {
     "defaultMessage": "預設訊息",

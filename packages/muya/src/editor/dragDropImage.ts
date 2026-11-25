@@ -26,17 +26,30 @@ const debug = logger('editor:dragDropImage:');
 // Cleanup: every listener is attached via `eventCenter.attachDOMEvent`, so
 // `muya.destroy()` → `eventCenter.detachAllDomEvents()` removes them.
 
-const GHOST_ID = 'mu-dragover-ghost';
+// One ghost per Muya instance: a shared global id let two editors reposition
+// (and fight over) the same element, and left it in the body after destroy.
+const GHOST_CLASS = 'mu-dragover-ghost';
 const GHOST_HEIGHT = 3;
+const ghosts = new WeakMap<Muya, HTMLElement>();
 
 interface IDropTarget {
     anchor: Parent;
     position: 'up' | 'down';
 }
 
-function hideGhost(): void {
-    const ghost = document.querySelector(`#${GHOST_ID}`);
-    ghost && ghost.remove();
+function hideGhost(muya: Muya): void {
+    const ghost = ghosts.get(muya);
+    if (ghost) {
+        ghost.remove();
+        ghosts.delete(muya);
+    }
+}
+
+// `dragend` is not guaranteed when an editor is destroyed mid-drag (tab close,
+// hot reload), so Muya.destroy() calls this explicitly to avoid an orphan
+// indicator left in document.body.
+export function cleanupDragDropImageGhost(muya: Muya): void {
+    hideGhost(muya);
 }
 
 // Above-or-below decision relative to the anchor block's vertical midpoint.
@@ -104,13 +117,14 @@ function videoDropTarget(muya: Muya, event: DragEvent): IDropTarget | null {
 }
 
 // Draw the horizontal drop indicator at the anchor block's top/bottom edge.
-function drawGhost(target: IDropTarget): void {
+function drawGhost(muya: Muya, target: IDropTarget): void {
     const rect = target.anchor.domNode!.getBoundingClientRect();
-    let ghost = document.querySelector<HTMLElement>(`#${GHOST_ID}`);
+    let ghost = ghosts.get(muya);
     if (!ghost) {
         ghost = document.createElement('div');
-        ghost.id = GHOST_ID;
+        ghost.classList.add(GHOST_CLASS);
         document.body.appendChild(ghost);
+        ghosts.set(muya, ghost);
     }
 
     Object.assign(ghost.style, {
@@ -352,13 +366,13 @@ export function attachDragDropImageHandlers(muya: Muya): void {
 
         const target = video ? videoDropTarget(muya, dragEvent) : resolveDropTarget(dragEvent);
         if (!target) {
-            hideGhost();
+            hideGhost(muya);
             return;
         }
 
         event.preventDefault();
         dataTransfer.dropEffect = 'copy';
-        drawGhost(target);
+        drawGhost(muya, target);
     };
 
     const dropHandler = (event: Event) => {
@@ -367,7 +381,7 @@ export function attachDragDropImageHandlers(muya: Muya): void {
         if (!dataTransfer)
             return;
 
-        hideGhost();
+        hideGhost(muya);
         const video = muya.options.importVideo ? videoFromTransfer(dataTransfer) : undefined;
         const target = video ? videoDropTarget(muya, dragEvent) : resolveDropTarget(dragEvent);
         if (!target)
@@ -394,7 +408,10 @@ export function attachDragDropImageHandlers(muya: Muya): void {
             event.preventDefault();
     };
 
-    const dragLeaveHandler = () => hideGhost();
+    const dragLeaveHandler = () => hideGhost(muya);
+    // `dragend` fires wherever the drag is released/cancelled, so a drag aborted
+    // outside the page cannot leave the ghost stranded in the body.
+    const dragEndHandler = () => hideGhost(muya);
 
     eventCenter.attachDOMEvent(domNode, 'dragstart', dragStartHandler);
     eventCenter.attachDOMEvent(domNode, 'dragover', dragOverHandler);
@@ -403,4 +420,5 @@ export function attachDragDropImageHandlers(muya: Muya): void {
     // the pointer leaves the page; `document` bubbles the same event and is
     // within `attachDOMEvent`'s accepted target union.
     eventCenter.attachDOMEvent(document, 'dragleave', dragLeaveHandler);
+    eventCenter.attachDOMEvent(document, 'dragend', dragEndHandler);
 }

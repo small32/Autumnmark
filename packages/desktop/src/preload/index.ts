@@ -27,13 +27,27 @@ type RendererEventListener<K extends keyof IpcMainEventChannels> = (
   ...args: IpcMainEventChannels[K]
 ) => void
 
+// The typed generics above only constrain call sites at compile time. At
+// runtime a compromised renderer could pass any string, including Node
+// EventEmitter-internal event names — subscribing to `removeListener` would
+// let it observe every other subscription, and `removeAllListeners` on such
+// names could tear down unrelated machinery. Reject non-string and reserved
+// names; a full channel allow-list would need a runtime mirror of the type
+// contract and is deliberately not duplicated here.
+const RESERVED_CHANNELS = new Set(['newListener', 'removeListener', '__proto__'])
+const assertChannel = (channel: unknown): string => {
+  if (typeof channel !== 'string' || RESERVED_CHANNELS.has(channel))
+    throw new Error(`Invalid IPC channel: ${String(channel)}`)
+  return channel
+}
+
 const invoke = <K extends keyof IpcInvokeChannels>(
   channel: K,
   ...args: IpcInvokeChannels[K]['args']
-): Promise<IpcInvokeChannels[K]['ret']> => ipcRenderer.invoke(channel, ...args)
+): Promise<IpcInvokeChannels[K]['ret']> => ipcRenderer.invoke(assertChannel(channel), ...args)
 
 const send = <K extends keyof IpcSendChannels>(channel: K, ...args: IpcSendChannels[K]): void =>
-  ipcRenderer.send(channel, ...args)
+  ipcRenderer.send(assertChannel(channel), ...args)
 
 // One synchronous handshake at startup so the renderer can read platform/env
 // without an `await` from inside Vue computed properties etc.
@@ -44,7 +58,7 @@ const ipcWrapper = {
   sendSync: <K extends keyof IpcSyncChannels>(
     channel: K,
     ...args: IpcSyncChannels[K]['args']
-  ): IpcSyncChannels[K]['ret'] => ipcRenderer.sendSync(channel, ...args),
+  ): IpcSyncChannels[K]['ret'] => ipcRenderer.sendSync(assertChannel(channel), ...args),
   invoke,
   on: <K extends keyof IpcMainEventChannels>(
     channel: K,
@@ -53,7 +67,7 @@ const ipcWrapper = {
     const subscription = (event: IpcRendererEvent, ...args: unknown[]): void => {
       listener(event, ...(args as IpcMainEventChannels[K]))
     }
-    ipcRenderer.on(channel, subscription)
+    ipcRenderer.on(assertChannel(channel), subscription)
     return () => ipcRenderer.removeListener(channel, subscription)
   },
   once: <K extends keyof IpcMainEventChannels>(
@@ -63,11 +77,11 @@ const ipcWrapper = {
     const subscription = (event: IpcRendererEvent, ...args: unknown[]): void => {
       listener(event, ...(args as IpcMainEventChannels[K]))
     }
-    ipcRenderer.once(channel, subscription)
+    ipcRenderer.once(assertChannel(channel), subscription)
     return () => ipcRenderer.removeListener(channel, subscription)
   },
   removeAllListeners: (channel: keyof IpcMainEventChannels | string): void => {
-    ipcRenderer.removeAllListeners(channel as string)
+    ipcRenderer.removeAllListeners(assertChannel(channel))
   }
 }
 
@@ -151,10 +165,20 @@ const isChildOfDirectory = (dir: string, child: string): boolean => {
   return !!relative && relative !== '..' && !relative.startsWith('../') && !pathe.isAbsolute(relative)
 }
 
+// `pathe.normalize` keeps a trailing separator where node's
+// `path.normalize` (used by the main process) strips it; without this the two
+// processes disagree on e.g. isSamePathSync('C:\foo\', 'C:\foo').
+const stripTrailingSeparator = (p: string): string => {
+  if (p.length <= 1) return p
+  const stripped = p.replace(/[\\/]+$/, '')
+  // Keep drive roots ('C:/') intact.
+  return /^[a-zA-Z]:$/.test(stripped) ? p : stripped
+}
+
 const isSamePathSync = (pathA: string, pathB: string, isNormalized: boolean = false): boolean => {
   if (!pathA || !pathB) return false
-  const a = isNormalized ? pathA : pathe.normalize(pathA)
-  const b = isNormalized ? pathB : pathe.normalize(pathB)
+  const a = isNormalized ? pathA : stripTrailingSeparator(pathe.normalize(pathA))
+  const b = isNormalized ? pathB : stripTrailingSeparator(pathe.normalize(pathB))
   if (a.length !== b.length) return false
   if (a === b) return true
   if (a.toLowerCase() === b.toLowerCase()) {

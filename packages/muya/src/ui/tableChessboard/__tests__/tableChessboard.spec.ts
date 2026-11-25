@@ -159,6 +159,21 @@ describe('tableChessboard — muya-table-picker subscription + grid pick', () =>
         expect(picker.status).toBe(false);
     });
 
+    it('caps arrow-key navigation at the chessboard size limit', () => {
+        const cb = vi.fn();
+        eventCenter.emit('muya-table-picker', { row: -1, column: -1 }, stubReference(), cb);
+        const row = picker.container!.querySelector<HTMLInputElement>('.row-input')!;
+        row.value = '50';
+        row.dispatchEvent(new Event('input', { bubbles: true }));
+
+        for (let i = 0; i < 10; i++)
+            muya.domNode.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        muya.domNode.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+        expect(cb).toHaveBeenCalledExactlyOnceWith(49, 0);
+        expect(picker.status).toBe(false);
+    });
+
     it('toggles closed when the event is re-dispatched while already shown', async () => {
         const reference = stubReference();
         eventCenter.emit('muya-table-picker', { row: -1, column: -1 }, reference, () => {});

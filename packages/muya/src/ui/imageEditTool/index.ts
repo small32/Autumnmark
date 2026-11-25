@@ -427,7 +427,29 @@ export class ImageEditTool extends BaseFloat {
         this.hide();
 
         // Upload image and get new URL
-        const uploadedSrc = await this.options.imageAction!({ src, title, alt });
+        let uploadedSrc: string;
+        try {
+            uploadedSrc = await this.options.imageAction!({ src, title, alt });
+        }
+        catch (error) {
+            // A failed upload must not strand the `loading-N` alt: put the
+            // user's edited values back when the placeholder is still there.
+            console.warn(`Unexpected error on image action: ${String(error)}`);
+            if (this.muya.isReadOnly || !this.muya.isBlockInDocument(targetBlock))
+                return;
+            const failedWrapper = query<HTMLElement>(
+                `span[data-id=${loadingId}]`,
+                targetBlock.domNode!,
+            );
+            if (failedWrapper) {
+                targetBlock.replaceImage(getImageInfo(failedWrapper), {
+                    alt,
+                    src,
+                    title,
+                });
+            }
+            return;
+        }
         if (this.muya.isReadOnly || !this.muya.isBlockInDocument(targetBlock))
             return;
 

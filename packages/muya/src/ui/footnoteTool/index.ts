@@ -7,6 +7,7 @@ import type { Muya } from '../../muya';
 import type { IFootnoteBlockState } from '../../state/types';
 import type { IBaseOptions } from '../types';
 import { ScrollPage } from '../../block/scrollPage';
+import { CLASS_NAMES } from '../../config';
 import { ChangeSource } from '../../types';
 import { h, patch } from '../../utils/snabbdom';
 import BaseFloat from '../baseFloat';
@@ -38,6 +39,7 @@ export class FootnoteTool extends BaseFloat {
     private _identifier: string = '';
     private _footnotes: Map<string, Footnote> = new Map();
     private _hideTimer: ReturnType<typeof setTimeout> | null = null;
+    private _showTimer: ReturnType<typeof setTimeout> | null = null;
     private _toolContainer: HTMLDivElement = document.createElement('div');
 
     constructor(muya: Muya, options: Partial<IBaseOptions> = {}) {
@@ -63,7 +65,13 @@ export class FootnoteTool extends BaseFloat {
                     // finish bubbling before BaseFloat's document-click hide
                     // handler races the open. Without this the float opens
                     // and immediately closes on the same tick.
-                    setTimeout(() => {
+                    this._showTimer = setTimeout(() => {
+                        this._showTimer = null;
+                        // The block may have been re-rendered between the click
+                        // and this deferred open; showing on a detached node
+                        // resurrects the tool over the wrong position.
+                        if (reference instanceof Node && !reference.isConnected)
+                            return;
                         this.show(reference);
                         this._render();
                     }, 0);
@@ -71,9 +79,52 @@ export class FootnoteTool extends BaseFloat {
                 }
                 if (this._hideTimer)
                     clearTimeout(this._hideTimer);
+                if (this._showTimer) {
+                    clearTimeout(this._showTimer);
+                    this._showTimer = null;
+                }
                 this._hideTimer = setTimeout(() => this.hide(), 500);
             }) as (...args: unknown[]) => void,
         );
+    }
+
+    override hide(event?: Event) {
+        // The click on `[^id]` emits `muya-footnote-tool` (queuing `show`
+        // through setTimeout) and then keeps bubbling to BaseFloat's
+        // document-click handler, which calls `hide()` on the same tick.
+        // That same click must keep the queued open: with another tooltip
+        // currently shown it is closed here and the deferred show replaces
+        // it, matching the upstream behaviour where clicking any reference
+        // opens that reference's tooltip. Any other hide source (other
+        // clicks, blur, Escape) cancels a pending open.
+        const footnoteClick = event instanceof Event && this._isFootnoteClick(event);
+        if (!footnoteClick)
+            this._cancelShowTimer();
+        if (this.status)
+            super.hide();
+    }
+
+    private _cancelShowTimer(): void {
+        if (this._showTimer) {
+            clearTimeout(this._showTimer);
+            this._showTimer = null;
+        }
+    }
+
+    private _isFootnoteClick(event: Event): boolean {
+        return event.target instanceof Element
+            && !!event.target.closest(`.${CLASS_NAMES.MU_INLINE_FOOTNOTE_IDENTIFIER}`);
+    }
+
+    override destroy() {
+        // A queued open must not survive the editor: it would re-open the
+        // tool on a detached node and keep an autoUpdate listener alive.
+        this._cancelShowTimer();
+        if (this._hideTimer) {
+            clearTimeout(this._hideTimer);
+            this._hideTimer = null;
+        }
+        super.destroy();
     }
 
     private _render() {

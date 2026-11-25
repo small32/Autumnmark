@@ -3,7 +3,7 @@ import { registerBootInfo } from './bootInfo'
 import { registerFsHandlers, type FileOperations } from './fs'
 import { registerPathHandlers } from './paths'
 import { registerRipgrepHandlers } from './ripgrep'
-import { registerUploaderHandlers } from './uploader'
+import { registerUploaderHandlers, type UploaderSettings } from './uploader'
 import { registerFontsHandlers } from './fonts'
 import { registerShellHandlers } from './shell'
 import { registerWindowHandlers } from './window'
@@ -16,12 +16,18 @@ import { registerImageClipboardHandlers } from './clipboardImage'
 import { RemoteContentCache } from './remoteContent'
 import { registerEmbeddedImageDrag } from './embeddedImageDrag'
 
-export const registerSandboxIpcHandlers = (fileOperations?: FileOperations): void => {
+export const registerSandboxIpcHandlers = (
+  fileOperations?: FileOperations,
+  getUploaderSettings: () => UploaderSettings | Promise<UploaderSettings> = () => ({
+    currentUploader: 'picgo',
+    cliScript: ''
+  })
+): void => {
   registerBootInfo()
   registerFsHandlers(fileOperations)
   registerPathHandlers()
   registerRipgrepHandlers()
-  registerUploaderHandlers()
+  registerUploaderHandlers(getUploaderSettings)
   registerFontsHandlers()
   registerShellHandlers()
   registerWindowHandlers()

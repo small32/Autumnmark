@@ -1,4 +1,11 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { setLocalesDirectory } from 'common/i18n'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+// This spec runs from the repo root in CI as well as from packages/desktop.
+setLocalesDirectory(path.resolve(__dirname, '../../../static/locales'))
 
 const { getLookUp, lookUpSelection } = await import('main_renderer/contextMenu/editor/menuItems')
 

@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "Arayüz dili"
       },
-      "openingMode": "Açılış modu"
+      "openingMode": "Açılış modu",
+      "updates": {
+        "title": "Yazılım güncellemeleri",
+        "checkUpdatesOnStartup": "GitHub Releases’i otomatik kontrol et",
+        "checkUpdatesOnStartupNote": "Başlangıçta kontrol eder, yeni sürüm bulunca bildirir.",
+        "onlineUpdateEnabled": "Uygulama içi güncellemelere izin ver",
+        "onlineUpdateEnabledNote": "GitHub Releases’den yeni sürümleri indirip kurar. Kapatırsan yalnızca sürüm sayfasını gösterir.",
+        "checkNow": "Şimdi kontrol et",
+        "unavailable": "Bu kurulumda uygulama içi güncellemeler kullanılamıyor."
+      }
     },
     "editor": {
       "title": "Düzenleyici",
@@ -1312,7 +1321,10 @@
     "background": "Arka planda devam et",
     "retry": "Yeniden dene",
     "downloadFailed": "İndirme başarısız oldu. Bağlantınızı kontrol edip yeniden deneyin.",
-    "waiting": "Yanıt bekleniyor…"
+    "waiting": "Yanıt bekleniyor…",
+    "available": "GitHub Release sürüm {version} kullanıma sunuldu.",
+    "openRelease": "Sürümü görüntüle",
+    "download": "İndir ve yükle"
   },
   "notifications": {
     "defaultMessage": "Varsayılan mesaj",

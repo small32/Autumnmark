@@ -21,5 +21,7 @@ for (const component of [
 const preferences = usePreferencesStore()
 preferences.LISTEN_FOR_USER_PREFERENCE()
 const initial = await window.electron.ipcRenderer.invoke('mt::preferences::get')
-await preferences.SET_USER_PREFERENCE({ ...initial })
+// A broadcast may have arrived while the snapshot was in flight; it is newer,
+// so it must not be rolled back by the snapshot.
+await preferences.SET_USER_PREFERENCE({ ...initial }, { skipBroadcasted: true })
 app.mount('#app')

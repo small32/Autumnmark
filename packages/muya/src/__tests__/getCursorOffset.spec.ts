@@ -132,6 +132,33 @@ describe('muya.getCursorOffset() (Phase G — G7)', () => {
         expect(cursor!.focus).toEqual({ line: 0, ch: 2 });
     });
 
+    it('ignores a document that contains the marker prefix itself', () => {
+        // The legacy markers were fixed literals; a document that happened to
+        // contain them shadowed the injected marker and moved the caret to the
+        // wrong position. The markers now carry a random token.
+        const muya = bootMuya('mUyAcUrSoRzZqAnChOr9x7kPvWb legacy text\n\nsecond line\n');
+        const block = muya.editor.scrollPage!.lastContentInDescendant()!;
+        const selection: IResolvedTextSelection = {
+            anchor: { offset: 0, block, path: [0, 'text'] },
+            focus: { offset: 0, block, path: [0, 'text'] },
+            isCollapsed: true,
+            isSelectionInSameBlock: true,
+            direction: SelectionDirection.FORWARD,
+
+        };
+        const sentinelState = injectStateSentinels(
+            muya.getState(),
+            createTextSelectionState(selection.anchor, selection.focus),
+        );
+        expect(sentinelState).not.toBeNull();
+        const md = muya.editor.jsonState.getMarkdownFromState(sentinelState!);
+        const cursor = locateSentinelOffsets(md);
+        expect(cursor).not.toBeNull();
+        // The caret belongs to the second line, not to the legacy marker text.
+        expect(cursor!.anchor).toEqual({ line: 2, ch: 0 });
+        expect(cursor!.focus).toEqual({ line: 2, ch: 0 });
+    });
+
     it('returns null when there is no selection', () => {
         const muya = bootMuya('text\n');
         muya.setSelection(null);

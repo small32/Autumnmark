@@ -45,7 +45,6 @@ class FileEncodingCommand {
       })
     }
 
-    let i = 0
     for (const [key, value] of Object.entries(ENCODING_NAME_MAP)) {
       const isTabEncoding = !isBom && key === encoding
       const item: EncodingSubcommand = {
@@ -53,12 +52,13 @@ class FileEncodingCommand {
         description: isTabEncoding ? `${value} - current` : value
       }
       if (isTabEncoding) {
-        this.subcommandSelectedIndex = i
+        // unshift moves the current encoding to index 0, so that is what the
+        // palette must preselect (the old loop index pointed at the wrong entry).
+        this.subcommandSelectedIndex = 0
         this.subcommands.unshift(item)
       } else {
         this.subcommands.push(item)
       }
-      ++i
     }
   }
 

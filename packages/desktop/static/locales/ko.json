@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "인터페이스 언어"
       },
-      "openingMode": "열기 모드"
+      "openingMode": "열기 모드",
+      "updates": {
+        "title": "소프트웨어 업데이트",
+        "checkUpdatesOnStartup": "GitHub Release 자동 확인",
+        "checkUpdatesOnStartupNote": "시작 시 확인하고 새 버전이 있으면 알립니다.",
+        "onlineUpdateEnabled": "앱 내 업데이트 허용",
+        "onlineUpdateEnabledNote": "GitHub Release에서 새 버전을 다운로드해 설치합니다. 끄면 릴리스 페이지만 표시합니다.",
+        "checkNow": "지금 확인",
+        "unavailable": "이 설치에서는 앱 내 업데이트를 사용할 수 없습니다."
+      }
     },
     "editor": {
       "title": "편집기",
@@ -1312,7 +1321,10 @@
     "background": "백그라운드에서 계속",
     "retry": "다시 시도",
     "downloadFailed": "다운로드하지 못했습니다. 연결을 확인하고 다시 시도하세요.",
-    "waiting": "응답을 기다리는 중…"
+    "waiting": "응답을 기다리는 중…",
+    "available": "GitHub Release에 새 버전 {version}이 있습니다.",
+    "openRelease": "릴리스 보기",
+    "download": "다운로드 및 설치"
   },
   "notifications": {
     "defaultMessage": "기본 메시지",

@@ -790,8 +790,18 @@ class ParagraphContent extends Format {
         const { start, end } = cursor;
 
         if (type === UnindentType.REPLACEMENT) {
-            const paragraph = parent.clone() as Paragraph;
-            listParent.insertBefore(paragraph, list);
+            // Outdenting turns the item into content of the outer list item.
+            // Move every child (the paragraph plus any nested list) rather than
+            // only the paragraph, otherwise a nested list is dropped together
+            // with the list item.
+            let paragraph: Nullable<Parent> = null;
+            listItem.forEach((node) => {
+                const clone = (node as Parent).clone() as Parent;
+                listParent.insertBefore(clone, list);
+                // Cursor follows the paragraph that held it, not just the first.
+                if (node === parent)
+                    paragraph = clone;
+            });
 
             if (listItem.isOnlyChild())
                 list.remove();

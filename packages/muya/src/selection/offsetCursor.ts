@@ -16,10 +16,42 @@ export interface IIndexCursor {
     focus: IIndexPosition | null;
 }
 
-// ASCII markers must survive Markdown parsing as literal text and be unlikely
-// to occur in documents. Non-ASCII control/PUA markers may be stripped.
-const ANCHOR_SENTINEL = 'mUyAcUrSoRzZqAnChOr9x7kPvWb';
-const FOCUS_SENTINEL = 'mUyAcUrSoRzZqFoCuS4t2nDhGj';
+// ASCII markers must survive Markdown parsing as literal text. The random
+// token keeps them unique per injection: a document that happens to contain
+// the marker prefix can no longer shadow the injected marker.
+const SENTINEL_PREFIX = 'mUyAcUrSoRzZq';
+const SENTINEL_TOKEN_LENGTH = 8;
+const SENTINEL_PATTERN = /mUyAcUrSoRzZq([a-z0-9]{8})(?:AnChOr|FoCuS)/;
+
+function _createToken(): string {
+    let token = '';
+
+    for (let i = 0; i < SENTINEL_TOKEN_LENGTH; i++)
+        token += 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)];
+
+    return token;
+}
+
+function _anchorSentinel(token: string): string {
+    return `${SENTINEL_PREFIX}${token}AnChOr`;
+}
+
+function _focusSentinel(token: string): string {
+    return `${SENTINEL_PREFIX}${token}FoCuS`;
+}
+
+// Detect the token of an injected marker pair so the exact markers can be
+// located; user text that merely contains the prefix is ignored.
+function _detectToken(text: string): { anchor: string; focus: string } | null {
+    const match = SENTINEL_PATTERN.exec(text);
+
+    if (!match)
+        return null;
+
+    const token = match[1];
+
+    return { anchor: _anchorSentinel(token), focus: _focusSentinel(token) };
+}
 
 function _clampOffset(offset: number, length: number): number {
     if (!Number.isInteger(offset))
@@ -48,6 +80,9 @@ export function injectSentinels(
     const focusText = lines[focus.line]!;
     const anchorCh = _clampOffset(anchor.ch, anchorText.length);
     const focusCh = _clampOffset(focus.ch, focusText.length);
+    const token = _createToken();
+    const anchorSentinel = _anchorSentinel(token);
+    const focusSentinel = _focusSentinel(token);
 
     if (anchor.line === focus.line) {
         const min = Math.min(anchorCh, focusCh);
@@ -57,16 +92,16 @@ export function injectSentinels(
         const last = anchorText.substring(max);
         lines[anchor.line]
             = first
-                + (anchorCh <= focusCh ? ANCHOR_SENTINEL : FOCUS_SENTINEL)
+                + (anchorCh <= focusCh ? anchorSentinel : focusSentinel)
                 + middle
-                + (anchorCh <= focusCh ? FOCUS_SENTINEL : ANCHOR_SENTINEL)
+                + (anchorCh <= focusCh ? focusSentinel : anchorSentinel)
                 + last;
     }
     else {
         lines[anchor.line]
-            = anchorText.substring(0, anchorCh) + ANCHOR_SENTINEL + anchorText.substring(anchorCh);
+            = anchorText.substring(0, anchorCh) + anchorSentinel + anchorText.substring(anchorCh);
         lines[focus.line]
-            = focusText.substring(0, focusCh) + FOCUS_SENTINEL + focusText.substring(focusCh);
+            = focusText.substring(0, focusCh) + focusSentinel + focusText.substring(focusCh);
     }
 
     return lines.join('\n');
@@ -96,8 +131,25 @@ function _findSentinel(scrollPage: ScrollPage, sentinel: string): ISentinelHit |
 // Return sentinel-free paths and offsets, or null when neither endpoint resolves.
 // Do not retain block references: the caller replaces the transient tree immediately.
 export function resolveSentinelCursor(scrollPage: ScrollPage): ITextSelectionState | null {
-    const anchorHit = _findSentinel(scrollPage, ANCHOR_SENTINEL);
-    const focusHit = _findSentinel(scrollPage, FOCUS_SENTINEL);
+    // Detect the injected token first so user text that contains the marker
+    // prefix cannot shadow the real markers.
+    const detected: { anchor: string; focus: string }[] = [];
+
+    scrollPage.depthFirstTraverse((node) => {
+        if (detected.length || !node.isContent())
+            return;
+
+        const found = _detectToken(node.text);
+        if (found)
+            detected.push(found);
+    });
+
+    if (!detected.length)
+        return null;
+
+    const markers = detected[0];
+    const anchorHit = _findSentinel(scrollPage, markers.anchor);
+    const focusHit = _findSentinel(scrollPage, markers.focus);
 
     if (!anchorHit && !focusHit)
         return null;
@@ -113,9 +165,9 @@ export function resolveSentinelCursor(scrollPage: ScrollPage): ITextSelectionSta
     // offsets are expressed against the sentinel-free text.
     if (anchor.block === focus.block) {
         if (anchorOffset <= focusOffset)
-            focusOffset = Math.max(focusOffset - ANCHOR_SENTINEL.length, anchorOffset);
+            focusOffset = Math.max(focusOffset - markers.anchor.length, anchorOffset);
         else
-            anchorOffset = Math.max(anchorOffset - FOCUS_SENTINEL.length, focusOffset);
+            anchorOffset = Math.max(anchorOffset - markers.focus.length, focusOffset);
     }
 
     return {
@@ -185,9 +237,13 @@ export function injectStateSentinels(
         sentinel: string,
     ): boolean => _injectSentinelAtPath(state, path, offset, sentinel);
 
+    const token = _createToken();
+    const anchorSentinel = _anchorSentinel(token);
+    const focusSentinel = _focusSentinel(token);
+
     if (!sameBlock) {
-        const anchorOk = inject(anchorPath, anchorOffset, ANCHOR_SENTINEL);
-        const focusOk = inject(focusPath, focusOffset, FOCUS_SENTINEL);
+        const anchorOk = inject(anchorPath, anchorOffset, anchorSentinel);
+        const focusOk = inject(focusPath, focusOffset, focusSentinel);
 
         return anchorOk || focusOk ? state : null;
     }
@@ -196,12 +252,12 @@ export function injectStateSentinels(
     // one shifted by the first sentinel's length.
     let ok: boolean;
     if (anchorOffset <= focusOffset) {
-        ok = inject(anchorPath, anchorOffset, ANCHOR_SENTINEL);
-        ok = inject(focusPath, focusOffset + ANCHOR_SENTINEL.length, FOCUS_SENTINEL) || ok;
+        ok = inject(anchorPath, anchorOffset, anchorSentinel);
+        ok = inject(focusPath, focusOffset + anchorSentinel.length, focusSentinel) || ok;
     }
     else {
-        ok = inject(focusPath, focusOffset, FOCUS_SENTINEL);
-        ok = inject(anchorPath, anchorOffset + FOCUS_SENTINEL.length, ANCHOR_SENTINEL) || ok;
+        ok = inject(focusPath, focusOffset, focusSentinel);
+        ok = inject(anchorPath, anchorOffset + focusSentinel.length, anchorSentinel) || ok;
     }
 
     return ok ? state : null;
@@ -233,14 +289,18 @@ function _findOffsetInMarkdown(
 // Resolve both markers to sentinel-free line/ch coordinates.
 // Return null if a required marker was lost during serialization.
 export function locateSentinelOffsets(markdown: string): IIndexCursor | null {
-    const anchorRaw = _findOffsetInMarkdown(markdown, ANCHOR_SENTINEL);
-    const focusRaw = _findOffsetInMarkdown(markdown, FOCUS_SENTINEL);
+    const detected = _detectToken(markdown);
+    if (!detected)
+        return null;
+
+    const anchorRaw = _findOffsetInMarkdown(markdown, detected.anchor);
+    const focusRaw = _findOffsetInMarkdown(markdown, detected.focus);
 
     if (!anchorRaw && !focusRaw)
         return null;
 
-    const anchorIdx = markdown.indexOf(ANCHOR_SENTINEL);
-    const focusIdx = markdown.indexOf(FOCUS_SENTINEL);
+    const anchorIdx = markdown.indexOf(detected.anchor);
+    const focusIdx = markdown.indexOf(detected.focus);
 
     const cleanLineCh = (
         raw: IIndexPosition | null,
@@ -260,8 +320,8 @@ export function locateSentinelOffsets(markdown: string): IIndexCursor | null {
         return raw;
     };
 
-    const anchor = cleanLineCh(anchorRaw, anchorIdx, focusIdx, FOCUS_SENTINEL.length);
-    const focus = cleanLineCh(focusRaw, focusIdx, anchorIdx, ANCHOR_SENTINEL.length);
+    const anchor = cleanLineCh(anchorRaw, anchorIdx, focusIdx, detected.focus.length);
+    const focus = cleanLineCh(focusRaw, focusIdx, anchorIdx, detected.anchor.length);
 
     return {
         anchor: anchor ?? focus,

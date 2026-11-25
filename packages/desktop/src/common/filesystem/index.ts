@@ -54,11 +54,12 @@ export const isDirectory2 = (dirPath: string): boolean => {
 }
 
 /**
- * Returns true if the path is a file with read access.
+ * Returns true if the path is a file with read access. Follows symbolic links
+ * (like `isMarkdownFile` does), so a symlinked image is not silently rejected.
  */
 export const isFile = (filepath: string): boolean => {
   try {
-    return lstatSync(filepath).isFile()
+    return statSync(filepath).isFile()
   } catch {
     return false
   }

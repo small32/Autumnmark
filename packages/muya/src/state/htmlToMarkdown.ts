@@ -16,19 +16,17 @@ function turnSoftBreakToSpan(html: string) {
             if (node.nodeType === Node.TEXT_NODE && node.parentElement?.tagName !== 'CODE') {
                 let startLen = 0;
                 let endLen = 0;
-                const text
-                    = node.nodeValue
-                        ?? ''
-                            .replace(/^(\n+)/, (_, p) => {
-                                startLen = p.length;
+                const text = (node.nodeValue ?? '')
+                    .replace(/^(\n+)/, (_, p) => {
+                        startLen = p.length;
 
-                                return '';
-                            })
-                            .replace(/(\n+)$/, (_, p) => {
-                                endLen = p.length;
+                        return '';
+                    })
+                    .replace(/(\n+)$/, (_, p) => {
+                        endLen = p.length;
 
-                                return '';
-                            });
+                        return '';
+                    });
                 if (/\n/.test(text)) {
                     const tokens = text.split('\n');
                     const params = [];

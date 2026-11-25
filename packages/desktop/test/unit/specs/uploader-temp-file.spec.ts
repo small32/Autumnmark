@@ -63,7 +63,7 @@ beforeAll(async() => {
   process.env.PATH = `${binDir}${path.delimiter}${originalPath ?? ''}`
 
   const { registerUploaderHandlers } = await import('main_renderer/ipc/uploader')
-  registerUploaderHandlers()
+  registerUploaderHandlers(() => ({ currentUploader: 'picgo', cliScript: '' }))
 })
 
 afterAll(async() => {

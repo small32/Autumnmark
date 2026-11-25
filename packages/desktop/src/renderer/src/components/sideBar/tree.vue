@@ -118,13 +118,17 @@
         <div
           :ref="el => registerRootRow(root, el as HTMLElement | null)"
           class="project-root"
+          :class="{
+            active: activeItem?.pathname === root.tree.pathname,
+            'multi-selected': projectStore.IS_MULTI_SELECTED(root.tree.pathname)
+          }"
           :data-tree-path="root.tree.pathname"
           data-tree-directory="true"
           role="button"
           tabindex="0"
           :title="root.error || root.pathname"
           :aria-expanded="!root.tree.isCollapsed"
-          @click.stop="toggleRoot(root)"
+          @click.stop="handleRootClick($event, root)"
           @contextmenu.prevent="handleRootContextMenu($event, root)"
           @keydown="handleRootKeydown($event, root)"
         >
@@ -230,6 +234,7 @@ import { usePreferencesStore } from '@/store/preferences'
 import Folder from './treeFolder.vue'
 import File from './treeFile.vue'
 import { useHiddenSidebarFiles } from './useHiddenSidebarFiles'
+import { useTreeSelection } from './useTreeSelection'
 import OpenedFile from './treeOpenedTab.vue'
 import { MIN_VISIBLE_ROWS, useOpenedFilesResize } from './useOpenedFilesResize'
 import { useTabReorder } from '../useTabReorder'
@@ -268,6 +273,7 @@ const rowRegistry: TreeRowRegistry = new Map()
 provide(TREE_ROW_REGISTRY_KEY, rowRegistry)
 
 const projectStore = useProjectStore()
+const { selectRange } = useTreeSelection()
 const editorStore = useEditorStore()
 const layoutStore = useLayoutStore()
 const showOpenedFiles = computed({
@@ -329,13 +335,22 @@ const saveAll = (isClose: boolean): void => {
 }
 
 const createFile = (root: RootView): void => {
-  projectStore.CHANGE_ACTIVE_ITEM(root.tree)
+  projectStore.SELECT_SINGLE(root.tree)
   bus.emit('SIDEBAR::new', 'file')
 }
 
 const toggleRoot = (root: RootView): void => {
-  projectStore.CHANGE_ACTIVE_ITEM(root.tree)
+  projectStore.SELECT_SINGLE(root.tree)
   projectStore.SET_FOLDER_COLLAPSED(root.tree, !root.tree.isCollapsed)
+}
+
+const handleRootClick = (event: MouseEvent, root: RootView): void => {
+  // Shift+click selects a range across roots; plain click still folds the root.
+  if (selectRange(event, root.tree)) return
+  // Roots are single-select targets and cannot join a multi-selection, so
+  // Ctrl/Cmd+click must not drop the current selection either.
+  if (event.ctrlKey || event.metaKey) return
+  toggleRoot(root)
 }
 
 const handleRootContextMenu = (
@@ -516,7 +531,7 @@ const handleDocumentClick = (event: MouseEvent): void => {
   if (isNameInput(target)) return
 
   if (isInsideTreeScope(target) && !keepsSidebarSelection(target)) {
-    projectStore.CHANGE_ACTIVE_ITEM({})
+    projectStore.CLEAR_SELECTION()
   }
   projectStore.COMMIT_NAME_INPUT()
 }
@@ -538,7 +553,7 @@ const handleTreeKeydown = (event: KeyboardEvent): void => {
 
   if (key === 'Escape') {
     projectStore.CLEAR_NAME_INPUT_STATE()
-    projectStore.CHANGE_ACTIVE_ITEM({})
+    projectStore.CLEAR_SELECTION()
   }
 
   const isEditingName = !!renameCache.value || !!createCacheDirname.value
@@ -594,13 +609,14 @@ watch(
   { flush: 'post' }
 )
 
-const hideActiveItem = async (): Promise<void> => {
-  const target = activeItem.value as { pathname?: unknown } | null
-  if (typeof target?.pathname !== 'string') return
+const hideSelectedItems = async (): Promise<void> => {
+  // Hide the whole Ctrl/Cmd/Shift+click selection in one write, or just the active row.
+  const paths = projectStore.SELECTION_PATHS()
+  if (!paths.length) return
   try {
-    const saved = await preferencesStore.HIDE_SIDEBAR_ITEM(target.pathname)
+    const saved = await preferencesStore.HIDE_SIDEBAR_ITEMS(paths)
     if (saved) {
-      projectStore.CHANGE_ACTIVE_ITEM({})
+      projectStore.CLEAR_SELECTION()
       return
     }
   } catch {
@@ -619,7 +635,7 @@ onMounted(() => {
   bus.on('SIDEBAR::show-new-input', handleInputFocus)
   bus.on('SIDEBAR::focus-tree', focusTree)
   bus.on('SIDEBAR::reveal-path', handleRevealPath)
-  bus.on('SIDEBAR::hide', hideActiveItem)
+  bus.on('SIDEBAR::hide', hideSelectedItems)
   // Capture phase: several click targets (project/collapse headings, editor
   // tabs) call `@click.stop`, which would otherwise keep the click-away commit
   // from running.
@@ -633,7 +649,7 @@ onUnmounted(() => {
   bus.off('SIDEBAR::show-new-input', handleInputFocus)
   bus.off('SIDEBAR::focus-tree', focusTree)
   bus.off('SIDEBAR::reveal-path', handleRevealPath)
-  bus.off('SIDEBAR::hide', hideActiveItem)
+  bus.off('SIDEBAR::hide', hideSelectedItems)
   document.removeEventListener('click', handleDocumentClick, true)
   document.removeEventListener('contextmenu', handleDocumentContextMenu)
 })
@@ -792,6 +808,15 @@ onUnmounted(() => {
 
 .project-root:hover {
   background: color-mix(in srgb, var(--sideBarBgColor), var(--editorColor) 8%);
+}
+
+.project-root.active {
+  background: var(--themeColor20);
+}
+
+.project-root.multi-selected {
+  background: var(--themeColor20);
+  box-shadow: inset 0 0 0 1px var(--focusColor);
 }
 
 .project-root:focus-visible {

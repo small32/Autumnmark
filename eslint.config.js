@@ -15,6 +15,8 @@ export default [
   {
     ignores: [
       '.claude/**',
+      // Workspace tooling data (backups, logs) is not source code.
+      '.workbuddy/**',
       '**/out/**',
       '**/dist/**',
       // Keep Next.js rules out of desktop CI; the website validates its own React code.

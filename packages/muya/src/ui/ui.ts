@@ -12,10 +12,20 @@ const CONTENT_NAV_KEYS = new Set([
 
 export class Ui {
     public shownFloat: Set<BaseFloat> = new Set();
+    /** Every registered float, including the ones that are still queued to open. */
+    private _floats: Set<BaseFloat> = new Set();
     private _shownButton: Set<BaseFloat> = new Set();
 
     constructor(public muya: Muya) {
         this._listen();
+    }
+
+    registerFloat(tool: BaseFloat) {
+        this._floats.add(tool);
+    }
+
+    unregisterFloat(tool: BaseFloat) {
+        this._floats.delete(tool);
     }
 
     private _listen() {
@@ -30,7 +40,10 @@ export class Ui {
     }
 
     hideAllFloatTools() {
-        for (const tool of this.shownFloat)
+    // Iterate the registry instead of `shownFloat`: a float that is queued to
+    // open is not shown yet, so it would survive the teardown and pop up
+    // afterwards.
+        for (const tool of this._floats)
             tool.hide();
 
         for (const btn of this._shownButton)

@@ -8,7 +8,11 @@
     :draggable="!renameCache && !projectStore.createCache.dirname"
     :style="{ opacity: file.isMarkdown ? 1 : 0.75 }"
     :class="[
-      { current: currentFile?.pathname === file.pathname, active: file.id === activeItem.id }
+      {
+        current: currentFile?.pathname === file.pathname,
+        active: file.id === activeItem.id,
+        'multi-selected': multiSelected
+      }
     ]"
     @click="handleFileClick"
     @dblclick="handleFileDblClick"
@@ -31,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/store/project'
 import { useEditorStore } from '@/store/editor'
@@ -41,6 +45,7 @@ import { showContextMenu } from '../../contextMenu/sideBar'
 import bus from '../../bus'
 import { renameSelectionEnd } from './renameKey'
 import { useTreeRow } from './rowRegistry'
+import { useTreeSelection } from './useTreeSelection'
 import type { TreeFileNode } from './types'
 
 const props = defineProps<{
@@ -62,9 +67,19 @@ const { activeItem } = storeToRefs(projectStore)
 const { clipboard } = storeToRefs(projectStore)
 const { currentFile, tabs } = storeToRefs(editorStore)
 
+const multiSelected = computed(() => projectStore.IS_MULTI_SELECTED(props.file.pathname))
+const { selectRange } = useTreeSelection()
+
 const handleFileClick = (event: MouseEvent): void => {
+  // Shift+click selects the visible range without opening the file.
+  if (selectRange(event, props.file)) return
+  // Ctrl/Cmd+click toggles the row into the multi-selection without opening it.
+  if (event.ctrlKey || event.metaKey) {
+    projectStore.TOGGLE_SELECTION(props.file)
+    return
+  }
   // Select before the open-file branch runs, so non-markdown rows select too.
-  projectStore.CHANGE_ACTIVE_ITEM(props.file)
+  projectStore.SELECT_SINGLE(props.file)
   // A double-click's second click must not re-issue the open request.
   if (event.detail === 2) return
   const { isMarkdown, pathname } = props.file
@@ -93,6 +108,14 @@ const handleFileDblClick = (): void => {
 
 const noop = (): void => {}
 
+const handleFileContextMenu = (event: MouseEvent): void => {
+  event.preventDefault()
+  // CHANGE_ACTIVE_ITEM keeps a multi-selection when the target is one of its
+  // rows, and otherwise falls back to a single selection of this file.
+  projectStore.CHANGE_ACTIVE_ITEM(props.file)
+  showContextMenu(event, !!clipboard.value, props.file)
+}
+
 const focusRenameInput = (): void => {
   // The `v-if` input mounts on the next tick; the store seeds its value.
   nextTick(() => {
@@ -108,14 +131,15 @@ const rename = (): void => {
 
 onMounted(() => {
   if (fileEl.value) {
-    fileEl.value.addEventListener('contextmenu', (event) => {
-      event.preventDefault()
-      projectStore.CHANGE_ACTIVE_ITEM(props.file)
-      showContextMenu(event, !!clipboard.value, props.file)
-    })
+    fileEl.value.addEventListener('contextmenu', handleFileContextMenu)
   }
 
   bus.on('SIDEBAR::show-rename-input', focusRenameInput)
+})
+
+onBeforeUnmount(() => {
+  fileEl.value?.removeEventListener('contextmenu', handleFileContextMenu)
+  bus.off('SIDEBAR::show-rename-input', focusRenameInput)
 })
 
 </script>
@@ -153,6 +177,11 @@ onMounted(() => {
 }
 .side-bar-file.active > span {
   color: var(--sideBarTitleColor);
+}
+/* Ctrl/Cmd/Shift+click multi-selection: outline keeps the active row distinguishable. */
+.side-bar-file.multi-selected {
+  background: var(--themeColor20);
+  box-shadow: inset 0 0 0 1px var(--focusColor);
 }
 input.rename {
   height: 22px;

@@ -20,6 +20,7 @@ import {
     MUYA_DEFAULT_OPTIONS,
     URL_REG,
 } from './config/index';
+import { cleanupDragDropImageGhost } from './editor/dragDropImage';
 import { Editor } from './editor/index';
 import { attachReadingEvents, prepareReadingLinks } from './editor/readOnly';
 import EventCenter from './event/index';
@@ -1602,9 +1603,11 @@ export class Muya {
         this.editor.foldBlocks.dispose();
         this.editor.inlineEngine.dispose();
         this.editor.textDrag?.destroy();
+        cleanupDragDropImageGhost(this);
         this.editor.selection.cancel();
         this.editor.transactions.cancel();
         this._cancelReadingLink();
+        this.editor.disposeEvents();
         this.eventCenter.detachAllDomEvents();
         this.eventCenter.unsubscribeAll();
         if (this.domNode.remove)

@@ -3,6 +3,7 @@ import type { Muya } from '../../../muya';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FootnoteTool } from '..';
 import { registerBlocks } from '../../../block';
+import { CLASS_NAMES } from '../../../config';
 import EventCenter from '../../../event';
 import { ChangeSource } from '../../../types';
 
@@ -149,6 +150,50 @@ describe('footnoteTool — render on muya-footnote-tool event', () => {
         expect(button?.textContent).toBe('Create');
         const text = container.querySelector('.text');
         expect(text?.textContent).toContain('missing');
+    });
+
+    it('survives the originating click bubbling to document before the deferred show', async () => {
+        // Regression: Format emits the tool event during the reference click.
+        // BaseFloat's document-click hide used to cancel the queued show, so
+        // the tool never opened for a real mouse click.
+        reference.classList.add(CLASS_NAMES.MU_INLINE_FOOTNOTE_IDENTIFIER);
+        const footnotes = new Map<string, IFakeFootnoteBlock>();
+        footnotes.set('foo', makeFakeFootnote('foo', 'definition body text'));
+
+        eventCenter.emit('muya-footnote-tool', { reference, identifier: 'foo', footnotes });
+        reference.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        await nextTick();
+
+        expect(tool.status).toBe(true);
+        expect(tool.container!.querySelector('a.btn')?.textContent).toBe('Go to');
+    });
+
+    it('switches to a newly clicked reference while another tooltip is open', async () => {
+        // Regression: cancelling the queued show on every hide made a click on
+        // a second reference require a second click whenever a tooltip was
+        // already open. The deferred show must replace the open tooltip.
+        reference.classList.add(CLASS_NAMES.MU_INLINE_FOOTNOTE_IDENTIFIER);
+        const footnotes = new Map<string, IFakeFootnoteBlock>();
+        footnotes.set('foo', makeFakeFootnote('foo', 'foo definition'));
+
+        eventCenter.emit('muya-footnote-tool', { reference, identifier: 'foo', footnotes });
+        reference.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        await nextTick();
+        expect(tool.status).toBe(true);
+
+        const second = document.createElement('sup');
+        second.classList.add(CLASS_NAMES.MU_INLINE_FOOTNOTE_IDENTIFIER);
+        second.getBoundingClientRect = reference.getBoundingClientRect;
+        document.body.appendChild(second);
+
+        eventCenter.emit('muya-footnote-tool', { reference: second, identifier: 'bar', footnotes: new Map() });
+        second.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        await nextTick();
+
+        expect(tool.status).toBe(true);
+        const text = tool.container!.querySelector('.text');
+        expect(text?.textContent).toContain('bar');
+        second.remove();
     });
 });
 

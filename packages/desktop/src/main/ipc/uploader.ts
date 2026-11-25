@@ -81,6 +81,7 @@ const uploadByPicgo = async(localPath: string): Promise<string> => {
 }
 
 const uploadByCli = async(cliScript: string, localPath: string): Promise<string> => {
+  if (!cliScript) throw new Error('No CLI uploader script is configured')
   // The script may call tools only the user's login shell can reach (#5518).
   await ensureShellEnvPath()
   return new Promise((resolve, reject) => {
@@ -149,12 +150,22 @@ interface UploadRequest {
   pathname: string
   image: string | BufferImagePayload
   isPath: boolean
-  preferences: { currentUploader: string; cliScript: string }
+  preferences?: { currentUploader: string; cliScript: string }
 }
 
-export const registerUploaderHandlers = (): void => {
+export interface UploaderSettings {
+  currentUploader: string
+  cliScript: string
+}
+
+export const registerUploaderHandlers = (
+  // Read from the persisted store, not from the renderer request: otherwise any
+  // renderer could make the main process execute an arbitrary binary.
+  getSettings: () => UploaderSettings | Promise<UploaderSettings>
+): void => {
   ipcMain.handle('mt::uploader::upload', async(_event, req: UploadRequest) => {
-    const { pathname, image, isPath, preferences } = req
+    const { pathname, image, isPath } = req
+    const preferences = await getSettings()
     if (isPath) {
       const dir = path.dirname(pathname)
       const imagePath = path.resolve(dir, image as string)

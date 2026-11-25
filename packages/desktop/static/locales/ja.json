@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "表示言語"
       },
-      "openingMode": "開くモード"
+      "openingMode": "開くモード",
+      "updates": {
+        "title": "ソフトウェア更新",
+        "checkUpdatesOnStartup": "GitHub Release を自動確認",
+        "checkUpdatesOnStartupNote": "起動時に確認し、新しいバージョンがある場合は通知します。",
+        "onlineUpdateEnabled": "アプリ内更新を許可",
+        "onlineUpdateEnabledNote": "GitHub Release から新しいバージョンをダウンロードしてインストールします。オフにするとリリースページのみ表示します。",
+        "checkNow": "今すぐ確認",
+        "unavailable": "このインストールではアプリ内更新を利用できません。"
+      }
     },
     "editor": {
       "title": "エディタ",
@@ -1312,7 +1321,10 @@
     "background": "バックグラウンドで続行",
     "retry": "再試行",
     "downloadFailed": "ダウンロードに失敗しました。接続を確認して再試行してください。",
-    "waiting": "応答を待っています…"
+    "waiting": "応答を待っています…",
+    "available": "GitHub Release に新しいバージョン {version} があります。",
+    "openRelease": "リリースを表示",
+    "download": "ダウンロードしてインストール"
   },
   "notifications": {
     "defaultMessage": "デフォルトメッセージ",

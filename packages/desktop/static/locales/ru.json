@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "Язык интерфейса"
       },
-      "openingMode": "Режим открытия"
+      "openingMode": "Режим открытия",
+      "updates": {
+        "title": "Обновления программы",
+        "checkUpdatesOnStartup": "Автоматически проверять GitHub Releases",
+        "checkUpdatesOnStartupNote": "Проверяет при запуске и показывает уведомление о новой версии.",
+        "onlineUpdateEnabled": "Разрешить обновления внутри приложения",
+        "onlineUpdateEnabledNote": "Скачивает и устанавливает новые версии из GitHub Releases. Отключите, чтобы открывать только страницу выпуска.",
+        "checkNow": "Проверить сейчас",
+        "unavailable": "Для этой установки обновления внутри приложения недоступны."
+      }
     },
     "editor": {
       "title": "Редактор",
@@ -1312,7 +1321,10 @@
     "background": "Продолжить в фоне",
     "retry": "Повторить",
     "downloadFailed": "Не удалось загрузить обновление. Проверьте подключение и повторите попытку.",
-    "waiting": "Ожидание ответа…"
+    "waiting": "Ожидание ответа…",
+    "available": "Версия {version} доступна в GitHub Release.",
+    "openRelease": "Открыть выпуск",
+    "download": "Скачать и установить"
   },
   "notifications": {
     "defaultMessage": "Сообщение по умолчанию",

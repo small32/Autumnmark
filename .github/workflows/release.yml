@@ -8,6 +8,13 @@ on:
       - 'v*'
       # Preview releases reuse verified build artifacts instead of rebuilding every platform.
       - '!v*-preview.*'
+      # Any other prerelease suffix (e.g. `-rc.1`, `-beta.2`) belongs to the
+      # preview workflow as well; letting it through here would publish the
+      # same tag twice (full build + asset attachment).
+      - '!v*-rc.*'
+      - '!v*-beta.*'
+      - '!v*-alpha.*'
+      - '!v*-pre.*'
 
 concurrency:
   group: release-${{ github.ref }}
@@ -32,6 +39,17 @@ jobs:
             exit 1
           fi
           echo "Tag '$tag' is valid."
+
+      - name: Reject prerelease tags
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          # Prerelease versions are published by attach-preview-packages.yml
+          # (draft release + verified build artifacts). Publishing them here
+          # would build and publish the same tag twice.
+          if [[ "$tag" == *-* ]]; then
+            echo "::error::Tag '$tag' is a prerelease version. Use the preview flow (release/* branch + attach-preview-packages workflow)."
+            exit 1
+          fi
 
       - name: Match tag to application version
         run: |
@@ -292,8 +310,10 @@ jobs:
           # heading (## Antumnmark+ 0.1.2), so strip any -/+ prerelease suffix.
           release_version="${GITHUB_REF_NAME#v}"
           stable_version="${release_version%%[-+]*}"
-          highlights=$(awk -v heading="## Antumnmark+ ${stable_version}" '
-            $0 == heading { found = 1; next }
+          highlights=$(awk -v version="${stable_version}" '
+            # Accept both the current product heading and the legacy one so a
+            # hotfix on an older version still finds its notes.
+            $0 == "## Antumnmark+ " version || $0 == "## AutumnMark " version { found = 1; next }
             found && /^## / { exit }
             found { print }
           ' packages/website/content/docs/CHANGELOG.md)

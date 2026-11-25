@@ -17,10 +17,12 @@ function position(source, ele) {
 class Tooltip {
     private _muya: Muya;
     private _cache: WeakMap<HTMLElement, HTMLElement>;
+    private _cleanup: WeakMap<HTMLElement, () => void>;
 
     constructor(muya) {
         this._muya = muya;
         this._cache = new WeakMap();
+        this._cleanup = new WeakMap();
         const { domNode, eventCenter } = this._muya;
 
         eventCenter.attachDOMEvent(
@@ -33,7 +35,6 @@ class Tooltip {
     private _mouseOver(event) {
         const { target } = event;
         const toolTipTarget = target.closest('[data-tooltip]');
-        const { eventCenter } = this._muya;
         if (toolTipTarget && !this._cache.has(toolTipTarget)) {
             const tooltip = toolTipTarget.getAttribute('data-tooltip');
             const tooltipEle = document.createElement('div');
@@ -48,18 +49,21 @@ class Tooltip {
                 tooltipEle.classList.add('active');
             });
 
+            // The timer and the mouseleave listener must die with the tooltip:
+            // a stable handler (not a fresh bind) plus a stored cleanup, so
+            // repeated hovers no longer leak one interval + one listener each.
+            const handler = (leaveEvent) => {
+                this._mouseLeave(leaveEvent);
+            };
             const timer = setInterval(() => {
-                if (!document.body.contains(toolTipTarget)) {
+                if (!document.body.contains(toolTipTarget))
                     this._mouseLeave({ target: toolTipTarget });
-                    clearInterval(timer);
-                }
             }, 300);
-
-            eventCenter.attachDOMEvent(
-                toolTipTarget,
-                'mouseleave',
-                this._mouseLeave.bind(this),
-            );
+            this._cleanup.set(toolTipTarget, () => {
+                clearInterval(timer);
+                toolTipTarget.removeEventListener('mouseleave', handler);
+            });
+            toolTipTarget.addEventListener('mouseleave', handler);
         }
     }
 
@@ -69,6 +73,11 @@ class Tooltip {
             const tooltipEle = this._cache.get(target);
             tooltipEle.remove();
             this._cache.delete(target);
+            const cleanup = this._cleanup.get(target);
+            if (cleanup) {
+                cleanup();
+                this._cleanup.delete(target);
+            }
         }
     }
 }

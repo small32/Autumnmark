@@ -60,9 +60,11 @@ export class ParagraphQuickInsertMenu extends BaseScrollFloat {
         this._renderData = data;
 
         this.renderArray = data.flatMap(d => d.children);
-        if (this.renderArray.length > 0) {
-            this.activeItem = this.renderArray[0];
-            const activeEle = this.getItemElement(this.activeItem);
+        // Clearing a stale item matters: with no matches the keyboard must not
+        // act on the previous search's selection.
+        this.activeItem = this.renderArray[0] ?? null;
+        if (this.activeItem) {
+            const activeEle = this.getItemElement(this.activeItem as IQuickInsertMenuItem['children'][number]);
             if (activeEle)
                 this.activeEleScrollIntoView(activeEle);
         }
@@ -263,7 +265,12 @@ export class ParagraphQuickInsertMenu extends BaseScrollFloat {
         this.render();
     }
 
-    override selectItem({ label }: IQuickInsertMenuItem['children'][number]) {
+    override selectItem(item: IQuickInsertMenuItem['children'][number] | null) {
+        // Enter with no matches (or after the arrow keys wrapped on an empty
+        // list) must not destructure a null item.
+        if (!item)
+            return;
+        const { label } = item;
         const { _block: block, muya } = this;
         if (block?.outMostBlock) {
             replaceBlockByLabel({

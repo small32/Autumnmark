@@ -8,16 +8,23 @@ const checker = require('license-checker')
 // license-checker keys packages as "<name>@<version>", and excludePackages
 // matches that string exactly — name-only entries don't match. Build the
 // workspace exclusions at runtime from each package's own package.json so
-// version bumps stay in sync automatically. @marktext/file-icons stays
-// pinned because it's a published third-party dep that license-checker
-// fails to detect (MIT).
+// version bumps stay in sync automatically. @marktext/file-icons is resolved
+// from the installed copy for the same reason; a name-only entry would never
+// match (MIT license, undetectable by license-checker).
 const repoRoot = path.resolve(__dirname, '..')
+const fileIconsVersion = (() => {
+  try {
+    return require(path.join(repoRoot, 'packages/desktop/node_modules/@marktext/file-icons/package.json')).version
+  } catch {
+    return null
+  }
+})()
 const workspaceExclusions = ['packages/desktop', 'packages/muya']
   .map((rel) => {
     const { name, version } = require(path.join(repoRoot, rel, 'package.json'))
     return `${name}@${version}`
   })
-  .concat('@marktext/file-icons')
+  .concat(fileIconsVersion ? [`@marktext/file-icons@${fileIconsVersion}`] : [])
   .join(';')
 
 const getLicenses = (rootDir, callback) => {

@@ -28,9 +28,14 @@ const sendIfAlive = (
   }
 }
 
+// One destroy listener per webContents, not one per search: searches finish far
+// more often than windows close, and `once` cannot be removed later.
+const senderCleanupHandlers = new WeakMap<WebContents, () => void>()
+
 const cleanupAtSenderDestroy = (sender: WebContents | null | undefined): void => {
-  if (!sender) return
+  if (!sender || senderCleanupHandlers.has(sender)) return
   const handler = (): void => {
+    senderCleanupHandlers.delete(sender)
     for (const [id, entry] of activeSearches.entries()) {
       if (entry.sender === sender) {
         entry.cancel()
@@ -38,6 +43,7 @@ const cleanupAtSenderDestroy = (sender: WebContents | null | undefined): void =>
       }
     }
   }
+  senderCleanupHandlers.set(sender, handler)
   sender.once('destroyed', handler)
 }
 
@@ -451,7 +457,7 @@ export const registerRipgrepHandlers = (): void => {
     cleanupAtSenderDestroy(event.sender)
     if (mode === 'files') startFileSearch(event.sender, searchId, directories, options || {})
     else startTextSearch(event.sender, searchId, directories, pattern, options || {})
-    return true
+    return { searchId }
   })
   ipcMain.on('mt::rg::cancel', (_event, searchId: string) => {
     const entry = activeSearches.get(searchId)

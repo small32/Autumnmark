@@ -52,6 +52,7 @@ export interface UpdateProgress {
 
 export type UpdateState =
   | { phase: 'idle' | 'checking' | 'current' }
+  | { phase: 'available'; version: string }
   | { phase: 'downloading'; version: string; progress: UpdateProgress | null }
   | { phase: 'ready' | 'installing'; version: string }
   | { phase: 'error'; stage: 'check' | 'download' | 'install'; version?: string }

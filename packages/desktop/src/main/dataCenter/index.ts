@@ -11,6 +11,11 @@ import { APP_PROFILE_NAME } from '@shared/brand'
 import { TypedEmitter } from '@shared/types/typedEmitter'
 
 const DATA_CENTER_NAME = 'dataCenter'
+// Renderer writes through `mt::set-user-data` are limited to the uploader
+// settings it is actually used for. Without this, any renderer could inject
+// arbitrary persisted keys (including a new CLI script) before triggering an
+// upload. Folder paths use their own dedicated channels.
+const USER_DATA_WRITE_KEYS = new Set(['cliScript', 'currentUploader'])
 
 // No events emitted directly on `this`. ipcMain.emit is used for cross-
 // process broadcasts but those don't fire through this instance.
@@ -154,7 +159,10 @@ class DataCenter extends TypedEmitter<DataCenterEvents> {
   }
 
   private _listenForIpcMain(): void {
-    ipcMain.on('set-image-folder-path', (newPath) => {
+    // Electron hands the IpcEvent as the first callback argument; the path is
+    // the second one. The old `(newPath)` signature persisted the event object.
+    ipcMain.on('set-image-folder-path', (_e, newPath?: unknown) => {
+      if (typeof newPath !== 'string' || !newPath) return
       this.setItem('imageFolderPath', newPath)
     })
 
@@ -182,7 +190,13 @@ class DataCenter extends TypedEmitter<DataCenterEvents> {
     })
 
     ipcMain.on('mt::set-user-data', (_e, userData: Record<string, unknown>) => {
-      this.setItems(userData)
+      if (!userData || typeof userData !== 'object' || Array.isArray(userData)) return
+      const allowed: Record<string, string> = {}
+      for (const [key, value] of Object.entries(userData)) {
+        if (USER_DATA_WRITE_KEYS.has(key) && typeof value === 'string') allowed[key] = value
+        else log.warn(`Ignored unsupported mt::set-user-data key: ${key}`)
+      }
+      if (Object.keys(allowed).length) this.setItems(allowed)
     })
 
     ipcMain.handle('mt::ask-for-image-path', async(e, kind?: 'video') => {

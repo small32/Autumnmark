@@ -94,7 +94,23 @@ export const isDangerousExecutableFile = (filepath: string): boolean => {
   // Windows strips trailing dots/spaces during ShellExecute canonicalization,
   // so `update.js.` / `<./update.js >` still run `update.js` — strip them
   // before reading the extension or the guard is trivially bypassed.
-  const ext = path.extname(filepath.replace(/[ .]+$/, '')).slice(1).toLowerCase()
+  let candidate = filepath.replace(/[ .]+$/, '')
+  // NTFS alternate data streams: `evil.exe::$DATA` addresses a stream of the
+  // executable itself, so the effective extension is the base file's. Only a
+  // colon inside the last path component is a stream separator, so URLs and
+  // drive letters (`http://…/e.exe`, `C:\…`) keep their real extension.
+  const lastSep = Math.max(candidate.lastIndexOf('/'), candidate.lastIndexOf('\\'))
+  let lastComponent = candidate.slice(lastSep + 1)
+  // `C:evil.exe` is a drive-relative path, not an NTFS stream. Truncating at
+  // the colon used to leave just `C`, hiding the executable extension. Keep
+  // the file part before applying the stream rule below.
+  if (/^[A-Za-z]:/.test(lastComponent)) {
+    candidate = candidate.slice(0, lastSep + 1) + lastComponent.slice(2)
+    lastComponent = lastComponent.slice(2)
+  }
+  const colon = lastComponent.indexOf(':')
+  if (colon !== -1) candidate = candidate.slice(0, lastSep + 1 + colon)
+  const ext = path.extname(candidate).slice(1).toLowerCase()
   return !!ext && DANGEROUS_EXECUTABLE_EXTENSIONS.includes(ext)
 }
 

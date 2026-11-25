@@ -82,6 +82,10 @@ abstract class BaseScrollFloat extends BaseFloat {
     }
 
     step(direction: 'previous' | 'next') {
+        // An empty result has no item to activate; indexing it would set
+        // `activeItem` to undefined and crash the next render/select.
+        if (!this.renderArray.length)
+            return;
         let index = this.renderArray.findIndex((item) => {
             return item === this.activeItem;
         });

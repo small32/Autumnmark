@@ -55,6 +55,8 @@ export interface PreferencesState {
   defaultDirectoryToOpen: string
   treePathExcludePatterns: string[]
   hiddenSidebarPaths: string[]
+  checkUpdatesOnStartup: boolean
+  onlineUpdateEnabled: boolean
   language: string
   showPandocConvert: boolean
 
@@ -151,6 +153,8 @@ export interface PreferencesState {
   cloudImages: unknown[]
   currentUploader: string
   cliScript: string
+  /** Keys received through a live broadcast; a fetched snapshot must not override them. */
+  broadcastedPreferenceKeys: string[]
 }
 
 interface SingleSetPreferencePayload {
@@ -189,6 +193,8 @@ export const usePreferencesStore = defineStore('preferences', {
     defaultDirectoryToOpen: '',
     treePathExcludePatterns: [],
     hiddenSidebarPaths: [],
+    checkUpdatesOnStartup: true,
+    onlineUpdateEnabled: true,
     language: 'en',
     showPandocConvert: false,
 
@@ -285,7 +291,11 @@ export const usePreferencesStore = defineStore('preferences', {
     webImages: [],
     cloudImages: [],
     currentUploader: 'picgo',
-    cliScript: ''
+    cliScript: '',
+
+    // Keys that arrived through a live broadcast after this window started.
+    // A fetched snapshot must not overwrite them (the broadcast is newer).
+    broadcastedPreferenceKeys: [] as string[]
   }),
 
   getters: {
@@ -293,8 +303,11 @@ export const usePreferencesStore = defineStore('preferences', {
   },
 
   actions: {
-    SET_USER_PREFERENCE(preference: Partial<PreferencesState> | Record<string, unknown>): void | Promise<void> {
+    SET_USER_PREFERENCE(preference: Partial<PreferencesState> | Record<string, unknown>, options?: { skipBroadcasted?: boolean }): void | Promise<void> {
+      const skip = options?.skipBroadcasted ? new Set(this.broadcastedPreferenceKeys) : null
       Object.keys(preference).forEach((key) => {
+        // A live broadcast is newer than a fetched snapshot; keep the broadcast.
+        if (skip?.has(key)) return
         const incoming = (preference as Record<string, unknown>)[key]
         if (
           typeof incoming !== 'undefined' &&
@@ -316,6 +329,10 @@ export const usePreferencesStore = defineStore('preferences', {
 
     LISTEN_FOR_USER_PREFERENCE(): void {
       window.electron.ipcRenderer.on('mt::user-preference', (_e, preferences) => {
+        const keys = preferences && typeof preferences === 'object' ? Object.keys(preferences) : []
+        if (keys.length) {
+          this.broadcastedPreferenceKeys = [...new Set([...this.broadcastedPreferenceKeys, ...keys])]
+        }
         this.SET_USER_PREFERENCE(preferences as Partial<PreferencesState>)
       })
     },
@@ -360,6 +377,18 @@ export const usePreferencesStore = defineStore('preferences', {
 
     async RESTORE_ALL_SIDEBAR_ITEMS(): Promise<boolean> {
       return enqueueHiddenSidebarMutation(() => this.SET_HIDDEN_SIDEBAR_PATHS([]))
+    },
+
+    // Hide several items in one IPC write so a multi-selection is atomic.
+    async HIDE_SIDEBAR_ITEMS(pathnames: string[]): Promise<boolean> {
+      return enqueueHiddenSidebarMutation(() => {
+        const next = pathnames.reduce(
+          (current, pathname) => withHiddenSidebarPath(current, pathname),
+          this.hiddenSidebarPaths
+        )
+        if (sameHiddenSidebarPaths(next, this.hiddenSidebarPaths)) return Promise.resolve(true)
+        return this.SET_HIDDEN_SIDEBAR_PATHS(next)
+      })
     },
 
     // Called after a successful rename/move so a hidden item keeps its hidden

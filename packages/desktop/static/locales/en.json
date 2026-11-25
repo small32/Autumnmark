@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "Interface language"
       },
-      "openingMode": "Opening mode"
+      "openingMode": "Opening mode",
+      "updates": {
+        "title": "Software updates",
+        "checkUpdatesOnStartup": "Check GitHub Releases automatically",
+        "checkUpdatesOnStartupNote": "Checks once on startup and shows a notice when a new version is found.",
+        "onlineUpdateEnabled": "Allow in-app updates",
+        "onlineUpdateEnabledNote": "Download and install new versions from GitHub Releases inside the app. Turn off to view the release page only.",
+        "checkNow": "Check now",
+        "unavailable": "In-app updates are not available for this installation."
+      }
     },
     "editor": {
       "title": "Editor",
@@ -908,10 +917,22 @@
       "installOnly": "Install only",
       "installAndApply": "Install and apply",
       "update": "Update",
-      "setFor": { "light": "Set as light theme", "dark": "Set as dark theme" },
-      "installFor": { "light": "Install and set as light theme", "dark": "Install and set as dark theme" },
-      "assigned": { "light": "Set for light mode", "dark": "Set for dark mode" },
-      "deferred": { "light": "{name} will apply when the system switches to light mode.", "dark": "{name} will apply when the system switches to dark mode." },
+      "setFor": {
+        "light": "Set as light theme",
+        "dark": "Set as dark theme"
+      },
+      "installFor": {
+        "light": "Install and set as light theme",
+        "dark": "Install and set as dark theme"
+      },
+      "assigned": {
+        "light": "Set for light mode",
+        "dark": "Set for dark mode"
+      },
+      "deferred": {
+        "light": "{name} will apply when the system switches to light mode.",
+        "dark": "{name} will apply when the system switches to dark mode."
+      },
       "applied": "Applied {name}.",
       "installedNotice": "Installed {name}. Find it in Local themes.",
       "updated": "Updated {name}.",
@@ -1300,7 +1321,10 @@
     "background": "Continue in background",
     "retry": "Retry",
     "downloadFailed": "The download failed. Check your connection and try again.",
-    "waiting": "Still waiting for a response…"
+    "waiting": "Still waiting for a response…",
+    "available": "Version {version} is available on GitHub Release.",
+    "openRelease": "View release",
+    "download": "Download and install"
   },
   "notifications": {
     "defaultMessage": "Default message",

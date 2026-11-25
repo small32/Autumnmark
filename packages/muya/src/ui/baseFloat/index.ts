@@ -1,6 +1,7 @@
 import type { Middleware, Placement, ReferenceElement } from '@floating-ui/dom';
 import type { Muya } from '../../index';
 import type { IBaseOptions } from '../types';
+import type { Ui } from '../ui';
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 import { EVENT_KEYS } from '../../config';
 
@@ -23,6 +24,17 @@ function defaultOptions() {
 
 const BUTTON_GROUP = ['mu-table-drag-bar', 'mu-front-button'];
 
+// The UI registry is optional: hosts may provide a partial stand-in.
+function isUiRegistry(value: unknown): value is Ui {
+    if (!value || typeof value !== 'object')
+        return false;
+
+    const registry = value as { registerFloat?: unknown; unregisterFloat?: unknown };
+
+    return typeof registry.registerFloat === 'function'
+        && typeof registry.unregisterFloat === 'function';
+}
+
 abstract class BaseFloat {
     protected options: IBaseOptions;
     public status: boolean = false;
@@ -42,6 +54,18 @@ abstract class BaseFloat {
     ) {
         this.options = Object.assign({}, defaultOptions(), options);
         this.init();
+        // Register with the UI registry so `hideAllFloatTools` can also reach
+        // floats that are still queued to open (they are not in `shownFloat`
+        // yet, so a pending open would survive a blur or a teardown).
+        const ui = this._ui();
+        if (ui && typeof ui.registerFloat === 'function')
+            ui.registerFloat(this);
+    }
+
+    private _ui(): Ui | undefined {
+        const candidate: unknown = (this.muya as { ui?: unknown }).ui;
+
+        return isUiRegistry(candidate) ? candidate : undefined;
     }
 
     init() {
@@ -206,6 +230,10 @@ abstract class BaseFloat {
     }
 
     destroy() {
+        const ui = this._ui();
+        if (ui && typeof ui.unregisterFloat === 'function')
+            ui.unregisterFloat(this);
+
         if (this.container && this._resizeObserver)
             this._resizeObserver.unobserve(this.container);
 

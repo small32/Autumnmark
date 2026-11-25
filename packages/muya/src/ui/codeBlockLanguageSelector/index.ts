@@ -98,7 +98,7 @@ export class CodeBlockLanguageSelector extends BaseScrollFloat {
                 this._block = block;
                 this.show(domNode);
                 this.renderArray = modes;
-                this.activeItem = modes[0];
+                this.activeItem = modes[0] ?? null;
                 this.render();
             }
             else {
@@ -181,7 +181,10 @@ export class CodeBlockLanguageSelector extends BaseScrollFloat {
         return this.floatBox!.querySelector(`[data-label="${name}"]`)!;
     }
 
-    override selectItem(item: { name: string }) {
+    override selectItem(item: { name: string } | null) {
+        // Enter with an empty search result must not destructure a null item.
+        if (!item)
+            return;
         const { _block: block, muya } = this;
         const { name } = item;
 

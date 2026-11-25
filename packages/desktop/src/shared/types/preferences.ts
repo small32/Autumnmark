@@ -40,6 +40,8 @@ export interface UserPreferences extends RecoveryPreferences {
   tocPosition: 'left' | 'right'
   treePathExcludePatterns: string[]
   hiddenSidebarPaths: string[]
+  checkUpdatesOnStartup: boolean
+  onlineUpdateEnabled: boolean
   fileSortBy: 'modified' | 'created' | 'title'
   fileSortOrder: 'asc' | 'desc'
   defaultOpenMode: 'edit' | 'read'

@@ -179,9 +179,11 @@ export function getTextContent(node: Node, blackList?: string[]) {
         const imageContainer = node.querySelector(
             `.${CLASS_NAMES.MU_IMAGE_CONTAINER}`,
         );
-        const hasImg = imageContainer!.querySelector('img');
-        const childNodes = imageContainer!.childNodes;
-        if (childNodes.length && hasImg) {
+        // A mid-render inline image can lack its container; fall through to the
+        // `raw` branch instead of dereferencing null.
+        const childNodes = imageContainer?.childNodes;
+        const hasImg = imageContainer ? !!imageContainer.querySelector('img') : false;
+        if (childNodes && childNodes.length && hasImg) {
             for (const child of childNodes) {
                 if (child.nodeType === Node.ELEMENT_NODE && child.nodeName === 'IMG')
                     text += raw;

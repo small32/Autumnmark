@@ -47,6 +47,7 @@ class LinkTools extends BaseFloat {
     private _linkBlock: Format | null = null;
     private _icons: LinkToolIcon[] = iconsConfig;
     private _hideTimer: ReturnType<typeof setTimeout> | null = null;
+    private _showTimer: ReturnType<typeof setTimeout> | null = null;
     private _linkContainer: HTMLElement;
 
     constructor(muya: Muya, options: Partial<ILinkToolsOptions> = {}) {
@@ -77,7 +78,12 @@ class LinkTools extends BaseFloat {
                 }
                 this._linkInfo = linkInfo ?? null;
                 this._linkBlock = block ?? null;
-                setTimeout(() => {
+                this._showTimer = setTimeout(() => {
+                    this._showTimer = null;
+                    // The link DOM may have been patched away between hover and
+                    // this deferred open; showing then would strand the popover.
+                    if (reference instanceof Node && !reference.isConnected)
+                        return;
                     this.show(reference);
                     this.render();
                 }, 0);
@@ -85,6 +91,10 @@ class LinkTools extends BaseFloat {
             else {
                 if (this._hideTimer)
                     clearTimeout(this._hideTimer);
+                if (this._showTimer) {
+                    clearTimeout(this._showTimer);
+                    this._showTimer = null;
+                }
 
                 this._hideTimer = setTimeout(() => {
                     this.hide();
@@ -160,6 +170,16 @@ class LinkTools extends BaseFloat {
         this._oldVNode = vnode;
     }
 
+    override hide() {
+        // A queued `show` must not resurrect the popover after blur,
+        // mouseleave or hideAllFloatTools closed it.
+        if (this._showTimer) {
+            clearTimeout(this._showTimer);
+            this._showTimer = null;
+        }
+        super.hide();
+    }
+
     selectItem(event: Event, item: LinkToolIcon) {
         event.preventDefault();
         event.stopPropagation();
@@ -167,11 +187,21 @@ class LinkTools extends BaseFloat {
             case 'unlink': {
                 const block = this._linkBlock;
                 const linkInfo = this._linkInfo;
-                if (block && linkInfo && linkInfo.range) {
-                    block.unlink({
-                        range: linkInfo.range,
-                        text: linkInfo.text ?? '',
-                    });
+                const range = linkInfo?.range;
+                if (block && linkInfo && range) {
+                    // The document may have been edited during the hide grace
+                    // period; only unlink while the cached range still covers
+                    // the same raw link text, otherwise the stale offsets would
+                    // delete unrelated content.
+                    const stale = typeof linkInfo.raw === 'string'
+                        && typeof block.text === 'string'
+                        && block.text.slice(range.start, range.end) !== linkInfo.raw;
+                    if (!stale) {
+                        block.unlink({
+                            range,
+                            text: linkInfo.text ?? '',
+                        });
+                    }
                 }
                 this.hide();
                 break;

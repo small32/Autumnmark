@@ -4,10 +4,10 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync }
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const { emit, environment } = vi.hoisted(() => ({ emit: vi.fn(), environment: { directory: '' } }))
+const { emit, on, environment } = vi.hoisted(() => ({ emit: vi.fn(), on: vi.fn(), environment: { directory: '' } }))
 vi.mock('electron', () => ({
   app: { getPath: () => tmpdir(), getVersion: () => '0.24.0' },
-  ipcMain: { on: vi.fn(), handle: vi.fn(), emit },
+  ipcMain: { on, handle: vi.fn(), emit },
   BrowserWindow: { fromWebContents: vi.fn() },
   dialog: { showOpenDialog: vi.fn() }
 }))
@@ -82,6 +82,43 @@ describe('DataCenter startup isolation', () => {
     )
     expect(await dataCenter.getItem('currentUploader')).toBe('picgo')
     expect(statSync(join(directory, 'screenshot')).isDirectory()).toBe(true)
+  })
+
+  it('restricts mt::set-user-data writes to the uploader settings keys', async() => {
+    const directory = profile()
+    const dataCenter = new DataCenter({ dataCenterPath: directory, userDataPath: directory })
+    const handler = on.mock.calls.find(([channel]) => channel === 'mt::set-user-data')?.[1] as
+      | ((event: unknown, userData: Record<string, unknown>) => void)
+      | undefined
+    if (!handler) throw new Error('mt::set-user-data handler was not registered')
+
+    handler({}, {
+      cliScript: '/usr/local/bin/upload',
+      currentUploader: 'cliScript',
+      webImages: ['injected'],
+      imageFolderPath: '/tmp/injected'
+    })
+
+    expect(await dataCenter.getItem('cliScript')).toBe('/usr/local/bin/upload')
+    expect(await dataCenter.getItem('currentUploader')).toBe('cliScript')
+    expect(await dataCenter.getItem('webImages')).toEqual([])
+    expect(await dataCenter.getItem('imageFolderPath')).toBe(join(directory, 'images'))
+  })
+
+  it('persists only the path argument for set-image-folder-path', async() => {
+    const directory = profile()
+    const dataCenter = new DataCenter({ dataCenterPath: directory, userDataPath: directory })
+    const handler = on.mock.calls.find(([channel]) => channel === 'set-image-folder-path')?.[1] as
+      | ((event: unknown, newPath?: unknown) => void)
+      | undefined
+    if (!handler) throw new Error('set-image-folder-path handler was not registered')
+
+    handler({}, '/custom/images')
+    expect(await dataCenter.getItem('imageFolderPath')).toBe('/custom/images')
+
+    // The legacy single-argument signature used to persist the IpcEvent itself.
+    handler('not-an-event')
+    expect(await dataCenter.getItem('imageFolderPath')).toBe('/custom/images')
   })
 
   it('retains valid values and unknown keys while persisting normal updates', async() => {

@@ -63,6 +63,16 @@
     },
     "default": []
   },
+  "checkUpdatesOnStartup": {
+    "description": "General--Check GitHub Releases automatically and show update notices.",
+    "type": "boolean",
+    "default": true
+  },
+  "onlineUpdateEnabled": {
+    "description": "General--Download and install updates from GitHub Releases inside the app.",
+    "type": "boolean",
+    "default": true
+  },
   "fileSortBy": {
     "description": "General--Sort files in opened folder by created time, modified time and title.",
     "enum": ["modified", "created", "title"],

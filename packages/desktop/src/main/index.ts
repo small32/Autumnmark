@@ -94,7 +94,11 @@ registerSandboxIpcHandlers({
       return host.moveResource(editor.sessionStateId, src, dest, write)
     return write()
   }
-})
+}, async() => ({
+  // Resolved per request so preferences changed at runtime take effect.
+  currentUploader: String(await accessor.dataCenter.getItem('currentUploader') ?? ''),
+  cliScript: String(await accessor.dataCenter.getItem('cliScript') ?? '')
+}))
 
 electronApp.setAppUserModelId(APP_ID)
 

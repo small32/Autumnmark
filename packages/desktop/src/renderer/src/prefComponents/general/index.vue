@@ -203,6 +203,57 @@
         />
       </template>
     </compound>
+
+    <compound v-if="show('updates')">
+      <template #head>
+        <h6 class="title">
+          {{ t('preferences.general.updates.title') }}
+        </h6>
+      </template>
+      <template #children>
+        <bool
+          id="setting-checkUpdatesOnStartup"
+          :description="preferenceLabel('checkUpdatesOnStartup')"
+          :notes="preferenceNotes('checkUpdatesOnStartup')"
+          :bool="checkUpdatesOnStartup"
+          :on-change="(value) => onSelectChange('checkUpdatesOnStartup', value)"
+        />
+        <bool
+          id="setting-onlineUpdateEnabled"
+          :description="preferenceLabel('onlineUpdateEnabled')"
+          :notes="preferenceNotes('onlineUpdateEnabled')"
+          :bool="onlineUpdateEnabled"
+          :on-change="(value) => onSelectChange('onlineUpdateEnabled', value)"
+        />
+        <div class="update-check">
+          <el-button
+            type="primary"
+            :loading="updateChecking"
+            :disabled="!updatable"
+            @click="checkForUpdates"
+          >
+            {{ t('preferences.general.updates.checkNow') }}
+          </el-button>
+          <!-- The update dialog is suppressed when notices are off, so the
+               settings page must offer the install/release actions itself. -->
+          <el-button
+            v-if="updateInstallable"
+            type="primary"
+            @click="updates.install()"
+          >
+            {{ t('updates.install') }}
+          </el-button>
+          <el-button
+            v-if="updateReleaseAvailable"
+            @click="updates.openRelease()"
+          >
+            {{ t('updates.openRelease') }}
+          </el-button>
+          <span v-if="updatable && updateStatus">{{ updateStatus }}</span>
+          <span v-else-if="!updatable">{{ t('preferences.general.updates.unavailable') }}</span>
+        </div>
+      </template>
+    </compound>
   </div>
 </template>
 
@@ -218,6 +269,7 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/store/preferences'
 import type { PreferencesState } from '@/store/preferences'
+import { useAutoUpdatesStore } from '@/store/autoUpdates'
 import Compound from '../common/compound/index.vue'
 import CommandDetection from '../common/commandDetection.vue'
 import type { CommandDetectionState } from '../common/types'
@@ -267,8 +319,23 @@ const {
   openedFilesInSidebar,
   autoRevealInSidebar,
   openFilesInPreviewMode,
-  showPandocConvert
+  showPandocConvert,
+  checkUpdatesOnStartup,
+  onlineUpdateEnabled
 } = storeToRefs(preferenceStore)
+
+const updates = useAutoUpdatesStore()
+const { status: updateStatus } = storeToRefs(updates)
+const updatable = window.electron.isUpdatable === true
+const updateChecking = computed(() => updates.state.phase === 'checking')
+// A ready package can be installed from here even when the update dialog is
+// suppressed by the "check on startup" switch.
+const updateInstallable = computed(() =>
+  updates.state.phase === 'ready' && updates.onlineEnabled)
+const updateReleaseAvailable = computed(() => updates.state.phase === 'available')
+const checkForUpdates = (): void => {
+  window.electron.ipcRenderer.send('mt::check-for-update')
+}
 
 const pandocProbe = ref<PandocCommandInfo | null>(null)
 const isProbing = ref(false)
@@ -313,3 +380,14 @@ const onSelectChange = (type: keyof PreferencesState, value: unknown): void => {
 }
 
 </script>
+
+<style scoped>
+.update-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  color: var(--editorColor60);
+  font-size: 12px;
+}
+</style>

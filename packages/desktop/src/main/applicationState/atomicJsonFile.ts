@@ -35,6 +35,11 @@ export class AtomicJsonFile<T> {
 
   private async _read(): Promise<LoadResult<T>> {
     this._initialized = true
+    // "unreadable" may come from a transient condition (anti-virus lock,
+    // EMFILE, EAGAIN); retry it on the next read/write instead of disabling
+    // writes for the rest of the process. Only invalid/unsupported data is
+    // permanently protected.
+    if (this._protectedReason === 'unreadable') this._protectedReason = null
     if (this._protectedReason) {
       return {
         status: 'read-only-defaulted',
@@ -77,7 +82,9 @@ export class AtomicJsonFile<T> {
     // Capture this request before earlier writes or initialization can yield control.
     const serialized = JSON.stringify(this._parse(value))
     return this._enqueue(async() => {
-      if (!this._initialized) await this._read()
+      // Re-attempt an unreadable file: the failure may have been transient, and
+      // writing over data we never managed to read would lose it.
+      if (!this._initialized || this._protectedReason === 'unreadable') await this._read()
       if (this._protectedReason) throw new Error(`State file is read-only: ${this._protectedReason}`)
       await mkdir(path.dirname(this._pathname), { recursive: true })
       if (this._hooks.beforeReplace) await this._hooks.beforeReplace(this._pathname, serialized)

@@ -14,7 +14,10 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
+  // Only framework/static paths may skip the redirect. Excluding `docs/` or
+  // `assets/` here would let www serve them directly, defeating the single
+  // canonical host goal stated above (duplicate content on two hosts).
   matcher: [
-    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.png|sitemap\\.xml|robots\\.txt|docs-index\\.json|assets/|docs/).*)'
+    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.png|sitemap\\.xml|robots\\.txt|docs-index\\.json).*)'
   ]
 }

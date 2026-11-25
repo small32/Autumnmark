@@ -723,7 +723,6 @@ onMounted(() => {
     codeMirrorConfig.theme = 'one-dark'
   }
 
-  bus.on('file-loaded', handleFileChange)
   bus.on('file-changed', handleFileChange)
   bus.on('selectAll', handleSelectAll)
   bus.on('undo', handleUndo)
@@ -802,7 +801,6 @@ onBeforeUnmount(() => {
   }
   viewDestroyed.value = true
 
-  bus.off('file-loaded', handleFileChange)
   bus.off('file-changed', handleFileChange)
   bus.off('selectAll', handleSelectAll)
   bus.off('undo', handleUndo)

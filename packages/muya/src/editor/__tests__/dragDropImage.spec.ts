@@ -44,7 +44,7 @@ vi.mock('../../block/scrollPage', () => ({
     },
 }));
 
-const { attachDragDropImageHandlers } = await import('../dragDropImage');
+const { attachDragDropImageHandlers, cleanupDragDropImageGhost } = await import('../dragDropImage');
 
 interface IMockMuya {
     isBlockInDocument: () => boolean;
@@ -453,6 +453,22 @@ describe('attachDragDropImageHandlers — dragover guard', () => {
         muya.domNode.dispatchEvent(event);
 
         expect(preventDefault).not.toHaveBeenCalled();
+    });
+});
+
+describe('cleanupDragDropImageGhost', () => {
+    it('removes a pending drop indicator when the editor is destroyed mid-drag', () => {
+        const muya = makeMuya();
+        const contentDom = makeDropTarget(muya);
+        attachDragDropImageHandlers(muya as unknown as Muya);
+
+        const dt = new DataTransfer();
+        dt.items.add(new File(['x'], 'shot.png', { type: 'image/png' }));
+        muya.domNode.dispatchEvent(dragoverEvent(contentDom, dt));
+        expect(document.querySelector('.mu-dragover-ghost')).not.toBeNull();
+
+        cleanupDragDropImageGhost(muya as unknown as Muya);
+        expect(document.querySelector('.mu-dragover-ghost')).toBeNull();
     });
 });
 

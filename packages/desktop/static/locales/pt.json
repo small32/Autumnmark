@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "Idioma da interface"
       },
-      "openingMode": "Modo de abertura"
+      "openingMode": "Modo de abertura",
+      "updates": {
+        "title": "Atualizações de software",
+        "checkUpdatesOnStartup": "Verificar GitHub Releases automaticamente",
+        "checkUpdatesOnStartupNote": "Verifica ao iniciar e mostra um aviso quando há uma versão nova.",
+        "onlineUpdateEnabled": "Permitir atualizações no aplicativo",
+        "onlineUpdateEnabledNote": "Baixa e instala novas versões do GitHub Releases. Desligue para ver apenas a página de lançamento.",
+        "checkNow": "Verificar agora",
+        "unavailable": "Atualizações no aplicativo não estão disponíveis para esta instalação."
+      }
     },
     "editor": {
       "title": "Editor",
@@ -1312,7 +1321,10 @@
     "background": "Continuar em segundo plano",
     "retry": "Tentar novamente",
     "downloadFailed": "A transferência falhou. Verifique a ligação e tente novamente.",
-    "waiting": "A aguardar uma resposta…"
+    "waiting": "A aguardar uma resposta…",
+    "available": "A versão {version} está disponível no GitHub Release.",
+    "openRelease": "Ver lançamento",
+    "download": "Baixar e instalar"
   },
   "notifications": {
     "defaultMessage": "Mensagem padrão",

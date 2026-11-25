@@ -265,7 +265,10 @@ class App {
       createWindow()
     }
 
-    startAutomaticUpdateChecks(() => this._windowManager.getActiveEditor()?.browserWindow ?? null)
+    startAutomaticUpdateChecks(
+      () => this._windowManager.getActiveEditor()?.browserWindow ?? null,
+      () => this._accessor.preferences
+    )
 
     //   try {
     //     // write screenshot image into screenshot folder.
@@ -541,7 +544,9 @@ class App {
           } catch (writeErr) {
             log.error(writeErr)
           }
-          win.webContents.send('mt::screenshot-captured', savedPath)
+          // The user may close the window while the capture callback is pending.
+          if (!win.isDestroyed())
+            win.webContents.send('mt::screenshot-captured', savedPath)
         })
       } else {
         // TODO: Do nothing, maybe we'll add screenCapture later on Linux and Windows.

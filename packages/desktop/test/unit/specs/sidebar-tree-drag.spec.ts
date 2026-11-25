@@ -3,10 +3,19 @@ import { createApp, h, nextTick, reactive, ref, type App } from 'vue'
 import path from 'node:path'
 import { useTreeDragDrop } from '../../../src/renderer/src/components/sideBar/useTreeDragDrop'
 
-const mocks = vi.hoisted(() => ({ project: {} as Record<string, unknown>, invoke: vi.fn(), notify: vi.fn(), reveal: vi.fn() }))
+const mocks = vi.hoisted(() => ({
+  project: {} as Record<string, unknown>,
+  invoke: vi.fn(),
+  notify: vi.fn(),
+  reveal: vi.fn(),
+  renameHidden: vi.fn()
+}))
 vi.mock('@/store/project', () => ({ useProjectStore: () => mocks.project }))
 vi.mock('@/services/notification', () => ({ default: { notify: mocks.notify } }))
 vi.mock('@/i18n', () => ({ t: (key: string) => key }))
+vi.mock('@/store/preferences', () => ({
+  usePreferencesStore: () => ({ RENAME_HIDDEN_SIDEBAR_ITEM: mocks.renameHidden })
+}))
 
 let app: App
 let host: HTMLElement
@@ -33,6 +42,7 @@ beforeEach(() => {
   mocks.invoke.mockReset().mockResolvedValue({ status: 'canceled' })
   mocks.notify.mockReset()
   mocks.reveal.mockReset()
+  mocks.renameHidden.mockReset().mockResolvedValue(true)
   Object.defineProperty(window, 'path', { configurable: true, value: path.posix })
   Object.defineProperty(window, 'electron', { configurable: true, value: { ipcRenderer: { invoke: mocks.invoke } } })
   mocks.project = reactive({
@@ -85,6 +95,8 @@ describe('sidebar drag session', () => {
     await nextTick()
     expect(mocks.reveal).toHaveBeenCalledExactlyOnceWith('/root/notes/a.md')
     expect(mocks.project.CHANGE_ACTIVE_ITEM).not.toHaveBeenCalled()
+    // A move is a rename: the hidden list has to follow the new path.
+    expect(mocks.renameHidden).toHaveBeenCalledExactlyOnceWith('/root/a.md', '/root/notes/a.md')
   })
   it('moves only an internally started drag and suppresses repeated drops', async() => {
     fire(target, 'drop')

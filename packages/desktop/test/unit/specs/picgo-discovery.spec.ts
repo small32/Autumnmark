@@ -47,7 +47,7 @@ beforeAll(async() => {
   const { registerCmdHandlers } = await import('main_renderer/ipc/cmd')
   const { registerUploaderHandlers } = await import('main_renderer/ipc/uploader')
   registerCmdHandlers()
-  registerUploaderHandlers()
+  registerUploaderHandlers(() => ({ currentUploader: 'picgo', cliScript: '' }))
 })
 
 afterAll(async() => {

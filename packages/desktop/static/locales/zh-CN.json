@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "界面语言"
       },
-      "openingMode": "打开模式"
+      "openingMode": "打开模式",
+      "updates": {
+        "title": "软件更新",
+        "checkUpdatesOnStartup": "自动检查 GitHub Release",
+        "checkUpdatesOnStartupNote": "启动时检查一次，发现新版本时显示更新提示。",
+        "onlineUpdateEnabled": "允许应用内更新",
+        "onlineUpdateEnabledNote": "从 GitHub Release 下载并安装新版本；关闭后仅显示发布页面。",
+        "checkNow": "立即检查",
+        "unavailable": "当前安装方式不支持应用内更新。"
+      }
     },
     "editor": {
       "title": "编辑器",
@@ -908,10 +917,22 @@
       "installOnly": "仅安装",
       "installAndApply": "安装并应用",
       "update": "更新",
-      "setFor": { "light": "设为浅色主题", "dark": "设为深色主题" },
-      "installFor": { "light": "安装并设为浅色主题", "dark": "安装并设为深色主题" },
-      "assigned": { "light": "已设为浅色主题", "dark": "已设为深色主题" },
-      "deferred": { "light": "系统切换到浅色时使用「{name}」。", "dark": "系统切换到深色时使用「{name}」。" },
+      "setFor": {
+        "light": "设为浅色主题",
+        "dark": "设为深色主题"
+      },
+      "installFor": {
+        "light": "安装并设为浅色主题",
+        "dark": "安装并设为深色主题"
+      },
+      "assigned": {
+        "light": "已设为浅色主题",
+        "dark": "已设为深色主题"
+      },
+      "deferred": {
+        "light": "系统切换到浅色时使用「{name}」。",
+        "dark": "系统切换到深色时使用「{name}」。"
+      },
       "applied": "已应用「{name}」。",
       "installedNotice": "已安装「{name}」，可在本机主题中找到。",
       "updated": "已更新「{name}」。",
@@ -1300,7 +1321,10 @@
     "background": "在后台继续",
     "retry": "重试",
     "downloadFailed": "下载失败，请检查网络连接后重试。",
-    "waiting": "仍在等待响应…"
+    "waiting": "仍在等待响应…",
+    "available": "GitHub Release 已发布新版本 {version}。",
+    "openRelease": "查看发布页",
+    "download": "下载并安装"
   },
   "notifications": {
     "defaultMessage": "默认消息",

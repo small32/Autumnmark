@@ -1,5 +1,6 @@
 import { computed, onMounted, onUnmounted, type Ref } from 'vue'
 import { useProjectStore } from '@/store/project'
+import { usePreferencesStore } from '@/store/preferences'
 import notice from '@/services/notification'
 import { t } from '@/i18n'
 
@@ -7,6 +8,18 @@ const ROW_SELECTOR = '[data-tree-path]'
 const DRAG_TYPE = 'application/x-marktext-tree-item'
 const EXPAND_DELAY_MS = 700
 const SCROLL_EDGE_PX = 32
+
+// The hidden list lives in the preferences store, which is optional here: a
+// host without a preferences store must still be able to move items.
+async function renameHiddenState(source: string, destination: string): Promise<void> {
+  try {
+    const preferences = usePreferencesStore()
+    if (typeof preferences?.RENAME_HIDDEN_SIDEBAR_ITEM === 'function')
+      await preferences.RENAME_HIDDEN_SIDEBAR_ITEM(source, destination)
+  } catch {
+    // Best effort: a failed migration must not fail the move itself.
+  }
+}
 
 interface DragRow {
   element: HTMLElement
@@ -139,6 +152,11 @@ export const useTreeDragDrop = (
       const result = await window.electron.ipcRenderer.invoke('mt::project-move-item', request)
       if (disposed) return
       if (result.status === 'moved') {
+        // A move is a rename: carry the hidden state to the new path so
+        // hidden rows stay hidden instead of reappearing (or leaving a dead
+        // entry in the hidden list). The migration is best effort and must
+        // not delay the reveal.
+        void renameHiddenState(request.source, result.destination)
         requestReveal(result.destination)
         notice.notify({ title: t('sideBar.move.title'), message: t('sideBar.move.completed'), type: 'primary' })
       } else if (result.status === 'failed') {

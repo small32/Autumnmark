@@ -700,7 +700,16 @@
         "italian": "Italiano",
         "label": "Interfacetaal"
       },
-      "openingMode": "Openingsmodus"
+      "openingMode": "Openingsmodus",
+      "updates": {
+        "title": "Software-updates",
+        "checkUpdatesOnStartup": "GitHub Releases automatisch controleren",
+        "checkUpdatesOnStartupNote": "Controleert bij het starten en toont een melding bij een nieuwe versie.",
+        "onlineUpdateEnabled": "Updates in de app toestaan",
+        "onlineUpdateEnabledNote": "Download en installeer nieuwe versies vanuit GitHub Releases. Uitzetten toont alleen de releasepagina.",
+        "checkNow": "Nu controleren",
+        "unavailable": "Updates in de app zijn niet beschikbaar voor deze installatie."
+      }
     },
     "editor": {
       "title": "Editor",
@@ -1312,7 +1321,10 @@
     "background": "Doorgaan op de achtergrond",
     "retry": "Opnieuw proberen",
     "downloadFailed": "Downloaden is mislukt. Controleer de verbinding en probeer het opnieuw.",
-    "waiting": "Nog steeds aan het wachten op een antwoord…"
+    "waiting": "Nog steeds aan het wachten op een antwoord…",
+    "available": "Versie {version} is beschikbaar op GitHub Release.",
+    "openRelease": "Release bekijken",
+    "download": "Downloaden en installeren"
   },
   "notifications": {
     "defaultMessage": "Standaardbericht",

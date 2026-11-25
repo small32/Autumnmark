@@ -266,7 +266,7 @@ body {
 
 /* Drag-and-drop image drop indicator (PG4). `dragDropImage.ts` positions this
    absolutely-anchored bar at the top/bottom edge of the drop-target block. */
-#mu-dragover-ghost {
+.mu-dragover-ghost {
     position: absolute;
 
     height: 3px;

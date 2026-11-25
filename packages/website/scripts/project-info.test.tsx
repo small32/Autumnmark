@@ -6,7 +6,7 @@ import Stats from '../src/components/Stats'
 import { PROJECT_INFO } from '../src/lib/project-info'
 import { getProjectInfo } from './fetch-project-info'
 
-const releaseAssets = ['marktext-mac-arm64-1.0.0.dmg']
+const releaseAssets = ['autumnmark-mac-arm64-1.0.0.dmg']
 const release = { tag_name: 'v1.0.0', assets: releaseAssets.map((name) => ({ name })) }
 
 test('initial HTML includes project data without contacting GitHub', () => {

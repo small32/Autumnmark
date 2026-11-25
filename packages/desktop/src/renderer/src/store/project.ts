@@ -18,6 +18,7 @@ import notice from '../services/notification'
 import { useLayoutStore } from './layout'
 import { useEditorStore } from './editor'
 import { scheduleWindowCheckpoint } from './checkpoint'
+import { normalizeHiddenSidebarPath } from '../util/hiddenSidebarFiles'
 import type { TreeNode, TreeFolderNode } from '../components/sideBar/types'
 import type { FileChangeDetail } from '@shared/types/files'
 import {
@@ -96,6 +97,11 @@ export const useProjectStore = defineStore('project', () => {
   // union breaks both the assignments and the field reads, so it stays a hatch.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activeItem = ref<any>({})
+  // Ctrl/Cmd+click and Shift+click multi-selection. Stores pathnames (not
+  // nodes) so the selection survives tree rebuilds; the last clicked item
+  // stays `activeItem`, and `selectionAnchor` is the origin of Shift ranges.
+  const selectedPaths = ref<string[]>([])
+  const selectionAnchor = ref<string | null>(null)
   const createCache = ref<CreateCacheEntry | Record<string, never>>({})
   const newFileNameCache = ref<string>('')
   const renameCache = ref<string | null>(null)
@@ -185,23 +191,25 @@ export const useProjectStore = defineStore('project', () => {
     revision = snapshot.revision
     if (snapshot.reason === 'restore') restoringSession.value = true
     const removedIndex = roots.value.findIndex((root) => root.key === snapshot.targetKey)
-    roots.value = snapshot.roots.map((root) => {
+    roots.value = snapshot.roots.flatMap((root): RootView[] => {
       const existing = roots.value.find(
         (item) => item.key === root.key && item.watchToken === root.watchToken
       )
       if (existing) {
         Object.assign(existing, root)
         if (root.status === 'ready') existing.restoring = false
-        return existing
+        return [existing]
       }
       const previous = roots.value.find((item) => item.key === root.key)
       const collapsedPaths = new Set(previous ? collectCollapsed(previous) : [])
-      const tree = createProjectRoot(root.pathname)!
+      const tree = createProjectRoot(root.pathname)
+      // A root without a usable pathname cannot be watched or rendered.
+      if (!tree) return []
       tree.isCollapsed = collapsedPaths.has('')
-      return { ...root, tree, collapsedPaths, restoring: !!previous }
+      return [{ ...root, tree, collapsedPaths, restoring: !!previous }]
     })
     treeVersion.value++
-    if (activeItem.value?.pathname && !FIND_ROOT(activeItem.value.pathname)) activeItem.value = {}
+    if (activeItem.value?.pathname && !FIND_ROOT(activeItem.value.pathname)) CLEAR_SELECTION()
     if (snapshot.reason === 'replace' || snapshot.reason === 'remove') CLEAR_NAME_INPUT_STATE()
     if (['add', 'replace', 'reveal'].includes(snapshot.reason)) {
       SHOW_FILES()
@@ -374,9 +382,169 @@ export const useProjectStore = defineStore('project', () => {
     treeVersion.value++
   }
 
+  const isSameSelectionPath = (a: string, b: string): boolean =>
+    normalizeHiddenSidebarPath(a) === normalizeHiddenSidebarPath(b)
+
+  /** Project roots are single-select targets: they must never be hidden or trashed. */
+  const isRootSelectionPath = (pathname: string): boolean => {
+    const root = FIND_ROOT(pathname)
+    return !!root && (
+      isSameSelectionPath(root.pathname, pathname) ||
+      isSameSelectionPath(root.key, pathname)
+    )
+  }
+
+  /** True when `child` lives in a subtree below `parent`, not at the same path. */
+  const isStrictlyWithin = (parent: string, child: string): boolean => {
+    const parentKey = normalizeHiddenSidebarPath(parent)
+    const childKey = normalizeHiddenSidebarPath(child)
+    if (childKey === parentKey) return false
+    const separator = parentKey.includes('\\') ? '\\' : '/'
+    const prefix = parentKey.endsWith('/') || parentKey.endsWith('\\')
+      ? parentKey
+      : parentKey + separator
+    return childKey.startsWith(prefix)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function CHANGE_ACTIVE_ITEM(item: any): void {
     activeItem.value = item
+    // Right-clicking an already selected row keeps the multi-selection; a row
+    // outside it falls back to single-select and drops the stale Shift anchor.
+    const pathname = item?.pathname
+    if (
+      selectedPaths.value.length &&
+      (typeof pathname !== 'string' || !selectedPaths.value.some(path => isSameSelectionPath(path, pathname)))
+    ) {
+      selectedPaths.value = []
+      selectionAnchor.value = null
+    }
+  }
+
+  /** Plain row click: collapse to that row and reset both selection anchors. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function SELECT_SINGLE(item: any): void {
+    activeItem.value = item
+    selectedPaths.value = []
+    const pathname = item?.pathname
+    selectionAnchor.value = typeof pathname === 'string' && pathname ? pathname : null
+  }
+
+  function SET_SELECTION_ANCHOR(pathname: string): void {
+    selectionAnchor.value = pathname
+  }
+
+  /** Whether a row belongs to the current Ctrl/Cmd/Shift multi-selection. */
+  function IS_MULTI_SELECTED(pathname: string): boolean {
+    return selectedPaths.value.length > 1 && selectedPaths.value.some(path => isSameSelectionPath(path, pathname))
+  }
+
+  /** Ctrl/Cmd+click: add or remove a row from the multi-selection. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function TOGGLE_SELECTION(item: any): void {
+    const pathname = item?.pathname
+    if (typeof pathname !== 'string' || !pathname) return
+    // Roots are single-select targets; Ctrl/Cmd+clicking one must not extend the
+    // multi-selection (and must never make a project root hideable/trashable).
+    if (isRootSelectionPath(pathname)) return
+    // A plain click followed by Ctrl+click is the most common way to start a
+    // multi-selection. The plain click only set `activeItem`, so seed the
+    // selection with that row before adding the newly toggled one; otherwise
+    // bulk hide/delete would silently skip the first row.
+    if (!selectedPaths.value.length) {
+      const active = activeItem.value?.pathname
+      if (
+        typeof active === 'string'
+        && active
+        && !isRootSelectionPath(active)
+        && !isSameSelectionPath(active, pathname)
+        // Never seed rows the user cannot see or that no longer exist: a
+        // hidden row would otherwise be trashed invisibly and a stale row
+        // would poison hiddenSidebarPaths for future files at that path.
+        && FIND_TREE_NODE(active)
+        && !isHiddenSidebarSelectionPath(active)
+      )
+        selectedPaths.value.push(active)
+    }
+    const index = selectedPaths.value.findIndex(path => isSameSelectionPath(path, pathname))
+    if (index >= 0) {
+      selectedPaths.value.splice(index, 1)
+      // A deselected row must not stay the action target: move the focus to a
+      // row that is still selected (or clear it) so Delete/F2 cannot retarget.
+      const active = activeItem.value?.pathname
+      if (typeof active === 'string' && isSameSelectionPath(active, pathname)) {
+        const last = selectedPaths.value[selectedPaths.value.length - 1]
+        activeItem.value = last ? selectionItem(last) : {}
+      }
+      return
+    }
+    selectedPaths.value.push(pathname)
+    // Keep the clicked row as the single-selection anchor for other actions.
+    activeItem.value = item
+    selectionAnchor.value = pathname
+  }
+
+  /** Rebuilds a row payload for actions that only have a pathname at hand. */
+  function selectionItem(pathname: string): Record<string, unknown> {
+    const node = FIND_TREE_NODE(pathname)
+    return node ? { ...node, pathname } : { pathname }
+  }
+
+  /** Whether the row is currently filtered out of the sidebar by the hide list. */
+  function isHiddenSidebarSelectionPath(pathname: string): boolean {
+    const key = normalizeHiddenSidebarPath(pathname)
+    return preferencesStore.hiddenSidebarPaths.some(path => normalizeHiddenSidebarPath(path) === key)
+  }
+
+  /** Shift+click: replace the selection with a contiguous range of rows. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function SELECT_RANGE(pathnames: readonly string[], item: any): void {
+    const unique: string[] = []
+    const seen = new Set<string>()
+    for (const pathname of pathnames) {
+      // Project roots never join a range: they are not hideable or trashable.
+      if (isRootSelectionPath(pathname)) continue
+      const key = normalizeHiddenSidebarPath(pathname)
+      if (seen.has(key)) continue
+      seen.add(key)
+      unique.push(pathname)
+    }
+    selectedPaths.value = unique
+    activeItem.value = item
+    const pathname = item?.pathname
+    selectionAnchor.value = typeof pathname === 'string' && pathname
+      ? pathname
+      : (unique[unique.length - 1] ?? null)
+  }
+
+  function CLEAR_SELECTION(): void {
+    activeItem.value = {}
+    selectedPaths.value = []
+    selectionAnchor.value = null
+  }
+
+  /** Paths to act on: the whole multi-selection, or the single active item. */
+  function SELECTION_PATHS(): string[] {
+    const paths = selectedPaths.value.length > 1
+      ? [...selectedPaths.value]
+      : [activeItem.value?.pathname]
+    // Roots are excluded here as well, so a stale entry can never hide/trash one.
+    return paths.filter((pathname): pathname is string =>
+      typeof pathname === 'string' && !!pathname && !isRootSelectionPath(pathname))
+  }
+
+  /** Drops trashed paths (and their descendants) from the selection state. */
+  function REMOVE_SELECTION_PATHS(pathnames: readonly string[]): void {
+    if (!pathnames.length) return
+    const isRemoved = (pathname: string): boolean =>
+      pathnames.some(path => isSameSelectionPath(path, pathname) || isStrictlyWithin(path, pathname))
+    selectedPaths.value = selectedPaths.value.filter(path => !isRemoved(path))
+    if (selectionAnchor.value && isRemoved(selectionAnchor.value)) selectionAnchor.value = null
+    const active = activeItem.value?.pathname
+    if (typeof active === 'string' && active && isRemoved(active)) {
+      const last = selectedPaths.value[selectedPaths.value.length - 1]
+      activeItem.value = last ? selectionItem(last) : {}
+    }
   }
 
   /** Expands the folders leading to `pathname`; false when it is not in the tree. */
@@ -494,23 +662,31 @@ export const useProjectStore = defineStore('project', () => {
       bus.emit('SIDEBAR::show-new-input')
     })
     on('SIDEBAR::remove', async() => {
-      const { pathname } = activeItem.value
-      if (typeof pathname !== 'string' || !pathname) return
-      try {
-        const trashed = await window.electron.ipcRenderer.invoke('mt::fs-trash-item', pathname)
-        if (trashed) {
-          // A trashed item must not linger in the hidden-files settings list.
-          void usePreferencesStore().REMOVE_HIDDEN_SIDEBAR_ITEM(pathname)
-          // The node is gone; drop the selection so Delete cannot retarget it.
-          if (activeItem.value?.pathname === pathname) activeItem.value = {}
+      // Delete acts on the whole Ctrl/Cmd/Shift selection, matching "hide".
+      const paths = SELECTION_PATHS()
+      if (!paths.length) return
+      // Trashing a folder also removes its descendants; do not trash them twice.
+      const targets = paths.filter(pathname =>
+        !paths.some(other => isStrictlyWithin(other, pathname)))
+      const trashedPaths: string[] = []
+      for (const pathname of targets) {
+        try {
+          const trashed = await window.electron.ipcRenderer.invoke('mt::fs-trash-item', pathname)
+          if (trashed) {
+            // A trashed item must not linger in the hidden-files settings list.
+            void usePreferencesStore().REMOVE_HIDDEN_SIDEBAR_ITEM(pathname)
+            trashedPaths.push(pathname)
+          }
+        } catch (err) {
+          notice.notify({
+            title: 'Error while deleting',
+            type: 'error',
+            message: err instanceof Error ? err.message : String(err)
+          })
         }
-      } catch (err) {
-        notice.notify({
-          title: 'Error while deleting',
-          type: 'error',
-          message: err instanceof Error ? err.message : String(err)
-        })
       }
+      // The nodes are gone; drop them from the selection so Delete cannot retarget.
+      REMOVE_SELECTION_PATHS(trashedPaths)
     })
     on('SIDEBAR::copy-cut', (type: unknown) => {
       const { pathname: src } = activeItem.value
@@ -646,6 +822,16 @@ export const useProjectStore = defineStore('project', () => {
             name: window.path.basename(dest)
           }
         }
+        // Carry the multi-selection (and its Shift anchor) to the new path too.
+        const normalizedSrc = window.path.normalize(src)
+        selectedPaths.value = selectedPaths.value.map((path) => {
+          if (isSameSelectionPath(path, src)) return dest
+          if (isStrictlyWithin(src, path))
+            return dest + window.path.normalize(path).slice(normalizedSrc.length)
+          return path
+        })
+        if (selectionAnchor.value && isSameSelectionPath(selectionAnchor.value, src))
+          selectionAnchor.value = dest
         // Carry hidden state over to the new path (including descendants when
         // a hidden folder is renamed), otherwise it silently reappears.
         await usePreferencesStore().RENAME_HIDDEN_SIDEBAR_ITEM(src, dest)
@@ -666,6 +852,8 @@ export const useProjectStore = defineStore('project', () => {
 
   return {
     activeItem,
+    selectedPaths,
+    selectionAnchor,
     createCache,
     newFileNameCache,
     renameCache,
@@ -690,6 +878,13 @@ export const useProjectStore = defineStore('project', () => {
     LISTEN_FOR_LOAD_PROJECT,
     LISTEN_FOR_UPDATE_PROJECT,
     CHANGE_ACTIVE_ITEM,
+    SELECT_SINGLE,
+    SET_SELECTION_ANCHOR,
+    IS_MULTI_SELECTED,
+    TOGGLE_SELECTION,
+    SELECT_RANGE,
+    CLEAR_SELECTION,
+    SELECTION_PATHS,
     REVEAL_PATH,
     OPEN_CONTAINING_FOLDER,
     CHANGE_CLIPBOARD,

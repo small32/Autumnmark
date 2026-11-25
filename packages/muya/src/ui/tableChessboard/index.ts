@@ -16,6 +16,9 @@ interface ICheckerCount {
 
 // Zero-based bottom-right cell of the initial two-row, one-column table.
 const DEFAULT_SELECTION = { row: 1, column: 0 };
+// Upper bound for the row/column inputs (inclusive); keeps a mistyped huge
+// number from creating an editor-freezing table.
+const MAX_CHESSBOARD_SIZE = 50;
 const ARROW_STEPS = new Map<string, ICheckerCount>([
     [EVENT_KEYS.ArrowRight, { row: 0, column: 1 }],
     [EVENT_KEYS.ArrowLeft, { row: 0, column: -1 }],
@@ -177,7 +180,12 @@ class TablePicker extends BaseFloat {
         event.stopImmediatePropagation();
         if (step) {
             const { row, column } = this._select;
-            this._select = tableSelection(row + step.row, column + step.column);
+            // Arrow keys must respect the same cap as the numeric input, or
+            // holding a key would build a grid that bypasses the freeze guard.
+            this._select = tableSelection(
+                Math.min(row + step.row, MAX_CHESSBOARD_SIZE - 1),
+                Math.min(column + step.column, MAX_CHESSBOARD_SIZE - 1),
+            );
             this.render();
         }
         else {
@@ -190,8 +198,15 @@ class TablePicker extends BaseFloat {
             return;
         const { value } = event.target;
         const count = Number(value);
-        if (Number.isSafeInteger(count))
-            this._select[type] = Math.max(count - 1, 0);
+        if (Number.isSafeInteger(count)) {
+            // Cap the grid: an unbounded input (e.g. 100000) would create a
+            // table that freezes the editor and the OT layer.
+            this._select[type] = Math.min(Math.max(count - 1, 0), MAX_CHESSBOARD_SIZE - 1);
+            // Show the effective size, not the raw input: a clamped value
+            // (99999 -> 50) must not be presented as if it were honoured.
+            this.render({ [type]: String(this._select[type] + 1) });
+            return;
+        }
         // Keep partial input editable, e.g. the first digit of a 12-row table.
         this.render({ [type]: value });
     }

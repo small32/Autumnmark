@@ -17,7 +17,7 @@ export const preferenceCategories = [
 export type PreferenceCategoryId = (typeof preferenceCategories)[number]['id']
 
 export const generalGroups: Partial<Record<PreferenceCategoryId, readonly string[]>> = {
-  general: ['language', 'opening', 'windowOpening', 'navigation'],
+  general: ['language', 'opening', 'windowOpening', 'navigation', 'updates'],
   appearance: ['windowAppearance'],
   files: ['save', 'recovery'],
   images: ['pandoc']

@@ -1,4 +1,5 @@
 import type { JSONOp, JSONOpComponent, JSONOpList } from 'ot-json1';
+import type { Subscription } from 'rxjs';
 import type Content from '../block/base/content';
 import type Format from '../block/base/format';
 import type { Muya } from '../muya';
@@ -293,6 +294,7 @@ export class Editor {
     private _activeContentBlock: Nullable<Content> = null;
     private _inputSelection: Nullable<TSelectionState> | undefined;
     private _isComposing = false;
+    private _domEventSubscriptions: Subscription[] = [];
 
     constructor(private _muya: Muya) {
         const state = _muya.options.json || _muya.options.markdown || '';
@@ -424,7 +426,9 @@ export class Editor {
             this._dispatchContentEvent(anchorBlock, event);
         };
 
-        merge(
+        // Kept so `muya.destroy()` can unsubscribe; `detachAllDomEvents` does
+        // not reach rxjs `fromEvent` subscriptions.
+        this._domEventSubscriptions.push(merge(
             fromEvent(domNode, 'click'),
             fromEvent(domNode, 'input'),
             fromEvent(domNode, 'keydown'),
@@ -451,7 +455,16 @@ export class Editor {
                     this.selection.notify();
                 }
             }
-        });
+        }));
+    }
+
+    // Unsubscribe the rxjs `fromEvent` streams; `detachAllDomEvents` only
+    // removes listeners registered through the muya EventCenter, so these
+    // would otherwise keep firing (and transacting) after `muya.destroy()`.
+    disposeEvents(): void {
+        for (const sub of this._domEventSubscriptions)
+            sub.unsubscribe();
+        this._domEventSubscriptions = [];
     }
 
     private _isContentEvent(event: Event): boolean {

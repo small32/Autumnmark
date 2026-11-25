@@ -19,8 +19,13 @@ interface PreparedWindow {
   discarded: Map<string, number>
 }
 
+const QUIT_KEY = '__quit__'
+
 export class CloseCoordinator {
-  private _pending = false
+  /** Close flows that are currently running, keyed by window id (or the quit key). */
+  private _pending = new Set<string>()
+  /** Serializes close flows so checkpoints and commits never overlap. */
+  private _chain: Promise<void> = Promise.resolve()
 
   constructor(private readonly _ports: ClosePorts) {}
 
@@ -40,57 +45,67 @@ export class CloseCoordinator {
   }
 
   private async _requestClose(windowId?: string): Promise<void> {
-    if (this._pending) return
-    this._pending = true
+    // A repeated request for the same target is idempotent, but a request for
+    // another window must not be dropped: it waits for the running flow and
+    // then closes its own window.
+    const key = windowId ?? QUIT_KEY
+    if (this._pending.has(key)) return
+    this._pending.add(key)
     try {
-      const initial = this._ports.getSession()
-      const windows = structuredClone(
-        windowId ? initial.windows.filter((window) => window.id === windowId) : initial.windows
-      )
-      if (windowId && windows.length === 0) return
-      const transactionId = createStateId()
-      const prepared: PreparedWindow[] = []
-      for (const window of windows) {
-        let snapshot = await this._capture(window.id, transactionId)
-        let dirty = unsavedDocuments(snapshot)
-        const discarded = new Map<string, number>()
-        if (dirty.length > 0) {
-          const choice = await this._ports.choose(snapshot, transactionId)
-          if (choice === 'cancel') return
-          if (choice === 'save') {
-            const result = await this._ports.save(snapshot)
-            if (result !== 'saved') return
-            snapshot = await this._capture(window.id, transactionId)
-            dirty = unsavedDocuments(snapshot)
-            if (dirty.length > 0) return
-          } else {
-            for (const document of dirty) {
-              if (document.content.kind === 'recovery')
-                discarded.set(document.id, document.content.contentRevision)
-            }
+      const run = this._chain.then(() => this._runClose(windowId))
+      this._chain = run.then(() => {}, () => {})
+      await run
+    } finally {
+      this._pending.delete(key)
+    }
+  }
+
+  private async _runClose(windowId?: string): Promise<void> {
+    const initial = this._ports.getSession()
+    const windows = structuredClone(
+      windowId ? initial.windows.filter((window) => window.id === windowId) : initial.windows
+    )
+    if (windowId && windows.length === 0) return
+    const transactionId = createStateId()
+    const prepared: PreparedWindow[] = []
+    for (const window of windows) {
+      let snapshot = await this._capture(window.id, transactionId)
+      let dirty = unsavedDocuments(snapshot)
+      const discarded = new Map<string, number>()
+      if (dirty.length > 0) {
+        const choice = await this._ports.choose(snapshot, transactionId)
+        if (choice === 'cancel') return
+        if (choice === 'save') {
+          const result = await this._ports.save(snapshot)
+          if (result !== 'saved') return
+          snapshot = await this._capture(window.id, transactionId)
+          dirty = unsavedDocuments(snapshot)
+          if (dirty.length > 0) return
+        } else {
+          for (const document of dirty) {
+            if (document.content.kind === 'recovery')
+              discarded.set(document.id, document.content.contentRevision)
           }
         }
-        prepared.push({ snapshot, discarded })
       }
-      // Other windows can change while their neighbors' dialogs are being answered.
-      for (const entry of prepared) {
-        const latest = await this._capture(entry.snapshot.id, transactionId)
-        const unexpected = unsavedDocuments(latest).some(
-          (document) =>
-            document.content.kind === 'recovery' &&
-            entry.discarded.get(document.id) !== document.content.contentRevision
-        )
-        if (unexpected) return
-        entry.snapshot = latest
-      }
-      const committed = await this._ports.commit(
-        prepared.map((entry) => entry.snapshot),
-        windowId
-      )
-      if (!committed) return
-      for (const entry of prepared) await this._ports.destroy(entry.snapshot.id)
-    } finally {
-      this._pending = false
+      prepared.push({ snapshot, discarded })
     }
+    // Other windows can change while their neighbors' dialogs are being answered.
+    for (const entry of prepared) {
+      const latest = await this._capture(entry.snapshot.id, transactionId)
+      const unexpected = unsavedDocuments(latest).some(
+        (document) =>
+          document.content.kind === 'recovery' &&
+          entry.discarded.get(document.id) !== document.content.contentRevision
+      )
+      if (unexpected) return
+      entry.snapshot = latest
+    }
+    const committed = await this._ports.commit(
+      prepared.map((entry) => entry.snapshot),
+      windowId
+    )
+    if (!committed) return
+    for (const entry of prepared) await this._ports.destroy(entry.snapshot.id)
   }
 }

@@ -30,6 +30,15 @@ describe('#3575 — isDangerousExecutableFile', () => {
     expect(isDangerousExecutableFile('/tmp/run.VBS')).toBe(true)
   })
 
+  it('flags drive-relative executable links without confusing them for NTFS streams', () => {
+    expect(isDangerousExecutableFile('C:evil.exe')).toBe(true)
+    expect(isDangerousExecutableFile('d:run.bat')).toBe(true)
+    expect(isDangerousExecutableFile('/tmp/C:evil.exe')).toBe(true)
+    // A real alternate data stream still uses the base file's extension.
+    expect(isDangerousExecutableFile('evil.exe:hidden')).toBe(true)
+    expect(isDangerousExecutableFile('evil.md:hidden')).toBe(false)
+  })
+
   it('flags macOS and Linux launchers, not just Windows', () => {
     for (const name of ['run.command', 'Foo.app', 'launch.desktop', 'App.AppImage', 'installer.run']) {
       expect(isDangerousExecutableFile(name)).toBe(true)

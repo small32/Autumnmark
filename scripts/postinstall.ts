@@ -48,11 +48,38 @@ const nativeKeymapDir = path.join(desktopRoot, 'node_modules', 'native-keymap')
 if (!fs.existsSync(nativeKeymapDir)) {
   console.log('Installing native-keymap source (skipping compilation)...')
   // native-keymap is already in marktext's optionalDependencies; the add
-  // re-installs without changing the version range.
-  if (isPnpm) {
-    run('pnpm --filter marktext add native-keymap --ignore-scripts')
-  } else {
-    run('npm install native-keymap --ignore-scripts --no-save', { cwd: desktopRoot })
+  // re-installs without changing the version range. `pnpm add` would move the
+  // entry into dependencies and rewrite the range, so restore package.json
+  // afterwards (npm gets --no-save for the same effect).
+  // Both package managers may rewrite manifests/lockfiles even with --no-save
+  // (pnpm definitely rewrites the root lockfile). Snapshot every file that can
+  // change and restore it in `finally`, so `--frozen-lockfile` installs later
+  // are not broken by this repair step.
+  const manifestPaths = [
+    path.join(desktopRoot, 'package.json'),
+    path.join(repoRoot, 'pnpm-lock.yaml'),
+    path.join(repoRoot, 'package-lock.json'),
+    path.join(desktopRoot, 'package-lock.json')
+  ].filter(item => fs.existsSync(item))
+  const before = new Map(manifestPaths.map(item => [item, fs.readFileSync(item, 'utf8')]))
+  try {
+    if (isPnpm)
+      run('pnpm --filter marktext add native-keymap --ignore-scripts')
+    else
+      run('npm install native-keymap --ignore-scripts --no-save', { cwd: desktopRoot })
+  } finally {
+    for (const [item, content] of before) {
+      let current = null
+      try {
+        current = fs.readFileSync(item, 'utf8')
+      } catch {
+        // Deleted rather than rewritten — restore it below.
+      }
+      if (current === content)
+        continue
+      fs.writeFileSync(item, content)
+      console.log(`Restored ${path.relative(repoRoot, item)} after native-keymap install rewrote it`)
+    }
   }
 }
 
@@ -157,7 +184,13 @@ run(`"${electronRebuildBin}" -f`, { cwd: desktopRoot })
 
 // ── 5. Generate minified locale files ───────────────────────────────────────
 console.log('Minifying locales...')
-run('pnpm tsx scripts/minify-locales.ts')
+// tsx/tsc are locally installed at the root; calling the bins keeps steps 5-6
+// working under the npm fallback, where no `pnpm` exists on PATH.
+const tsxBin = path.join(repoRoot, 'node_modules', '.bin', `tsx${ext}`)
+const tscBin = path.join(repoRoot, 'node_modules', '.bin', `tsc${ext}`)
+run(isPnpm
+  ? 'pnpm tsx scripts/minify-locales.ts'
+  : `"${tsxBin}" scripts/minify-locales.ts`)
 
 // ── 6. Emit @muyajs/core typings ────────────────────────────────────────────
 // The package's `exports` map points at TS source and it ships no built
@@ -165,4 +198,6 @@ run('pnpm tsx scripts/minify-locales.ts')
 // `pnpm typecheck` regenerates them, but an IDE opened straight after install
 // would otherwise see an unresolved import.
 console.log('Emitting muya typings...')
-run('pnpm --filter @muyajs/core build:types')
+run(isPnpm
+  ? 'pnpm --filter @muyajs/core build:types'
+  : `"${tscBin}" -p tsconfig.build.json`, { cwd: path.join(repoRoot, 'packages', 'muya') })

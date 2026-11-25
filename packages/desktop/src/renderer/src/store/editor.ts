@@ -398,7 +398,7 @@ export const useEditorStore = defineStore('editor', {
         })
       }
 
-      if (currentFile && pathname === currentFile.pathname) {
+      if (currentFile && window.fileUtils.isSamePathSync(pathname, currentFile.pathname)) {
         this.currentFile = tab
         const { id, cursor, history, scrollTop, muyaIndexCursor } = tab // Should not use blocks history as this is loaded from disk
         bus.emit('file-changed', {
@@ -643,7 +643,7 @@ export const useEditorStore = defineStore('editor', {
       // Keep DIRNAME in sync when the active tab is the one being renamed,
       // so link resolution / dirname-based lookups don't keep using the old
       // folder until the user switches tabs.
-      if (this.currentFile != null && this.currentFile.pathname === dest) {
+      if (this.currentFile != null && window.fileUtils.isSamePathSync(this.currentFile.pathname, dest)) {
         window.DIRNAME = window.path.dirname(dest)
       }
       scheduleWindowCheckpoint()
@@ -1050,7 +1050,20 @@ export const useEditorStore = defineStore('editor', {
     SET_SAVE_STATUS_WHEN_REMOVE({ pathname }: { pathname: string }): void {
       let didUpdateSaveStatus = false
       this.tabs.forEach((f) => {
+        // `isSamePathSync` falls back to a blocking sync IPC when two paths
+        // differ only in case. Skip the obviously different ones first so a
+        // removal does not stall the renderer on one call per tab.
         if (f.pathname === pathname) {
+          f.isSaved = false
+          didUpdateSaveStatus = true
+          return
+        }
+        if (
+          f.pathname.length !== pathname.length
+          || f.pathname.toLowerCase() !== pathname.toLowerCase()
+        )
+          return
+        if (window.fileUtils.isSamePathSync(f.pathname, pathname)) {
           f.isSaved = false
           didUpdateSaveStatus = true
         }

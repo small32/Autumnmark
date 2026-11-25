@@ -34,10 +34,6 @@ class TrailingNewlineCommand {
     const { currentFile } = this._editorState
     if (!currentFile) return
     const { trimTrailingNewline } = currentFile
-    let index: number = trimTrailingNewline
-    if (index !== 0 && index !== 1) {
-      index = 2
-    }
 
     this.subcommands = [
       {
@@ -56,8 +52,16 @@ class TrailingNewlineCommand {
         value: 3
       }
     ]
-    this.subcommands[index].description = `${descriptions[index]} - current`
-    this.subcommandSelectedIndex = index
+
+    // Mark the entry that matches the current value. The "preserve" mode (2)
+    // has no entry of its own, so it must not be presented as another mode.
+    const index = this.subcommands.findIndex(subcommand => subcommand.value === trimTrailingNewline)
+    if (index >= 0) {
+      this.subcommands[index].description = `${descriptions[index]} - current`
+      this.subcommandSelectedIndex = index
+    } else {
+      this.subcommandSelectedIndex = -1
+    }
   }
 
   execute = async(): Promise<void> => {

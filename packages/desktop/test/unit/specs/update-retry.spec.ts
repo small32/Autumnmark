@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events'
-import { app, ipcMain, type BrowserWindow } from 'electron'
+import { ipcMain, type BrowserWindow } from 'electron'
 import type * as DesktopUpdates from '../../../src/main/updates'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -50,7 +50,6 @@ describe('desktop updates', () => {
   })
 
   afterEach(() => {
-    app.emit('will-quit', {} as Electron.Event)
     vi.useRealTimers()
   })
 
@@ -60,23 +59,67 @@ describe('desktop updates', () => {
     expect(updater.autoDownload).toBe(false)
   })
 
-  it('retries silent checks on the timer, stopping on quit', async() => {
+  it('checks only once on startup and never repeats on a timer', async() => {
     updater.checkForUpdates.mockRejectedValueOnce(new Error('offline'))
     updates.startAutomaticUpdateChecks(() => win)
     updates.startAutomaticUpdateChecks(() => win)
-    await vi.advanceTimersByTimeAsync(interval)
-    expect(updater.checkForUpdates).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(interval * 2)
+    expect(updater.checkForUpdates).toHaveBeenCalledOnce()
     expect(send.mock.calls.some(call => call[2] === true)).toBe(false)
-    app.emit('will-quit', {} as Electron.Event)
-    await vi.advanceTimersByTimeAsync(interval)
-    expect(updater.checkForUpdates).toHaveBeenCalledTimes(2)
   })
 
-  it('skips scheduled checks on unsupported installations', async() => {
+  it('skips the startup check on unsupported installations', async() => {
     isUpdatable.mockReturnValue(false)
     updates.startAutomaticUpdateChecks(() => win)
     await vi.advanceTimersByTimeAsync(interval)
     expect(updater.checkForUpdates).not.toHaveBeenCalled()
+  })
+
+  it('skips automatic checks when update notices are disabled', async() => {
+    const preferences = { getItem: vi.fn((key: string) => key === 'checkUpdatesOnStartup' ? false : true) }
+    updates.startAutomaticUpdateChecks(() => win, () => preferences)
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(interval)
+    expect(updater.checkForUpdates).not.toHaveBeenCalled()
+    expect(send).not.toHaveBeenCalledWith('mt::update-state', expect.anything(), true)
+
+    // An explicit check still works; only the automatic notice is suppressed.
+    updates.checkUpdates(win)
+    await vi.advanceTimersByTimeAsync(0)
+    expect(updater.checkForUpdates).toHaveBeenCalledOnce()
+  })
+
+  it('reports available releases without downloading when online updates are disabled', async() => {
+    updater.checkForUpdates.mockResolvedValue(available('2.0'))
+    const preferences = { getItem: vi.fn((key: string) => key === 'onlineUpdateEnabled' ? false : true) }
+    updates.startAutomaticUpdateChecks(() => win, () => preferences)
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(updater.downloadUpdate).not.toHaveBeenCalled()
+    expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version: '2.0' }, true)
+    ipcMain.emit('mt::update-install', { sender }, '2.0')
+    expect(updater.quitAndInstall).not.toHaveBeenCalled()
+  })
+
+  it('does not let an in-flight check restore a notice dismissed in settings', async() => {
+    let notices = true
+    const preferences = { getItem: vi.fn((key: string) => key === 'checkUpdatesOnStartup' ? notices : true) }
+    updates.startAutomaticUpdateChecks(() => win, () => preferences)
+    await vi.advanceTimersByTimeAsync(0)
+    send.mockClear()
+
+    updater.checkForUpdates.mockImplementationOnce(() =>
+      new Promise(resolve => setTimeout(() => resolve({ isUpdateAvailable: false }), 5)))
+    updates.checkUpdates(win)
+    expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'checking' }, true)
+
+    notices = false
+    ipcMain.emit('broadcast-preferences-changed', { checkUpdatesOnStartup: false })
+    expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'idle' })
+    send.mockClear()
+
+    await vi.advanceTimersByTimeAsync(10)
+    expect(send).not.toHaveBeenCalled()
   })
 
   it('shows an ongoing check immediately and allows retry after a network error', async() => {
@@ -126,11 +169,8 @@ describe('desktop updates', () => {
     send.mockClear()
     await vi.advanceTimersByTimeAsync(interval)
     expect(send).not.toHaveBeenCalled()
+    expect(updater.checkForUpdates).toHaveBeenCalledOnce()
     expect(updater.downloadUpdate).toHaveBeenCalledOnce()
-
-    updater.checkForUpdates.mockResolvedValue(available('1.3'))
-    await vi.advanceTimersByTimeAsync(interval)
-    expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'ready', version: '1.3' }, true)
     expect(updater.quitAndInstall).not.toHaveBeenCalled()
   })
 

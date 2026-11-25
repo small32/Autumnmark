@@ -6,7 +6,7 @@
       :data-tree-path="folder.pathname"
       data-tree-directory="true"
       :draggable="!renameCache && !createCache.dirname"
-      :class="[{ active: folder.id === activeItem.id }]"
+      :class="[{ active: folder.id === activeItem.id, 'multi-selected': multiSelected }]"
       :title="folder.pathname"
       @click="folderNameClick"
     >
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/store/project'
 import { showContextMenu } from '../../contextMenu/sideBar'
@@ -76,6 +76,7 @@ import { useHiddenSidebarFiles } from './useHiddenSidebarFiles'
 import { ArrowRight, Folder } from '@element-plus/icons-vue'
 import type { TreeFolderNode } from './types'
 import { useTreeRow } from './rowRegistry'
+import { useTreeSelection } from './useTreeSelection'
 
 const props = defineProps<{
   folder: TreeFolderNode
@@ -106,6 +107,9 @@ const { nameInputValue } = storeToRefs(projectStore)
 const { activeItem } = storeToRefs(projectStore)
 const { clipboard } = storeToRefs(projectStore)
 
+const multiSelected = computed(() => projectStore.IS_MULTI_SELECTED(props.folder.pathname))
+const { selectRange } = useTreeSelection()
+
 const handleInputFocus = (): void => {
   // Expand the create target before waiting for its input to mount.
   if (createCache.value.dirname !== props.folder.pathname) return
@@ -121,12 +125,27 @@ const handleInputEnter = (): void => {
   projectStore.CREATE_FILE_DIRECTORY(nameInputValue.value)
 }
 
-const folderNameClick = (): void => {
-  projectStore.CHANGE_ACTIVE_ITEM(props.folder)
+const folderNameClick = (event: MouseEvent): void => {
+  // Shift+click selects the visible range; plain click still folds the folder.
+  if (selectRange(event, props.folder)) return
+  // Ctrl/Cmd+click toggles the row into the multi-selection without expanding it.
+  if (event.ctrlKey || event.metaKey) {
+    projectStore.TOGGLE_SELECTION(props.folder)
+    return
+  }
+  projectStore.SELECT_SINGLE(props.folder)
   isCollapsed.value = !isCollapsed.value
 }
 
 const noop = (): void => {}
+
+const handleFolderContextMenu = (event: MouseEvent): void => {
+  event.preventDefault()
+  // CHANGE_ACTIVE_ITEM keeps a multi-selection when the target is one of its
+  // rows, and otherwise falls back to a single selection of this folder.
+  projectStore.CHANGE_ACTIVE_ITEM(props.folder)
+  showContextMenu(event, !!clipboard.value, props.folder)
+}
 
 const focusRenameInput = (): void => {
   // The `v-if` input mounts on the next tick; the store seeds its value.
@@ -143,14 +162,16 @@ const rename = (): void => {
 
 onMounted(() => {
   if (folderEl.value) {
-    folderEl.value.addEventListener('contextmenu', (event) => {
-      event.preventDefault()
-      projectStore.CHANGE_ACTIVE_ITEM(props.folder)
-      showContextMenu(event, !!clipboard.value, props.folder)
-    })
+    folderEl.value.addEventListener('contextmenu', handleFolderContextMenu)
   }
   bus.on('SIDEBAR::show-new-input', handleInputFocus)
   bus.on('SIDEBAR::show-rename-input', focusRenameInput)
+})
+
+onBeforeUnmount(() => {
+  folderEl.value?.removeEventListener('contextmenu', handleFolderContextMenu)
+  bus.off('SIDEBAR::show-new-input', handleInputFocus)
+  bus.off('SIDEBAR::show-rename-input', focusRenameInput)
 })
 </script>
 
@@ -185,6 +206,11 @@ onMounted(() => {
     /* After :hover so the selection stays visible while the pointer is over it. */
     &.active {
       background: var(--themeColor20);
+    }
+    /* Ctrl/Cmd/Shift+click multi-selection: outline keeps the active row distinguishable. */
+    &.multi-selected {
+      background: var(--themeColor20);
+      box-shadow: inset 0 0 0 1px var(--focusColor);
     }
   }
 }

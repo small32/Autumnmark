@@ -18,6 +18,8 @@
   "defaultDirectoryToOpen": "",
   "treePathExcludePatterns": [],
   "hiddenSidebarPaths": [],
+  "checkUpdatesOnStartup": true,
+  "onlineUpdateEnabled": true,
   "language": "en",
   "editorFontFamily": "Open Sans",
   "fontSize": 16,

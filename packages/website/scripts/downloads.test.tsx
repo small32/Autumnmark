@@ -113,21 +113,21 @@ test('download URLs include only published installers from the displayed version
     assert.equal(url.origin, 'https://github.com')
     assert.ok(
       url.pathname.startsWith(
-        `/marktext/marktext/releases/download/${PROJECT_INFO.releaseVersion}/`
+        `/small32/Autumnmark/releases/download/${PROJECT_INFO.releaseVersion}/`
       )
     )
     assert.ok(
       PROJECT_INFO.releaseAssets.includes(decodeURIComponent(url.pathname.split('/').at(-1)!))
     )
   }
-  const x64Only = getReleaseDownloads('v1.0.0', ['marktext-linux-1.0.0.snap'])
+  const x64Only = getReleaseDownloads('v1.0.0', ['autumnmark-linux-1.0.0.snap'])
   assert.equal(x64Only.length, 1)
   assert.equal(x64Only[0].architecture, 'x64')
   assert.deepEqual(
-    getReleaseDownloads('v1.0.0', ['marktext-mac-arm64-0.23.0.dmg', 'latest.yml']),
+    getReleaseDownloads('v1.0.0', ['autumnmark-mac-arm64-0.23.0.dmg', 'latest.yml']),
     []
   )
-  assert.deepEqual(getReleaseDownloads('v1.0.0', ['marktext-mac-arm64-1.0.0.dmg.blockmap']), [])
+  assert.deepEqual(getReleaseDownloads('v1.0.0', ['autumnmark-mac-arm64-1.0.0.dmg.blockmap']), [])
 })
 
 test('initial HTML offers all direct downloads and an honest generic hero button', () => {

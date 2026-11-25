@@ -56,7 +56,15 @@ function wouldMergeAdjacentLists(previous: TListMeta, meta: TListMeta): boolean 
 }
 
 function escapeText(str: string) {
-    return str.replace(/(?<!\\)\|/g, '\\|');
+    // A pipe only ends a table cell when it is preceded by an even number of
+    // backslashes (marked toggles on each `\`). Add the missing escape in that
+    // case; an odd run is already escaped and must be left alone, otherwise the
+    // cell text would split the row. Backslashes are not doubled here: marked
+    // strips exactly one `\` before a pipe and the inline engine interprets the
+    // rest of the source, so doubling would change what the cell renders.
+    return str.replace(/(\\*)\|/g, (match, slashes: string) => {
+        return slashes.length % 2 === 0 ? `${slashes}\\|` : match;
+    });
 }
 
 export interface IExportMarkdownOptions {
@@ -107,6 +115,10 @@ export default class ExportMarkdown {
 
     generate(states: TState[]) {
         this._blockBoundary.reset();
+        // Generation may run repeatedly on one instance; a stale list stack would
+        // otherwise leak the previous document's list metadata (and could be
+        // empty at the root of the next one).
+        this._listType = [];
         return this._convertStatesToMarkdown(states);
     }
 
@@ -335,7 +347,9 @@ export default class ExportMarkdown {
         listIndent: string,
         firstItem: boolean,
     ) {
-        const { loose } = this._listType[this._listType.length - 1];
+        // A `list-item` can reach the root in externally supplied state trees;
+        // fall back to a tight list instead of destructuring `undefined`.
+        const { loose } = this._listType[this._listType.length - 1] ?? { loose: false };
 
         this._isLooseParentList = loose;
         if (loose)
@@ -635,7 +649,10 @@ export default class ExportMarkdown {
         isTightItem: boolean,
         firstItem: boolean,
     ) {
-        const listInfo = this._listType[this._listType.length - 1];
+        // Root-level `list-item` states have no enclosing list metadata; default
+        // to a tight bullet item so serialization does not throw.
+        const listInfo = this._listType[this._listType.length - 1]
+            ?? { marker: '-', loose: false } as TListMeta;
         const marker = 'marker' in listInfo ? listInfo.marker : undefined;
         const isUnorderedList = !!marker;
         const { children, name } = state;

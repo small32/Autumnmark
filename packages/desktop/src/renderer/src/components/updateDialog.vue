@@ -59,6 +59,12 @@
         {{ busy ? t('updates.background') : state.phase === 'ready' ? t('updates.later') : t('titleBar.close') }}
       </el-button>
       <el-button
+        v-if="releaseVersion"
+        @click="updates.openRelease"
+      >
+        {{ t('updates.openRelease') }}
+      </el-button>
+      <el-button
         v-if="canInstall"
         type="primary"
         @click="updates.install"
@@ -87,7 +93,7 @@ const updates = useAutoUpdatesStore()
 const stopListening = updates.listen()
 onBeforeUnmount(stopListening)
 const { t, locale } = useI18n()
-const { state, progress, percent, status } = storeToRefs(updates)
+const { state, progress, percent, status, releaseVersion, onlineEnabled } = storeToRefs(updates)
 const busy = computed(() => ['checking', 'downloading'].includes(state.value.phase))
 const size = computed(() => new Intl.NumberFormat(locale.value, {
   style: 'unit', unit: 'megabyte', maximumFractionDigits: 1
@@ -95,8 +101,10 @@ const size = computed(() => new Intl.NumberFormat(locale.value, {
 const speed = computed(() => new Intl.NumberFormat(locale.value, {
   style: 'unit', unit: 'megabyte-per-second', maximumFractionDigits: 2
 }))
-const canInstall = computed(() => state.value.phase === 'ready' ||
-  (state.value.phase === 'error' && state.value.stage === 'install'))
+const canInstall = computed(() => onlineEnabled.value && (
+  state.value.phase === 'ready' ||
+  (state.value.phase === 'error' && state.value.stage === 'install')
+))
 const waiting = ref(false)
 watch([() => updates.visible, () => state.value.phase, () => progress.value?.transferred], (_, __, cleanUp) => {
   waiting.value = false
