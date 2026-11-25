@@ -49,7 +49,8 @@
     "test:unit": "vitest run test/unit",
     "test:e2e": "playwright test test/e2e",
     "typecheck": "pnpm --filter @muyajs/core build:types && vue-tsc --noEmit -p tsconfig.json",
-    "typecheck:watch": "pnpm --filter @muyajs/core build:types && vue-tsc --noEmit -p tsconfig.json --watch"
+    "typecheck:watch": "pnpm --filter @muyajs/core build:types && vue-tsc --noEmit -p tsconfig.json --watch",
+    "check:packaging": "tsx scripts/check-packaging.ts"
   },
   "dependencies": {
     "@csstools/css-tokenizer": "4.0.2",
