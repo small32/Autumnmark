@@ -77,7 +77,6 @@ test('the CSS inspector docks beside the studio and selects live preview HTML', 
     const settings = await openSettings(app, page)
     const studio = await openStudio(app, settings)
     const native = await app.browserWindow(studio)
-    await studio.getByRole('button', { name: 'CSS source' }).click()
     const input = studio.getByRole('textbox', { name: 'CSS source' })
     await input.focus()
     await studio.keyboard.insertText(layout)
@@ -134,7 +133,7 @@ test('the CSS inspector docks beside the studio and selects live preview HTML', 
     await studio.reload()
     await expect(inspector).toHaveAttribute('aria-pressed', 'true')
     await expect(studio.locator('.css-source .CodeMirror-code')).toContainText(layout)
-    await studio.getByRole('button', { name: 'AI assistant' }).click()
+    await inspector.click()
     await expect.poll(() => native.evaluate(win => win.webContents.isDevToolsOpened())).toBe(false)
     await expect(settings.evaluate(async() => {
       try { await window.electron.ipcRenderer.invoke('mt::theme::set-inspector', true); return 'opened' }
@@ -148,12 +147,14 @@ test('Elements tree selections add or focus a rule in the writable theme CSS', a
   try {
     const studio = await openStudio(app, await openSettings(app, page))
     const native = await app.browserWindow(studio)
-    await studio.getByRole('button', { name: 'CSS source' }).click()
     const input = studio.getByRole('textbox', { name: 'CSS source' })
     await input.focus()
     await studio.keyboard.insertText(layout)
-    await studio.getByRole('button', { name: 'Inspect element' }).click()
     const preview = studio.frameLocator('iframe')
+    // Wait for the preview to re-render with the inserted CSS before inspecting:
+    // the inspector maps the click position into the live iframe DOM.
+    await expect(preview.locator('h2')).toHaveCSS('margin-top', '47px')
+    await studio.getByRole('button', { name: 'Inspect element' }).click()
     const selector = studio.getByRole('combobox', { name: 'Selector', exact: true })
     await expect(studio.locator('main.inspecting')).toBeVisible()
     await preview.locator('h2').click({ position: { x: 2, y: 2 } })
@@ -221,7 +222,6 @@ test('previously saved themes open as editable CSS and retain their ID', async()
     const studio = await openStudio(app, settings, true)
     const preview = studio.frameLocator('iframe')
     await expect(preview.locator('h2')).toHaveCSS('color', 'rgb(18, 103, 137)')
-    await studio.getByRole('button', { name: 'CSS source' }).click()
     await expect(studio.locator('.css-source .CodeMirror-code')).toContainText('#126789')
     const base = studio.getByRole('checkbox', { name: 'View base CSS (read-only)' })
     await base.check()
@@ -246,7 +246,6 @@ test('saving an active theme creates a copy that can be applied separately', asy
   try {
     const settings = await openSettings(app, page)
     const studio = await openStudio(app, settings, true)
-    await studio.getByRole('button', { name: 'CSS source' }).click()
     await studio.getByRole('textbox', { name: 'CSS source' }).focus()
     await studio.keyboard.insertText(layout)
     await expect(studio.frameLocator('iframe').locator('h2')).toHaveCSS('margin-top', '47px')

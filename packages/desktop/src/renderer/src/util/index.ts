@@ -180,13 +180,6 @@ export const getUniqueId = (): string => {
   return `${ID_PREFIX}${id++}`
 }
 
-export const hasKeys = (obj: object): boolean => Object.keys(obj).length > 0
-
-/** Clone own properties; inheritFromObject=false creates a null-prototype result. */
-export const cloneObject = <T extends object>(obj: T, inheritFromObject = true): T => {
-  return Object.assign(inheritFromObject ? {} : Object.create(null), obj)
-}
-
 export const deepClone = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj))
 }

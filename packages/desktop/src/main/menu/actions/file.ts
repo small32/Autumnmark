@@ -360,10 +360,6 @@ ipcMain.on('mt::response-file-move-to', async(e, { id }: { id: string; pathname:
   if (operations) await operations.move(id)
 })
 
-ipcMain.on('mt::ask-for-open-project-in-sidebar', event => {
-  addFolder(BrowserWindow.fromWebContents(event.sender))
-})
-
 ipcMain.on('mt::cmd-add-folder', event => {
   addFolder(BrowserWindow.fromWebContents(event.sender))
 })

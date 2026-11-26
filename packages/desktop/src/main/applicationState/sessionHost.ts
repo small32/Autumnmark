@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, screen, type WebContents } from 'electron'
-import { stat, rename, readdir, writeFile } from 'node:fs/promises'
+import { stat, rename, readdir } from 'node:fs/promises'
 import { createReadStream } from 'node:fs'
 import { createHash } from 'node:crypto'
 import path from 'node:path'
@@ -13,7 +13,6 @@ import type { FileOpenOptions } from '../windows/editor'
 import { loadMarkdownFile, loadCliMarkdownFile, writeMarkdownFile } from '../filesystem/markdown'
 import { t } from '../i18n'
 import { documentWrites } from '../filesystem/documentWrites'
-import { drawingFilename, isDrawingPath } from '@shared/drawing'
 import { createDefaultLayout, emptyDocumentBody } from '@shared/applicationState/defaults'
 import { RecoveryStatus, SessionLifecycle } from '@shared/types/applicationState'
 import { StartupAction } from '@shared/types/preferences'
@@ -73,8 +72,7 @@ const findFileTab = (snapshot: WindowSnapshot, location: FileLocation): Document
 
 const isBlankMarkdownTab = (document: DocumentSnapshot): boolean =>
   document.resource.kind === 'untitled' &&
-  document.content.kind === 'empty' &&
-  !isDrawingPath(document.title)
+  document.content.kind === 'empty'
 
 /** Owns native editor lifetimes and checkpoints within the current application session. */
 export class SessionHost {
@@ -190,9 +188,7 @@ export class SessionHost {
         ? { kind: 'empty' }
         : { kind: 'recovery', contentRevision: 1 },
       readOnly: false,
-      saveFormat: isDrawingPath(title)
-        ? { encoding: { encoding: 'utf8', isBom: false }, lineEnding: 'lf', adjustLineEndingOnSave: false, trimTrailingNewline: 0 }
-        : this._defaultFormat(),
+      saveFormat: this._defaultFormat(),
       view: null
     }
   }
@@ -222,21 +218,20 @@ export class SessionHost {
     id = createStateId()
   ): Promise<{ document: DocumentSnapshot; content: RegisteredDocumentContent }> {
     const preferences = this._accessor.preferences.getAll()
-    const drawing = isDrawingPath(pathname)
     const raw =
       options.allowMissing && !options.readOnly
         ? await loadCliMarkdownFile(
           pathname,
           preferences.defaultEncoding,
           this._accessor.preferences.getPreferredEol(),
-          !drawing && preferences.autoGuessEncoding,
+          preferences.autoGuessEncoding,
           preferences.trimTrailingNewline,
           preferences.autoNormalizeLineEndings
         )
         : await loadMarkdownFile(
           pathname,
           this._accessor.preferences.getPreferredEol(),
-          !drawing && preferences.autoGuessEncoding,
+          preferences.autoGuessEncoding,
           preferences.trimTrailingNewline,
           preferences.autoNormalizeLineEndings
         )
@@ -252,7 +247,7 @@ export class SessionHost {
         ? { kind: 'empty' }
         : { kind: 'disk', baseline: raw.rawBaseline },
       readOnly:
-        options.readOnly ?? (!drawing && !raw.isPendingCreation && preferences.defaultOpenMode === 'read'),
+        options.readOnly ?? (!raw.isPendingCreation && preferences.defaultOpenMode === 'read'),
       saveFormat: {
         encoding: { encoding: raw.encoding.encoding, isBom: !!raw.encoding.isBom },
         lineEnding: raw.lineEnding,
@@ -787,31 +782,6 @@ export class SessionHost {
     })
   }
 
-  private async createDrawing(editor: EditorWindow, documentId: string, content: string, filename?: string): Promise<string> {
-    const id = editor.sessionStateId
-    if (!id || typeof content !== 'string') throw new Error(t('drawing.documentUnavailable'))
-    return this._enqueueWindowOperation(id, async() => {
-      const note = this._owner().getWindow(id)?.documents.find(document => document.id === documentId)
-      if (!note || note.readOnly || note.resource.kind !== 'file' || note.resource.pendingCreation || isDrawingPath(note.title))
-        throw new Error(t('drawing.documentUnavailable'))
-
-      const directory = path.dirname(note.resource.location.path)
-      const stem = t('drawing.untitled')
-      const customName = filename === undefined ? undefined : drawingFilename(filename)
-      if (filename !== undefined && !customName) throw new Error(t('drawing.invalidName'))
-      for (let number = 1; ; number++) {
-        const suffix = number === 1 ? '' : ` ${number}`
-        const candidate = path.join(directory, customName ?? `${stem}${suffix}.excalidraw`)
-        try {
-          await writeFile(candidate, content, { flag: 'wx' })
-          return candidate
-        } catch (error) {
-          if (customName || (error as NodeJS.ErrnoException).code !== 'EEXIST') throw error
-        }
-      }
-    })
-  }
-
   cancelPreview(windowId: string, requestId: number): void {
     if (this._previewRequests.get(windowId) === requestId) this._previewRequests.delete(windowId)
   }
@@ -1072,19 +1042,16 @@ export class SessionHost {
         if (epoch === null) throw new Error('Document is read-only')
         const native = this._native(windowId)
         const resource = capture.snapshot.resource
-        const drawing = isDrawingPath(capture.snapshot.title)
         // A preceding queued Save As may have rebound the resource since the request arrived.
         previousPath = resource.kind === 'file' ? resource.location.path : ''
         let destination = resource.kind === 'file' ? resource.location.path : ''
         if (saveAs || !destination) {
           const choice = await dialog.showSaveDialog(native, {
             defaultPath:
-              destination || path.join(app.getPath('documents'), drawing ? capture.snapshot.title : `${capture.snapshot.title}.md`),
-            ...(drawing ? { filters: [{ name: 'Excalidraw', extensions: ['excalidraw'] }] } : {})
+              destination || path.join(app.getPath('documents'), `${capture.snapshot.title}.md`)
           })
           if (choice.canceled || !choice.filePath) return null
           destination = choice.filePath
-          if (drawing && !isDrawingPath(destination)) throw new Error(t('drawing.invalidFile'))
         } else {
           const current = await this._diskBaseline(destination)
           const baseline = capture.baseline
@@ -1497,9 +1464,6 @@ export class SessionHost {
     })
     ipcMain.handle('mt::project-open-containing-folder', (event, documentId: string) => {
       return this._openContainingFolder(editorFor(event.sender), documentId)
-    })
-    ipcMain.handle('mt::drawing::create', (event, documentId: string, content: string, filename?: string) => {
-      return this.createDrawing(editorFor(event.sender), documentId, content, filename)
     })
     ipcMain.handle('mt::preferences::get', () => this._accessor.preferences.getAll())
     ipcMain.handle('mt::preferences::update', (_event, patch) => {

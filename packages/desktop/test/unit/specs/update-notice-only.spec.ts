@@ -5,20 +5,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Portable ZIPs cannot install updates, but they must still learn that a newer
 // release exists.
-const { updater, isUpdatable, netFetch } = vi.hoisted(() => ({
+const { isUpdatable, netFetch } = vi.hoisted(() => ({
   isUpdatable: vi.fn(),
-  netFetch: vi.fn(),
-  updater: {
-    allowPrerelease: true,
-    autoDownload: true,
-    autoInstallOnAppQuit: true,
-    on: vi.fn(),
-    checkForUpdates: vi.fn(),
-    downloadUpdate: vi.fn(),
-    quitAndInstall: vi.fn()
-  }
+  netFetch: vi.fn()
 }))
-vi.mock('electron-updater', () => ({ autoUpdater: updater }))
 vi.mock('electron', async() => {
   const { EventEmitter } = await import('node:events')
   return {
@@ -60,8 +50,6 @@ describe('release-only update checks', () => {
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version: '0.2.0' }, true)
     })
-    expect(updater.checkForUpdates).not.toHaveBeenCalled()
-    expect(updater.downloadUpdate).not.toHaveBeenCalled()
   })
 
   it('reports the current version when the latest release is not newer', async() => {
@@ -69,7 +57,6 @@ describe('release-only update checks', () => {
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'current' })
     })
-    expect(updater.checkForUpdates).not.toHaveBeenCalled()
   })
 
   it('ignores a release tag that cannot be compared', async() => {
@@ -87,7 +74,6 @@ describe('release-only update checks', () => {
     await vi.waitFor(() => {
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'error', stage: 'check' })
     }, { timeout: 8000 })
-    expect(updater.checkForUpdates).not.toHaveBeenCalled()
   })
 
   it('retries a transient network failure instead of reporting it', async() => {

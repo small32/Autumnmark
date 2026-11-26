@@ -66,11 +66,13 @@ async function nextTick() {
 }
 
 describe('tableChessboard — plugin shape (restored, revert #4435)', () => {
+    // The package entrypoint pulls in mermaid/vega/katex; the full 374-worker
+    // suite can push this single import past the 5s default (passes in isolation).
     it('is exported from the package entrypoint', async () => {
         const pkg = await import('../../../index');
         expect('TableChessboard' in pkg).toBe(true);
         expect(pkg.TableChessboard).toBe(TableChessboard);
-    });
+    }, 15000);
 
     it('exposes a stable static pluginName so Muya.use registers it', () => {
         expect(TableChessboard.pluginName).toBe('tablePicker');

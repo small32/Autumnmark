@@ -326,8 +326,8 @@
 
 .mu-code-block .mu-code::-webkit-scrollbar {
     display: block;
-    height: 6px;
     width: 6px;
+    height: 6px;
 }
 
 .mu-code-block .mu-code::-webkit-scrollbar-track {
@@ -419,6 +419,7 @@ code.mu-code .mu-code-copy:hover {
 .mu-line-numbers-rows > span {
     position: absolute;
     left: 0;
+
     width: 100%;
 
     counter-increment: mu-linenumber;
@@ -725,7 +726,6 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
 .mu-table-inner {
     --mu-cell-padding-x: 13px;
     --mu-cell-auto-min-width: calc(2em + 2 * var(--mu-cell-padding-x));
-
     width: 100%;
     max-width: 100%;
     padding: 0;
@@ -805,7 +805,6 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
 .mu-table-inner tr th::before,
 .mu-table-inner tr td::before {
     position: absolute;
-    inset: 0;
 
     box-sizing: border-box;
     width: calc(100% + 1px);
@@ -815,6 +814,7 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
 
     content: '';
     pointer-events: none;
+    inset: 0;
 }
 
 .mu-table-inner tr th:first-child,

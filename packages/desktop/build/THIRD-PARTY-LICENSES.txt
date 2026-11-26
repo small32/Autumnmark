@@ -7,67 +7,78 @@ This file contains all third-party packages that are bundled and shipped with Ma
 # Summary
 -------------------------------------------------
 
-1. @electron-toolkit/preload (MIT)
+1. @csstools/css-tokenizer (MIT)
 2. @electron-toolkit/utils (MIT)
-3. @electron/remote (MIT)
-4. @element-plus/icons-vue (MIT)
-5. @hfelix/electron-localshortcut (MIT)
-6. @marktext/file-icons (MIT)
-7. @octokit/rest (MIT)
-8. @popperjs/core (MIT)
-9. @vscode/ripgrep (MIT)
-10. arg (MIT)
-11. axios (MIT)
-12. ced ((ISC AND Apache-2.0))
-13. chokidar (MIT)
-14. codemirror (MIT)
-15. command-exists (MIT)
-16. deep-equal (MIT)
-17. dom-autoscroller (MIT)
-18. dompurify ((MPL-2.0 OR Apache-2.0))
-19. dragula (MIT)
-20. electron-log (MIT)
-21. electron-store (MIT)
-22. electron-updater (MIT)
-23. electron-window-state (MIT)
-24. element-plus (MIT)
-25. element-resize-detector (MIT)
-26. execall (MIT)
-27. flowchart.js (MIT)
-28. font-list (MIT)
-29. fs-extra (MIT)
-30. fuzzaldrin (MIT)
-31. github-markdown-css (MIT)
-32. html-tags (MIT)
-33. iso-639-1 (MIT)
-34. joplin-turndown-plugin-gfm (MIT)
-35. katex (MIT)
-36. keytar (MIT)
-37. languine (MIT)
-38. lodash (MIT)
-39. marktext (MIT*)
-40. mermaid (MIT)
-41. mitt (MIT)
-42. native-keymap (MIT)
-43. pinia (MIT)
-44. prismjs (MIT)
-45. snabbdom-to-html (MIT)
-46. snabbdom (MIT)
-47. snapsvg-cjs (MIT)
-48. turndown (MIT)
-49. underscore (MIT)
-50. vega-embed (BSD-3-Clause)
-51. vite-plugin-prismjs (MIT)
-52. vue-i18n (MIT)
-53. vue-router (MIT)
-54. webfontloader (Apache-2.0)
+3. @element-plus/icons-vue (MIT)
+4. @floating-ui/dom (MIT)
+5. @intlify/core-base (MIT)
+6. @jsr/std__path (MIT*)
+7. @vscode/ripgrep (MIT)
+8. arg (MIT)
+9. axios (MIT)
+10. ced ((ISC AND Apache-2.0))
+11. chokidar (MIT)
+12. codemirror (MIT)
+13. command-exists (MIT)
+14. dom-autoscroller (MIT)
+15. dompurify ((MPL-2.0 OR Apache-2.0))
+16. dragula (MIT)
+17. electron-log (MIT)
+18. electron-store (MIT)
+19. element-plus (MIT)
+20. entities (BSD-2-Clause)
+21. fast-diff (Apache-2.0)
+22. flowchart.js (MIT)
+23. font-list (MIT)
+24. fs-extra (MIT)
+25. fuse.js (Apache-2.0)
+26. fuzzaldrin (MIT)
+27. github-markdown-css (MIT)
+28. html-tags (MIT)
+29. iso-639-1 (MIT)
+30. joplin-turndown-plugin-gfm (MIT)
+31. katex (MIT)
+32. keytar (MIT)
+33. lodash (MIT)
+34. marked-highlight (MIT)
+35. marked (MIT)
+36. mermaid (MIT)
+37. micromark (MIT)
+38. minimatch (BlueOak-1.0.0)
+39. mitt (MIT)
+40. ms (MIT)
+41. native-keymap (MIT)
+42. ot-json1 (ISC)
+43. ot-text-unicode (ISC)
+44. pako ((MIT AND Zlib))
+45. parse5 (MIT)
+46. pathe (MIT)
+47. pinia (MIT)
+48. plantuml-encoder (MIT)
+49. postcss-selector-parser (MIT)
+50. postcss (MIT)
+51. prismjs (MIT)
+52. rxjs (Apache-2.0)
+53. snabbdom-to-html (MIT)
+54. snabbdom (MIT)
+55. snapsvg-cjs (MIT)
+56. turndown (MIT)
+57. underscore (MIT)
+58. vega-embed (BSD-3-Clause)
+59. vega-lite (BSD-3-Clause)
+60. vega (BSD-3-Clause)
+61. vue-i18n (MIT)
+62. vue-router (MIT)
+63. webfontloader (Apache-2.0)
+64. write-file-atomic (ISC)
+65. @hfelix/electron-localshortcut (MIT)
 
 
 -------------------------------------------------
 # Licenses
 -------------------------------------------------
 
-# @electron-toolkit/preload (MIT)
+# @csstools/css-tokenizer (MIT)
 -------------------------------------------------
 undefined
 
@@ -79,60 +90,25 @@ undefined
 
 
 
-# @electron/remote (MIT)
--------------------------------------------------
-undefined
-
-
-
 # @element-plus/icons-vue (MIT)
 -------------------------------------------------
 undefined
 
 
 
-# @hfelix/electron-localshortcut (MIT)
--------------------------------------------------
-The MIT License (MIT)
-
-Copyright (c) 2022 Felix Häusler
-Copyright (c) 2017 Andrea Parodi
-Copyright (c) 2016 Thomas Brouard
-Copyright (c) 2014 GitHub Inc.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-
-# @marktext/file-icons (MIT)
+# @floating-ui/dom (MIT)
 -------------------------------------------------
 undefined
 
 
 
-# @octokit/rest (MIT)
+# @intlify/core-base (MIT)
 -------------------------------------------------
 undefined
 
 
 
-# @popperjs/core (MIT)
+# @jsr/std__path (MIT*)
 -------------------------------------------------
 undefined
 
@@ -180,12 +156,6 @@ undefined
 
 
 
-# deep-equal (MIT)
--------------------------------------------------
-undefined
-
-
-
 # dom-autoscroller (MIT)
 -------------------------------------------------
 undefined
@@ -216,31 +186,19 @@ undefined
 
 
 
-# electron-updater (MIT)
--------------------------------------------------
-undefined
-
-
-
-# electron-window-state (MIT)
--------------------------------------------------
-undefined
-
-
-
 # element-plus (MIT)
 -------------------------------------------------
 undefined
 
 
 
-# element-resize-detector (MIT)
+# entities (BSD-2-Clause)
 -------------------------------------------------
 undefined
 
 
 
-# execall (MIT)
+# fast-diff (Apache-2.0)
 -------------------------------------------------
 undefined
 
@@ -259,6 +217,12 @@ undefined
 
 
 # fs-extra (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# fuse.js (Apache-2.0)
 -------------------------------------------------
 undefined
 
@@ -306,19 +270,19 @@ undefined
 
 
 
-# languine (MIT)
--------------------------------------------------
-undefined
-
-
-
 # lodash (MIT)
 -------------------------------------------------
 undefined
 
 
 
-# marktext (MIT*)
+# marked-highlight (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# marked (MIT)
 -------------------------------------------------
 undefined
 
@@ -330,7 +294,25 @@ undefined
 
 
 
+# micromark (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# minimatch (BlueOak-1.0.0)
+-------------------------------------------------
+undefined
+
+
+
 # mitt (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# ms (MIT)
 -------------------------------------------------
 undefined
 
@@ -342,13 +324,67 @@ undefined
 
 
 
+# ot-json1 (ISC)
+-------------------------------------------------
+undefined
+
+
+
+# ot-text-unicode (ISC)
+-------------------------------------------------
+undefined
+
+
+
+# pako ((MIT AND Zlib))
+-------------------------------------------------
+undefined
+
+
+
+# parse5 (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# pathe (MIT)
+-------------------------------------------------
+undefined
+
+
+
 # pinia (MIT)
 -------------------------------------------------
 undefined
 
 
 
+# plantuml-encoder (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# postcss-selector-parser (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# postcss (MIT)
+-------------------------------------------------
+undefined
+
+
+
 # prismjs (MIT)
+-------------------------------------------------
+undefined
+
+
+
+# rxjs (Apache-2.0)
 -------------------------------------------------
 undefined
 
@@ -390,7 +426,13 @@ undefined
 
 
 
-# vite-plugin-prismjs (MIT)
+# vega-lite (BSD-3-Clause)
+-------------------------------------------------
+undefined
+
+
+
+# vega (BSD-3-Clause)
 -------------------------------------------------
 undefined
 
@@ -411,6 +453,42 @@ undefined
 # webfontloader (Apache-2.0)
 -------------------------------------------------
 undefined
+
+
+
+# write-file-atomic (ISC)
+-------------------------------------------------
+undefined
+
+
+
+# @hfelix/electron-localshortcut (MIT)
+-------------------------------------------------
+The MIT License (MIT)
+
+Copyright (c) 2022 Felix Häusler
+Copyright (c) 2017 Andrea Parodi
+Copyright (c) 2016 Thomas Brouard
+Copyright (c) 2014 GitHub Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 
 

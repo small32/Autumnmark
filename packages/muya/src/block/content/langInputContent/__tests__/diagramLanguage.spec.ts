@@ -3,8 +3,12 @@
 import type Content from '../../../base/content';
 import type Parent from '../../../base/parent';
 import type LangInputContent from '../index';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Muya } from '../../../../muya';
+
+// Rendering mermaid/vega previews is CPU-heavy; 374 workers in the full suite
+// can push a single case past the 5s default even though it passes in isolation.
+vi.setConfig({ testTimeout: 15000 });
 
 // #5060: leaving a code block's language input commits the language. A diagram
 // language turns the block into a diagram block — what loading its ```lang

@@ -3,7 +3,6 @@ import path from 'path'
 import { app, Menu, ipcMain, BrowserWindow } from 'electron'
 import log from 'electron-log'
 import { isOsx, isWindows } from '../config'
-import { updateSidebarMenu } from '../menu/actions/edit'
 import { updateFormatMenu } from '../menu/actions/format'
 import { updateSelectionMenus, type SelectionState } from '../menu/actions/paragraph'
 import { onInternalChannel } from '../utils/internalIpc'
@@ -441,9 +440,6 @@ class AppMenu {
       this._applyDocumentMode(win.id)
       event.sender.send('mt::menu::application-categories-changed')
     })
-    ipcMain.on('mt::add-recently-used-document', (_e, pathname: string) => {
-      this.addRecentlyUsedDocument(pathname)
-    })
     ipcMain.handle('mt::get-recently-used-documents', () => this.getRecentDocuments())
     ipcMain.on('mt::remove-recently-used-document', (_e, pathname: string) => {
       this.removeRecentlyUsedDocument(pathname)
@@ -462,14 +458,6 @@ class AppMenu {
         this._applyDocumentMode(windowId, (menu) => updateFormatMenu(menu, formats))
       }
     )
-    ipcMain.on('mt::update-sidebar-menu', (_e, windowId: number, value: unknown) => {
-      if (!this.has(windowId)) {
-        log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
-        return
-      }
-      const menu = this.getWindowMenuById(windowId)
-      if (menu) updateSidebarMenu(menu, value)
-    })
     ipcMain.on(
       'mt::view-layout-changed',
       (_e, windowId: number, viewSettings: Record<string, unknown>) => {

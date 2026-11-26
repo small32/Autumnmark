@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "PlantUML Sunucu URL'si"
-        },
-        "newDrawingView": {
-          "title": "Yeni çizimleri açma biçimi",
-          "dialog": "Kayan pencere",
-          "tab": "Yeni sekme"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "Açık",
         "dark": "Koyu"
       },
-      "noResults": "Eşleşen tema bulunamadı."
+      "noResults": "Eşleşen tema bulunamadı.",
+      "previewRetry": "Yeniden dene"
     },
     "keybindings": {
       "title": "Kısayol Tuşları",
@@ -951,24 +943,6 @@
       "checking": "Denetleniyor…",
       "recheck": "Yeniden denetle",
       "failed": "Algılama başarısız. Yeniden denetleyin."
-    }
-  },
-  "remoteContent": {
-    "about": "Güncel bilgiler",
-    "loading": "En yeni içerik getiriliyor…",
-    "loadFailed": "İçerik yüklenemedi.",
-    "refreshFailed": "Yenileme başarısız. Son alınan içerik gösteriliyor.",
-    "refresh": "Yenile",
-    "retry": "Tekrar dene",
-    "announcement": "Duyurular",
-    "unreadAnnouncement": "Okunmamış duyuru",
-    "unverified": "GitHub’a ulaşılamıyor. Duyurunun güncel olup olmadığı doğrulanamadı.",
-    "donation": {
-      "title": "AutumnMark+’ı destekleyin",
-      "description": "AutumnMark+’ın geliştirilmesini desteklemek için QR kodunu ilgili uygulamayla tarayın.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "Bağış için {method} QR kodu"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "Görseli Görüntüle",
     "copyLink": "Bağlantı Adresini Kopyala",
     "resumed": "Düzenleme Modu açık. Otomatik kaydetme devam ediyor."
-  },
-  "themeHistory": {
-    "empty": "Bu tema için henüz kaydedilmiş bir sürüm yok.",
-    "restoreAndApply": "Geri yükle ve uygula",
-    "confirmApplyDetail": "Bu sürüm uygulanacaktır. Mevcut sürüm geçmişte kalacaktır.",
-    "appliedCollaboration": "Harici yapay zekâ istemcisinin değişiklikleri uygulandı.",
-    "appliedRecovered": "Daha önce uygulanan sürüm",
-    "title": "Sürüm geçmişi",
-    "current": "Geçerli taslak",
-    "loading": "Sürümler yükleniyor…",
-    "storageError": "Tema sürümleri bu cihazda okunamadı veya kaydedilemedi.",
-    "changes": "Değişiklikler",
-    "previous": "Önceki sürümle karşılaştırma",
-    "noChanges": "Tema içeriği önceki sürümle aynı.",
-    "restore": "Taslak olarak geri yükle",
-    "confirmRestore": "Geri yüklemeyi onayla",
-    "confirm": "{date} {time} tarihli sürüm geri yüklensin mi?",
-    "confirmDetail": "Geri yükleme bir sürüm ekler. Geçerli taslak geçmişte kalır.",
-    "restored": "{date} {time} tarihli sürüm geri yüklendi.",
-    "applyHint": "Kullanılan temayı güncellemek için «Kaydet ve uygula» seçeneğini kullanın.",
-    "kind": {
-      "initial": "İlk sürüm",
-      "manual": "Elle düzenleme",
-      "save": "Kaydet",
-      "apply": "Kaydet ve uygula",
-      "restore": "Geri yükle",
-      "undo": "Geri al",
-      "collaboration": "Ortak düzenleme",
-      "recovered": "Kurtarılan taslak"
-    },
-    "description": {
-      "initial": "Bu temanın başlangıç noktası.",
-      "manual": "Tema taslağı elle düzenlendi.",
-      "save": "Tema kaydedildi.",
-      "apply": "Tema kaydedildi ve uygulandı.",
-      "restore": "Önceki bir sürüm geri yüklendi.",
-      "undo": "Taslakta yapılan bir değişiklik geri alındı.",
-      "collaboration": "Taslak ortak çalışma klasöründeki dosyalardan güncellendi.",
-      "recovered": "Bu cihazda kayıtlı bir taslak kurtarıldı."
-    },
-    "field": {
-      "name": "Tema adı",
-      "base": "Temel tema",
-      "css": "Stil",
-      "sample": "Önizleme Markdown metni"
-    }
-  },
-  "about": {
-    "copyright": "Telif Hakkı © Luo Ran 2017-{year}",
-    "copyrightContributors": "Github Katkıda Bulunanlar tarafından <3 ile yapıldı"
-  },
-  "drawing": {
-    "insert": "Excalidraw çizimi ekle",
-    "openInTab": "Sekmede aç",
-    "new": "Yeni Excalidraw çizimi",
-    "open": "Excalidraw çizimini aç",
-    "untitled": "Adsız çizim",
-    "addDocument": "Markdown belgesi ekle",
-    "addDocumentButton": "Belge ekle",
-    "searchDocuments": "Markdown belgelerini ara",
-    "insertIntoNote": "Belgeye ekle",
-    "wholeDocument": "Belgenin tamamı",
-    "addCard": "Kart ekle",
-    "discardChanges": "Bu çizimdeki kaydedilmemiş değişiklikler atılsın mı?",
-    "discard": "Değişiklikleri at",
-    "changedOnDisk": "Diskteki çizim değişti. Son sürümü görmek için yeniden açın.",
-    "invalidFile": "Bir .excalidraw dosyası seçin.",
-    "openFailed": "Dosya açılamadı. {reason}",
-    "saveFailed": "Çizim kaydedilemedi veya eklenemedi. {reason}",
-    "cardFailed": "Belge kartı eklenemedi. {reason}",
-    "embedded": "Embedded drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
-  },
-  "history": {
-    "title": "Geçmiş",
-    "document": "Belge",
-    "theme": "Tema",
-    "documentChanges": "Yapay zekânın belge değişiklikleri",
-    "empty": "Bu geçmişte henüz değişiklik yok.",
-    "undated": "Tarihsiz",
-    "viewConversation": "Sohbeti görüntüle"
   }
 }

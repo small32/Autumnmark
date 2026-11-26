@@ -117,7 +117,7 @@
                 size="small"
                 @click="loadPreview"
               >
-                {{ t('remoteContent.retry') }}
+                {{ t('preferences.theme.previewRetry') }}
               </el-button>
               <img
                 v-if="choice.image"

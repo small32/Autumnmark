@@ -42,23 +42,11 @@ export const isCatalogThemeSource = (value: unknown): value is CatalogThemeSourc
   const { id, revision } = value as Partial<CatalogThemeSource>
   return isCatalogThemeId(id) && typeof revision === 'number' && Number.isSafeInteger(revision) && revision > 0
 }
-export interface ThemeMessage { role: 'user' | 'assistant'; content: string }
 export const maxThemeNameLength = 80
-export const maxThemeMessageLength = 4000
 export const maxThemeSampleLength = 16000
 export const isThemeSample = (value: unknown): value is string =>
   typeof value === 'string' && value.length <= maxThemeSampleLength
 
-export interface ThemeModelRequest {
-  id: string
-  profileId: string
-  base: string
-  css: string
-  baseCss: string
-  messages: ThemeMessage[]
-  sampleMarkdown?: string
-  previewTools?: { baseUrl: string }
-}
 export interface PreviewTarget {
   framing: 'node' | 'viewport'
   selector: string
@@ -85,24 +73,7 @@ export interface PreviewCrop {
   slices: number
 }
 export type PreparedPreview = { crop: PreviewCrop } | { error: string }
-export interface ThemeReplyTrace {
-  wireBytes: number
-  replyBytes: number
-  assistantText: string
-}
-export interface ThemeChatDiagnostic extends ThemeReplyTrace {
-  time: string
-  requestId: string
-  model: string
-  requestType?: string
-  phase: string
-  reason: string
-  inputCss: string
-}
 export type ThemeCaptureEvent = { prepareCapture: string; target: PreviewTarget; css: string } | { releaseCapture: string }
-export type ThemeModelEvent = ThemeCaptureEvent | { css: string } | { sampleMarkdown: string } | { message: string } | { screenshot: string }
-export type ThemeGenerationResult = { css: string; sampleMarkdown?: string; reply: string } |
-  { diagnostic: ThemeChatDiagnostic } | { cancelled: true }
 
 export const isThemeField = (key: string): key is ThemeField => Object.hasOwn(themeFields, key)
 export const validThemeValue = (key: ThemeField, value: unknown): value is string => {

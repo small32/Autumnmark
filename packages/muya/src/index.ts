@@ -1,18 +1,15 @@
 export type { IHeadingFoldState } from './block/folding';
 export type { IClipboardImageCopy } from './clipboard/image';
-export type { IDrawingInsertion } from './types';
 export { imageDocumentMarkdown } from './clipboard/markdownSource';
 export { embeddedImageDestination, findDocumentImages, findLinkedDocumentMedia, findPastedImageSources } from './clipboard/pastedImageSources';
 export type { ISerializedHistory } from './history';
 export type { ILocale } from './i18n/types';
-
 export { headingLinkAt } from './inline/headingLink';
-export { linkedImageAt } from './inline/linkedImage';
+
 export { embeddedPictureSize } from './inline/imageDimensions';
+export { linkedImageAt } from './inline/linkedImage';
 export { de, en, es, fr, it, ja, ko, nl, pt, ru, tr, zhCN, zhTW } from './locales';
 export { Muya } from './muya';
-export { decodeInlineDrawing, encodeInlineDrawing, isInlineDrawingSource } from './utils/diagram/drawingData';
-export { findEmbeddedDrawings, inlineDrawingToMarkdown } from './utils/diagram/drawingSource';
 export type { IMatch, IReplaceOption, ISearchOption } from './search/types';
 export type { IIndexCursor } from './selection/offsetCursor';
 export { SelectionDirection, SelectionType } from './selection/types';
@@ -36,10 +33,10 @@ export type { IRenderToStaticHTMLOptions } from './state/renderToStaticHTML';
 export type { TState } from './state/types';
 export { ChangeSource } from './types';
 export type { IMuyaOptions } from './types';
-
 export { CodeBlockLanguageSelector } from './ui/codeBlockLanguageSelector';
 // Export ui tools.
 export { EmojiSelector } from './ui/emojiSelector';
+
 export { FootnoteTool } from './ui/footnoteTool';
 export { ImageEditTool } from './ui/imageEditTool';
 export { ImagePathPicker } from './ui/imagePicker';

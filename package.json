@@ -1,6 +1,6 @@
 {
   "name": "autumnmark-monorepo",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "AutumnMark+ monorepo root",
   "private": true,
   "homepage": "https://github.com/small32/Autumnmark",
@@ -63,7 +63,6 @@
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.1",
-    "vite-plugin-static-copy": "^4.1.1",
     "vue-eslint-parser": "^10.4.1"
   }
 }

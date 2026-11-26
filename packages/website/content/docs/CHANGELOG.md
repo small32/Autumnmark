@@ -1,3 +1,10 @@
+## AutumnMark+ 0.2.7
+
+- Removed all built-in AI features: the AI model settings page, the theme assistant inside the theme studio, and the unused document chat code. The editor no longer calls a model provider.
+- Removed the remaining drawing support that no longer worked: Markdown preferences no longer show the drawing settings, the bundled Excalidraw renderer and fonts are gone, and `.excalidraw` files open as plain text.
+- Removed unused runtime dependencies and dead code, including React, electron-updater, duplicate utilities and orphan components, reducing the installed size.
+- Fixed a Muya test that could time out when the full suite runs in parallel.
+
 ## AutumnMark+ 0.2.6
 
 - Updated the application icon across every platform and file association, plus the in-app logos, to the new AutumnMark+ mark with a plus sign.

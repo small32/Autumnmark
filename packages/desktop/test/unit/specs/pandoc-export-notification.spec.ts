@@ -29,7 +29,6 @@ vi.mock('electron', () => ({
 }))
 
 vi.mock('electron-log', () => ({ default: { error: vi.fn(), warn: vi.fn(), info: vi.fn() } }))
-vi.mock('electron-updater', () => ({ autoUpdater: { on: vi.fn(), checkForUpdates: vi.fn() } }))
 // `main/filesystem` reaches the native `ced` addon, built for Electron's ABI, not this Node.
 vi.mock('ced', () => ({ default: () => 'UTF-8' }))
 

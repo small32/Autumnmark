@@ -1,3 +1,28 @@
+/* The search band for a line break is an empty box drawn just before the break.
+   Out of flow: in flow its ~4px width wraps a full line onto its own row.
+   Kept before the `.mu-hide .mu-highlight`/`.mu-selection` rules below so
+   selector specificity ascends (no-descending-specificity). */
+.mu-soft-line-break,
+.mu-hard-line-break,
+.mu-line-end {
+    position: relative;
+}
+
+.mu-soft-line-break > .mu-highlight,
+.mu-soft-line-break > .mu-selection,
+.mu-hard-line-break > .mu-highlight,
+.mu-hard-line-break > .mu-selection,
+.mu-line-end > .mu-highlight,
+.mu-line-end > .mu-selection {
+    position: absolute;
+    top: 0;
+
+    /* `.mu-selection` is normally inline and takes its height from the line
+       box; blockified by `position: absolute` it would collapse to zero. */
+    height: 1.3em;
+    inset-inline-start: 0;
+}
+
 .mu-gray {
     color: var(--editor-color-30);
     text-decoration: none;
@@ -171,29 +196,6 @@ del.mu-inline-diff-deletion {
 /* hard line break and soft line end */
 .mu-line-end {
     display: block;
-}
-
-/* The search band for a line break is an empty box drawn just before the break.
-   Out of flow: in flow its ~4px width wraps a full line onto its own row. */
-.mu-soft-line-break,
-.mu-hard-line-break,
-.mu-line-end {
-    position: relative;
-}
-
-.mu-soft-line-break > .mu-highlight,
-.mu-soft-line-break > .mu-selection,
-.mu-hard-line-break > .mu-highlight,
-.mu-hard-line-break > .mu-selection,
-.mu-line-end > .mu-highlight,
-.mu-line-end > .mu-selection {
-    position: absolute;
-    inset-inline-start: 0;
-    top: 0;
-
-    /* `.mu-selection` is normally inline and takes its height from the line
-       box; blockified by `position: absolute` it would collapse to zero. */
-    height: 1.3em;
 }
 
 /* When softNewlineAsSpace is on, collapse the \n inside a soft break span
@@ -481,11 +483,11 @@ blockquote .mu-hide.mu-math > .mu-math-render {
     pointer-events: none;
 }
 
-.mu-editor:focus-within [data-mu-image-caret="start"]::after {
+.mu-editor:focus-within [data-mu-image-caret='start']::after {
     inset-inline-start: 0;
 }
 
-.mu-editor:focus-within [data-mu-image-caret="end"]::after {
+.mu-editor:focus-within [data-mu-image-caret='end']::after {
     inset-inline-end: 0;
 }
 

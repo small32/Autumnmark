@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "URL du serveur PlantUML"
-        },
-        "newDrawingView": {
-          "title": "Ouvrir les nouveaux dessins dans",
-          "dialog": "Fenêtre flottante",
-          "tab": "Nouvel onglet"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "Clair",
         "dark": "Sombre"
       },
-      "noResults": "Aucun thème ne correspond."
+      "noResults": "Aucun thème ne correspond.",
+      "previewRetry": "Réessayer"
     },
     "keybindings": {
       "title": "Raccourcis clavier",
@@ -951,24 +943,6 @@
       "checking": "Vérification…",
       "recheck": "Vérifier à nouveau",
       "failed": "La détection a échoué. Veuillez réessayer."
-    }
-  },
-  "remoteContent": {
-    "about": "Informations actualisées",
-    "loading": "Chargement du contenu le plus récent…",
-    "loadFailed": "Impossible de charger le contenu.",
-    "refreshFailed": "Échec de l’actualisation. Le dernier contenu reçu est affiché.",
-    "refresh": "Actualiser",
-    "retry": "Réessayer",
-    "announcement": "Annonces",
-    "unreadAnnouncement": "Annonce non lue",
-    "unverified": "GitHub est indisponible. Impossible de vérifier si l’annonce est à jour.",
-    "donation": {
-      "title": "Soutenir AutumnMark+",
-      "description": "Scannez le code avec l’application correspondante pour soutenir le développement d’AutumnMark+.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "Code QR pour faire un don avec {method}"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "Afficher l’image",
     "copyLink": "Copier l’adresse du lien",
     "resumed": "Le mode édition est activé. L’enregistrement automatique a repris."
-  },
-  "themeHistory": {
-    "empty": "Aucune version de ce thème n’a encore été enregistrée.",
-    "restoreAndApply": "Restaurer et appliquer",
-    "confirmApplyDetail": "Cette version sera appliquée. La version actuelle restera dans l’historique.",
-    "appliedCollaboration": "Les modifications d’un client IA externe ont été appliquées.",
-    "appliedRecovered": "Version appliquée précédemment",
-    "title": "Historique des versions",
-    "current": "Brouillon actuel",
-    "loading": "Chargement des versions…",
-    "storageError": "Impossible de lire ou de sauvegarder les versions du thème sur cet appareil.",
-    "changes": "Modifications",
-    "previous": "Comparaison avec la version précédente",
-    "noChanges": "Le contenu du thème est identique à celui de la version précédente.",
-    "restore": "Restaurer comme brouillon",
-    "confirmRestore": "Confirmer la restauration",
-    "confirm": "Restaurer la version du {date} à {time} ?",
-    "confirmDetail": "La restauration ajoute une version. Le brouillon actuel restera dans l’historique.",
-    "restored": "La version du {date} à {time} a été restaurée.",
-    "applyHint": "Choisissez « Enregistrer et appliquer » pour mettre à jour le thème utilisé.",
-    "kind": {
-      "initial": "Version initiale",
-      "manual": "Modification manuelle",
-      "save": "Enregistrer",
-      "apply": "Enregistrer et appliquer",
-      "restore": "Restaurer",
-      "undo": "Annuler",
-      "collaboration": "Modification collaborative",
-      "recovered": "Brouillon récupéré"
-    },
-    "description": {
-      "initial": "Point de départ de ce thème.",
-      "manual": "Le brouillon a été modifié manuellement.",
-      "save": "Le thème a été enregistré.",
-      "apply": "Le thème a été enregistré et appliqué.",
-      "restore": "Une version précédente a été restaurée.",
-      "undo": "Une modification du brouillon a été annulée.",
-      "collaboration": "Le brouillon a été mis à jour depuis le dossier de collaboration.",
-      "recovered": "Un brouillon enregistré sur cet appareil a été récupéré."
-    },
-    "field": {
-      "name": "Nom du thème",
-      "base": "Thème de base",
-      "css": "Style",
-      "sample": "Markdown de l’aperçu"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Contributeurs aux droits d'auteur"
-  },
-  "drawing": {
-    "insert": "Insérer un dessin Excalidraw",
-    "openInTab": "Ouvrir dans un onglet",
-    "new": "Nouveau dessin Excalidraw",
-    "open": "Ouvrir un dessin Excalidraw",
-    "untitled": "Dessin sans titre",
-    "addDocument": "Ajouter un document Markdown",
-    "addDocumentButton": "Ajouter un document",
-    "searchDocuments": "Rechercher des documents Markdown",
-    "insertIntoNote": "Insérer dans le document",
-    "wholeDocument": "Document entier",
-    "addCard": "Ajouter la carte",
-    "discardChanges": "Ignorer les modifications non enregistrées de ce dessin ?",
-    "discard": "Ignorer les modifications",
-    "changedOnDisk": "Le dessin a été modifié sur le disque. Rouvrez-le pour afficher la dernière version.",
-    "invalidFile": "Sélectionnez un fichier .excalidraw.",
-    "openFailed": "Impossible d’ouvrir le fichier. {reason}",
-    "saveFailed": "Impossible d’enregistrer ou d’insérer le dessin. {reason}",
-    "cardFailed": "Impossible d’ajouter la carte du document. {reason}",
-    "embedded": "Embedded drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
-  },
-  "history": {
-    "title": "Historique",
-    "document": "Document",
-    "theme": "Thème",
-    "documentChanges": "Modifications du document par l’IA",
-    "empty": "Cet historique ne contient encore aucune modification.",
-    "undated": "Sans date",
-    "viewConversation": "Voir la conversation"
   }
 }

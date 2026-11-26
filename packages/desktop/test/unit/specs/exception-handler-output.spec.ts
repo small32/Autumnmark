@@ -16,10 +16,6 @@ vi.mock('../../../src/main/i18n', () => ({
   t: (key: string) => key
 }))
 
-vi.mock('../../../src/main/utils/createGitHubIssue', () => ({
-  createAndOpenGitHubIssueUrl: vi.fn()
-}))
-
 import setupExceptionHandler from '../../../src/main/exceptionHandler'
 
 type OutputErrorHandler = (error: NodeJS.ErrnoException) => void

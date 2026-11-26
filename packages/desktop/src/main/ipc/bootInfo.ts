@@ -57,10 +57,6 @@ export const registerBootInfo = (): void => {
     if (!cached) cached = buildBootInfo()
     event.returnValue = cached
   })
-  ipcMain.handle('mt::boot-info-async', () => {
-    if (!cached) cached = buildBootInfo()
-    return cached
-  })
 }
 
 export const getBootInfo = (): BootInfo => {

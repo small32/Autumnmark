@@ -1,19 +1,13 @@
-import { resolve, dirname, relative } from 'path'
-import { createRequire } from 'node:module'
-import { normalizePath, type PluginOption } from 'vite'
+import { resolve, dirname } from 'path'
+import { type PluginOption } from 'vite'
 import { defineConfig } from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
 import postcssPresetEnv from 'postcss-preset-env'
 import packageJson from './package.json' with { type: 'json' }
 import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const excalidrawFonts = normalizePath(resolve(dirname(createRequire(import.meta.url).resolve('@excalidraw/excalidraw')), 'fonts'))
-const excalidrawFontBase = normalizePath(relative(resolve(__dirname, 'src/renderer'), dirname(excalidrawFonts)))
-  .split('/').filter(segment => segment && segment !== '..').length
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   main: {
@@ -90,9 +84,7 @@ export default defineConfig({
         'codemirror/addon/display/placeholder', 'postcss', 'postcss-selector-parser'
       ]
     },
-    plugins: [vue(), svgLoader(), viteStaticCopy({
-      targets: [{ src: excalidrawFonts, dest: 'excalidraw', rename: { stripBase: excalidrawFontBase } }]
-    })] as PluginOption[],
+    plugins: [vue(), svgLoader()] as PluginOption[],
     css: {
       postcss: {
         plugins: [

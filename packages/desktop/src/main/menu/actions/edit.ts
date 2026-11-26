@@ -5,7 +5,6 @@ import { COMMANDS } from '../../commands'
 import type { CommandManager } from '../../commands'
 import { isOsx } from '../../config'
 import { searchFilesAndDir } from '../../utils/imagePathAutoComplement'
-import { requireMenuItem } from '../lookup'
 
 type Win = BrowserWindow | null | undefined
 
@@ -179,13 +178,4 @@ export const loadEditCommands = (commandManager: CommandManager): void => {
   commandManager.add(COMMANDS.EDIT_SCREENSHOT, screenshot)
   commandManager.add(COMMANDS.EDIT_SELECT_ALL, editorSelectAll)
   commandManager.add(COMMANDS.EDIT_UNDO, editorUndo)
-}
-
-
-// NOTE: Don't use static `getMenuItemById` here, instead request the menu by
-//       window id from `AppMenu` manager.
-
-export const updateSidebarMenu = (applicationMenu: Menu, value: unknown): void => {
-  const sideBarMenuItem = requireMenuItem(applicationMenu, 'sideBarMenuItem')
-  sideBarMenuItem.checked = !!value
 }

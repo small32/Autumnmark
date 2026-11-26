@@ -15,6 +15,7 @@ vi.mock('../../utils/prism/index', () => ({
     walkTokens: () => null,
     loadedLanguages: new Set(),
     transformAliasToOrigin: (s: string) => s,
+    languageTitle: (s: string) => s,
     // Returns a thenable so `CodeBlock.set lang` -> loadLanguage(value).then(...)
     // does not throw under the stubbed prism.
     loadLanguage: () => Promise.resolve([]),

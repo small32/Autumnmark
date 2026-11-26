@@ -14,7 +14,6 @@ import { MarkdownToHtml } from '@muyajs/core'
 import { sanitize, EXPORT_DOMPURIFY_CONFIG } from './dompurify'
 import { resolveLocalLinkHref } from './resolveLinkHref'
 import { getHtmlToc, type HtmlTocOptions } from './pdf'
-import { expandDrawingPreviews } from '@/services/drawingPreviews'
 
 export interface HeaderFooterPart {
   type?: number
@@ -175,8 +174,7 @@ export const exportStyledHTML = async(
 
   // Render the engine's full HTML document. We re-extract its <article> body so
   // we can inject the TOC / header-footer, then re-emit the document shell.
-  const expanded = await expandDrawingPreviews(markdown, options.documentPath)
-  const { html: fullDoc, headings } = await new MarkdownToHtml(expanded, muya).generateWithHeadings({
+  const { html: fullDoc, headings } = await new MarkdownToHtml(markdown, muya).generateWithHeadings({
     title,
     extraCSS: extraCss,
     dir

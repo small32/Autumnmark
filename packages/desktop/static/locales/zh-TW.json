@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "PlantUML 伺服器 URL"
-        },
-        "embedDrawings": {
-          "title": "在 Markdown 中內嵌繪圖",
-          "description": "關閉後，插入繪圖將建立獨立的 .excalidraw 檔案，並在文件中引用該檔案。"
-        },
-        "newDrawingView": {
-          "title": "新建繪圖的開啟方式",
-          "dialog": "浮動視窗",
-          "tab": "新分頁"
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "淺色",
         "dark": "深色"
       },
-      "noResults": "沒有符合的主題。"
+      "noResults": "沒有符合的主題。",
+      "previewRetry": "重試"
     },
     "keybindings": {
       "title": "按鍵綁定",
@@ -951,24 +943,6 @@
       "checking": "偵測中…",
       "recheck": "重新偵測",
       "failed": "偵測失敗，請重新偵測。"
-    }
-  },
-  "remoteContent": {
-    "about": "動態資訊",
-    "loading": "正在取得最新內容…",
-    "loadFailed": "無法取得內容。",
-    "refreshFailed": "重新整理失敗，正在顯示上次取得的內容。",
-    "refresh": "重新整理",
-    "retry": "重試",
-    "announcement": "公告",
-    "unreadAnnouncement": "公告有更新",
-    "unverified": "暫時無法連線至 GitHub，無法確認公告是否為最新版本。",
-    "donation": {
-      "title": "支持秋箋",
-      "description": "歡迎使用支付寶或微信掃描 QR 碼，支持秋箋的持續開發。",
-      "alipay": "支付寶",
-      "wechatPay": "微信支付",
-      "qrCode": "{method}捐贈收款 QR 碼"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "檢視圖片",
     "copyLink": "複製連結位址",
     "resumed": "已切換至編輯模式，自動儲存已恢復。"
-  },
-  "themeHistory": {
-    "empty": "此主題還沒有儲存的版本。",
-    "restoreAndApply": "還原並套用",
-    "confirmApplyDetail": "將套用這個版本。目前版本會保留在歷史記錄中。",
-    "appliedCollaboration": "套用了外部 AI 用戶端的修改。",
-    "appliedRecovered": "先前套用的版本",
-    "title": "版本記錄",
-    "current": "目前草稿",
-    "loading": "正在讀取版本…",
-    "storageError": "無法在這台裝置讀取或儲存主題版本。",
-    "changes": "變更",
-    "previous": "與上一個版本比較",
-    "noChanges": "主題內容與上一個版本相同。",
-    "restore": "還原為草稿",
-    "confirmRestore": "確認還原",
-    "confirm": "還原 {date} {time} 的版本？",
-    "confirmDetail": "還原會新增一筆記錄，原有草稿會保留在版本記錄中。",
-    "restored": "已還原 {date} {time} 的版本。",
-    "applyHint": "若要更新使用中的主題，請選擇「儲存並套用」。",
-    "kind": {
-      "initial": "初始版本",
-      "manual": "手動編輯",
-      "save": "手動儲存",
-      "apply": "儲存並套用",
-      "restore": "版本還原",
-      "undo": "復原",
-      "collaboration": "協作編輯",
-      "recovered": "找回的草稿"
-    },
-    "description": {
-      "initial": "此主題的初始快照。",
-      "manual": "已手動編輯主題草稿。",
-      "save": "已儲存目前主題。",
-      "apply": "已儲存並套用主題。",
-      "restore": "已還原較早的版本。",
-      "undo": "已復原草稿中的一次變更。",
-      "collaboration": "已根據協作資料夾中的檔案更新草稿。",
-      "recovered": "已找回這台裝置上儲存的草稿。"
-    },
-    "field": {
-      "name": "主題名稱",
-      "base": "基礎主題",
-      "css": "樣式",
-      "sample": "預覽 Markdown"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "版權貢獻者"
-  },
-  "drawing": {
-    "new": "新增 Excalidraw 繪圖",
-    "insert": "插入 Excalidraw 繪圖",
-    "openInTab": "移到分頁",
-    "open": "開啟 Excalidraw 繪圖",
-    "embedded": "內嵌繪圖",
-    "untitled": "未命名繪圖",
-    "filename": "繪圖檔名",
-    "invalidName": "請輸入有效的繪圖檔名。",
-    "renameFailed": "無法重新命名繪圖。{reason}",
-    "documentUnavailable": "無法存取原始文件。",
-    "addDocument": "新增 Markdown 文件",
-    "addDocumentButton": "新增文件",
-    "searchDocuments": "搜尋 Markdown 文件",
-    "browseDocuments": "瀏覽檔案…",
-    "canvas": "畫布",
-    "source": "原始碼",
-    "invalidSource": "繪圖原始碼無效。{reason}",
-    "sourceChanged": "編輯原始碼期間畫布已修改。捨棄原始碼草稿後可載入最新版本。",
-    "discardSource": "捨棄尚未套用的繪圖原始碼變更嗎？",
-    "insertionChanged": "文件已修改。請在目標位置重新插入繪圖。",
-    "insertIntoNote": "插入到文件",
-    "wholeDocument": "整份文件",
-    "addCard": "新增卡片",
-    "discardChanges": "要捨棄這張繪圖中尚未儲存的變更嗎？",
-    "discard": "捨棄變更",
-    "changedOnDisk": "磁碟上的繪圖已變更。請重新開啟以查看最新版本。",
-    "invalidFile": "請選擇 .excalidraw 檔案。",
-    "openFailed": "無法開啟檔案。{reason}",
-    "saveFailed": "無法儲存或插入繪圖。{reason}",
-    "cardFailed": "無法新增文件卡片。{reason}"
-  },
-  "history": {
-    "title": "歷史紀錄",
-    "document": "文件",
-    "theme": "主題",
-    "documentChanges": "AI 文件變更",
-    "empty": "目前沒有歷史變更。",
-    "undated": "無日期",
-    "viewConversation": "檢視對話"
   }
 }

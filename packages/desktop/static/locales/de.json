@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "PlantUML-Server-URL"
-        },
-        "newDrawingView": {
-          "title": "Neue Zeichnungen öffnen in",
-          "dialog": "Schwebendes Fenster",
-          "tab": "Neuer Tab"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "Hell",
         "dark": "Dunkel"
       },
-      "noResults": "Keine passenden Themen gefunden."
+      "noResults": "Keine passenden Themen gefunden.",
+      "previewRetry": "Erneut versuchen"
     },
     "keybindings": {
       "title": "Tastenkürzel",
@@ -951,24 +943,6 @@
       "checking": "Wird geprüft…",
       "recheck": "Erneut prüfen",
       "failed": "Erkennung fehlgeschlagen. Bitte erneut prüfen."
-    }
-  },
-  "remoteContent": {
-    "about": "Aktuelle Informationen",
-    "loading": "Aktuelle Inhalte werden geladen…",
-    "loadFailed": "Der Inhalt konnte nicht geladen werden.",
-    "refreshFailed": "Aktualisierung fehlgeschlagen. Der zuletzt geladene Inhalt wird angezeigt.",
-    "refresh": "Aktualisieren",
-    "retry": "Erneut versuchen",
-    "announcement": "Ankündigungen",
-    "unreadAnnouncement": "Ungelesene Ankündigung",
-    "unverified": "GitHub ist nicht erreichbar. Die Aktualität der Ankündigung konnte nicht geprüft werden.",
-    "donation": {
-      "title": "AutumnMark+ unterstützen",
-      "description": "Scanne den QR-Code mit der passenden App, um die Entwicklung von AutumnMark+ zu unterstützen.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "QR-Code für Spenden mit {method}"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "Bild anzeigen",
     "copyLink": "Linkadresse kopieren",
     "resumed": "Der Bearbeitungsmodus ist aktiviert. Das automatische Speichern wurde fortgesetzt."
-  },
-  "themeHistory": {
-    "empty": "Für dieses Design wurden noch keine Versionen gespeichert.",
-    "restoreAndApply": "Wiederherstellen und anwenden",
-    "confirmApplyDetail": "Diese Version wird angewendet. Die aktuelle Version bleibt im Verlauf erhalten.",
-    "appliedCollaboration": "Änderungen eines externen KI-Clients wurden angewendet.",
-    "appliedRecovered": "Zuvor angewendete Version",
-    "title": "Versionsverlauf",
-    "current": "Aktueller Entwurf",
-    "loading": "Versionen werden geladen…",
-    "storageError": "Die Designversionen konnten auf diesem Gerät nicht gelesen oder gespeichert werden.",
-    "changes": "Änderungen",
-    "previous": "Vergleich mit der vorherigen Version",
-    "noChanges": "Der Inhalt entspricht der vorherigen Version.",
-    "restore": "Als Entwurf wiederherstellen",
-    "confirmRestore": "Wiederherstellung bestätigen",
-    "confirm": "Version vom {date} um {time} wiederherstellen?",
-    "confirmDetail": "Beim Wiederherstellen wird eine Version hinzugefügt. Der aktuelle Entwurf bleibt im Verlauf erhalten.",
-    "restored": "Die Version vom {date} um {time} wurde wiederhergestellt.",
-    "applyHint": "Mit „Speichern und anwenden“ aktualisieren Sie das verwendete Design.",
-    "kind": {
-      "initial": "Erste Version",
-      "manual": "Manuelle Änderung",
-      "save": "Speichern",
-      "apply": "Speichern und anwenden",
-      "restore": "Wiederherstellen",
-      "undo": "Rückgängig",
-      "collaboration": "Gemeinsame Änderung",
-      "recovered": "Wiederhergestellter Entwurf"
-    },
-    "description": {
-      "initial": "Ausgangspunkt dieses Designs.",
-      "manual": "Der Entwurf wurde manuell bearbeitet.",
-      "save": "Das Design wurde gespeichert.",
-      "apply": "Das Design wurde gespeichert und angewendet.",
-      "restore": "Eine frühere Version wurde wiederhergestellt.",
-      "undo": "Eine Änderung am Entwurf wurde rückgängig gemacht.",
-      "collaboration": "Der Entwurf wurde mit Dateien aus dem gemeinsamen Ordner aktualisiert.",
-      "recovered": "Ein auf diesem Gerät gespeicherter Entwurf wurde wiederhergestellt."
-    },
-    "field": {
-      "name": "Designname",
-      "base": "Basisdesign",
-      "css": "Stil",
-      "sample": "Markdown-Vorschau"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Urheberrecht Mitwirkende"
-  },
-  "drawing": {
-    "insert": "Excalidraw-Zeichnung einfügen",
-    "openInTab": "Im Tab öffnen",
-    "new": "Neue Excalidraw-Zeichnung",
-    "open": "Excalidraw-Zeichnung öffnen",
-    "untitled": "Unbenannte Zeichnung",
-    "addDocument": "Markdown-Dokument hinzufügen",
-    "addDocumentButton": "Dokument hinzufügen",
-    "searchDocuments": "Markdown-Dokumente suchen",
-    "insertIntoNote": "In Dokument einfügen",
-    "wholeDocument": "Gesamtes Dokument",
-    "addCard": "Karte hinzufügen",
-    "discardChanges": "Nicht gespeicherte Änderungen an dieser Zeichnung verwerfen?",
-    "discard": "Änderungen verwerfen",
-    "changedOnDisk": "Die Zeichnung wurde auf dem Datenträger geändert. Öffne sie erneut, um die aktuelle Version zu sehen.",
-    "invalidFile": "Wähle eine .excalidraw-Datei.",
-    "openFailed": "Datei konnte nicht geöffnet werden. {reason}",
-    "saveFailed": "Zeichnung konnte nicht gespeichert oder eingefügt werden. {reason}",
-    "cardFailed": "Dokumentkarte konnte nicht hinzugefügt werden. {reason}",
-    "embedded": "Embedded drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
-  },
-  "history": {
-    "title": "Verlauf",
-    "document": "Dokument",
-    "theme": "Theme",
-    "documentChanges": "KI-Änderungen am Dokument",
-    "empty": "In diesem Verlauf gibt es noch keine Änderungen.",
-    "undated": "Ohne Datum",
-    "viewConversation": "Unterhaltung anzeigen"
   }
 }

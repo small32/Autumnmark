@@ -31,7 +31,7 @@ export type PreferHeadingStyle = 'atx' | 'setext'
 export type FrontmatterType = '-' | ';' | '{' | '+'
 export type SequenceTheme = 'hand' | 'simple'
 export type ImageInsertAction = 'folder' | 'path' | 'upload' | 'embed'
-export type ImageRelativeDirectoryBase = 'file' | 'root'
+export type ImageRelativeDirectoryBase = 'file' | 'folder'
 export type FileSortBy = 'created' | 'modified' | 'title'
 export type FileSortOrder = 'asc' | 'desc'
 
@@ -115,8 +115,6 @@ export interface PreferencesState {
   githubAlerts: boolean
   isHtmlEnabled: boolean
   softNewlineAsSpace: boolean
-  embedDrawings: boolean
-  newDrawingView: UserPreferences['newDrawingView']
   sequenceTheme: SequenceTheme | string
   mermaidLightTheme: string
   mermaidDarkTheme: string
@@ -255,8 +253,6 @@ export const usePreferencesStore = defineStore('preferences', {
     githubAlerts: false,
     isHtmlEnabled: true,
     softNewlineAsSpace: false,
-    embedDrawings: true,
-    newDrawingView: 'dialog',
     sequenceTheme: 'hand',
     mermaidLightTheme: 'default',
     mermaidDarkTheme: 'dark',

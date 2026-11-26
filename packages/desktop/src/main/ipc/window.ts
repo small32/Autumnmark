@@ -3,11 +3,9 @@ import {
   Menu,
   MenuItem,
   ipcMain,
-  screen,
   type WebContents
 } from 'electron'
 import log from 'electron-log'
-import type { IpcInvokeChannels } from '@shared/types/ipc'
 import type { MenuTemplate, MenuTemplateItem, MenuPopupPosition, ContextMenuPopupOptions } from '@shared/types/menu'
 import { buildEditorContextMenu } from '../contextMenu/editor'
 
@@ -87,22 +85,6 @@ export const registerWindowHandlers = (): void => {
     const win = windowFromEvent(event)
     return !!win && win.isFullScreen()
   })
-  ipcMain.handle(
-    'mt::win::is-cursor-over',
-    (event, bounds: IpcInvokeChannels['mt::win::is-cursor-over']['args'][0]) => {
-      const win = windowFromEvent(event)
-      if (!win?.isFocused()) return false
-
-      const cursor = screen.getCursorScreenPoint()
-
-      const content = win.getContentBounds()
-      const zoom = event.sender.getZoomFactor()
-      const x = (cursor.x - content.x) / zoom
-      const y = (cursor.y - content.y) / zoom
-      return x >= bounds.left && x < bounds.right && y >= bounds.top && y < bounds.bottom
-    }
-  )
-
   ipcMain.on('mt::menu::popup', (event, template: MenuTemplate, options?: ContextMenuPopupOptions) => {
     const win = windowFromEvent(event)
     if (!win) return

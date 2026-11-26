@@ -5,11 +5,7 @@ import { dirname, resolve } from 'node:path'
 import { parse, compileScript } from 'vue/compiler-sfc'
 import ts from 'typescript'
 import { ref, shallowRef } from 'vue'
-import {
-  findMarkdownHeadingLine,
-  getMarkdownHeadingLines,
-  scrollSourceEditorToLine
-} from '@/util/sourceModeToc'
+import { scrollSourceEditorToLine } from '@/util/sourceModeToc'
 
 // `handleImageAction` lives as a <script setup> closure in sourceCode.vue
 // (registered on the `image-action` bus during onMounted). The desktop unit
@@ -68,7 +64,7 @@ const loadComponent = (deps: Record<string, unknown>) => {
     `const { _defineComponent, ref, shallowRef, watch, onMounted, onBeforeUnmount, nextTick,
       useEditorStore, usePreferencesStore, storeToRefs, codeMirror,
       setCursorAtFirstLine, setTextDirection, getWordCount, adjustCursor, bus,
-      oneDarkThemes, railscastsThemes, findMarkdownHeadingLine, getMarkdownHeadingLines, scrollSourceEditorToLine,
+      oneDarkThemes, railscastsThemes, scrollSourceEditorToLine,
       registerSourceView, captureSourceHistory, restoreSourceHistory } = __deps
     ${js}
     return module.exports`
@@ -80,8 +76,6 @@ const loadComponent = (deps: Record<string, unknown>) => {
 
 const makeDeps = (over: Record<string, unknown> = {}) => ({
   _defineComponent: (o: unknown) => o,
-  findMarkdownHeadingLine,
-  getMarkdownHeadingLines,
   scrollSourceEditorToLine,
   registerSourceView: () => {},
   captureSourceHistory: () => {},

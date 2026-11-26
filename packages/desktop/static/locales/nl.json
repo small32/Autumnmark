@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "PlantUML server"
-        },
-        "newDrawingView": {
-          "title": "Nieuwe tekeningen openen in",
-          "dialog": "Zwevend venster",
-          "tab": "Nieuw tabblad"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "Licht",
         "dark": "Donker"
       },
-      "noResults": "Geen overeenkomende thema’s."
+      "noResults": "Geen overeenkomende thema’s.",
+      "previewRetry": "Opnieuw proberen"
     },
     "keybindings": {
       "title": "Sneltoetsen",
@@ -951,24 +943,6 @@
       "checking": "Controleren…",
       "recheck": "Opnieuw controleren",
       "failed": "Detectie mislukt. Controleer opnieuw."
-    }
-  },
-  "remoteContent": {
-    "about": "Actuele informatie",
-    "loading": "Nieuwste inhoud wordt opgehaald…",
-    "loadFailed": "De inhoud kon niet worden geladen.",
-    "refreshFailed": "Vernieuwen is mislukt. De laatst opgehaalde inhoud wordt getoond.",
-    "refresh": "Vernieuwen",
-    "retry": "Opnieuw proberen",
-    "announcement": "Aankondigingen",
-    "unreadAnnouncement": "Ongelezen aankondiging",
-    "unverified": "GitHub is niet bereikbaar. Er kon niet worden gecontroleerd of de aankondiging actueel is.",
-    "donation": {
-      "title": "Steun AutumnMark+",
-      "description": "Scan de code met de bijbehorende app om de ontwikkeling van AutumnMark+ te steunen.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "QR-code voor donaties via {method}"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "Afbeelding bekijken",
     "copyLink": "Linkadres kopiëren",
     "resumed": "De bewerkingsmodus is ingeschakeld. Automatisch opslaan is hervat."
-  },
-  "themeHistory": {
-    "empty": "Er zijn nog geen versies van dit thema opgeslagen.",
-    "restoreAndApply": "Herstellen en toepassen",
-    "confirmApplyDetail": "Deze versie wordt toegepast. De huidige versie blijft in de geschiedenis staan.",
-    "appliedCollaboration": "Wijzigingen van een externe AI-client toegepast.",
-    "appliedRecovered": "Eerder toegepaste versie",
-    "title": "Versiegeschiedenis",
-    "current": "Huidig concept",
-    "loading": "Versies laden…",
-    "storageError": "De themaversies konden op dit apparaat niet worden gelezen of opgeslagen.",
-    "changes": "Wijzigingen",
-    "previous": "Vergelijking met de vorige versie",
-    "noChanges": "De thema-inhoud komt overeen met de vorige versie.",
-    "restore": "Herstellen als concept",
-    "confirmRestore": "Herstellen bevestigen",
-    "confirm": "De versie van {date} om {time} herstellen?",
-    "confirmDetail": "Bij het herstellen wordt een versie toegevoegd. Het huidige concept blijft in de geschiedenis staan.",
-    "restored": "De versie van {date} om {time} is hersteld.",
-    "applyHint": "Gebruik ‘Opslaan en toepassen’ om het actieve thema bij te werken.",
-    "kind": {
-      "initial": "Eerste versie",
-      "manual": "Handmatige bewerking",
-      "save": "Opslaan",
-      "apply": "Opslaan en toepassen",
-      "restore": "Herstellen",
-      "undo": "Ongedaan maken",
-      "collaboration": "Samenwerking",
-      "recovered": "Hersteld concept"
-    },
-    "description": {
-      "initial": "Beginpunt van dit thema.",
-      "manual": "Het concept is handmatig bewerkt.",
-      "save": "Het thema is opgeslagen.",
-      "apply": "Het thema is opgeslagen en toegepast.",
-      "restore": "Een eerdere versie is hersteld.",
-      "undo": "Een wijziging in het concept is ongedaan gemaakt.",
-      "collaboration": "Het concept is bijgewerkt vanuit de samenwerkingsmap.",
-      "recovered": "Een op dit apparaat opgeslagen concept is hersteld."
-    },
-    "field": {
-      "name": "Themanaam",
-      "base": "Basisthema",
-      "css": "Stijl",
-      "sample": "Markdown-voorbeeld"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Gemaakt met <3 door GitHub-bijdragers"
-  },
-  "drawing": {
-    "insert": "Excalidraw-tekening invoegen",
-    "openInTab": "Openen in tabblad",
-    "new": "Nieuwe Excalidraw-tekening",
-    "open": "Excalidraw-tekening openen",
-    "untitled": "Naamloze tekening",
-    "addDocument": "Markdown-document toevoegen",
-    "addDocumentButton": "Document toevoegen",
-    "searchDocuments": "Markdown-documenten zoeken",
-    "insertIntoNote": "In document invoegen",
-    "wholeDocument": "Volledig document",
-    "addCard": "Kaart toevoegen",
-    "discardChanges": "Niet-opgeslagen wijzigingen aan deze tekening verwerpen?",
-    "discard": "Wijzigingen verwerpen",
-    "changedOnDisk": "De tekening op schijf is gewijzigd. Open deze opnieuw om de nieuwste versie te zien.",
-    "invalidFile": "Selecteer een .excalidraw-bestand.",
-    "openFailed": "Kan het bestand niet openen. {reason}",
-    "saveFailed": "Kan de tekening niet opslaan of invoegen. {reason}",
-    "cardFailed": "Kan de documentkaart niet toevoegen. {reason}",
-    "embedded": "Embedded drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
-  },
-  "history": {
-    "title": "Geschiedenis",
-    "document": "Document",
-    "theme": "Thema",
-    "documentChanges": "Documentwijzigingen door AI",
-    "empty": "Deze geschiedenis bevat nog geen wijzigingen.",
-    "undated": "Zonder datum",
-    "viewConversation": "Gesprek bekijken"
   }
 }

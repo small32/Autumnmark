@@ -27,7 +27,9 @@
     padding: 3px 7px;
 
     color: var(--editor-color);
-    font: 12px/1.4 system-ui, sans-serif;
+    font:
+        12px/1.4 system-ui,
+        sans-serif;
     white-space: nowrap;
 
     background: var(--editor-bg-color);

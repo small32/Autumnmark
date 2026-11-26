@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "PlantUML サーバーの URL"
-        },
-        "newDrawingView": {
-          "title": "新規図面の表示先",
-          "dialog": "フローティングウィンドウ",
-          "tab": "新しいタブ"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "ライト",
         "dark": "ダーク"
       },
-      "noResults": "一致するテーマがありません。"
+      "noResults": "一致するテーマがありません。",
+      "previewRetry": "再試行"
     },
     "keybindings": {
       "title": "キーバインド",
@@ -951,24 +943,6 @@
       "checking": "検出中…",
       "recheck": "再検出",
       "failed": "検出に失敗しました。再検出してください。"
-    }
-  },
-  "remoteContent": {
-    "about": "最新情報",
-    "loading": "最新の内容を取得しています…",
-    "loadFailed": "内容を取得できませんでした。",
-    "refreshFailed": "更新に失敗したため、前回取得した内容を表示しています。",
-    "refresh": "更新",
-    "retry": "再試行",
-    "announcement": "お知らせ",
-    "unreadAnnouncement": "未読のお知らせ",
-    "unverified": "GitHub に接続できないため、お知らせが最新かどうかを確認できませんでした。",
-    "donation": {
-      "title": "AutumnMark+ を支援する",
-      "description": "対応するアプリで QR コードを読み取って、AutumnMark+ の開発を支援できます。",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "{method} の寄付用 QR コード"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "画像を表示",
     "copyLink": "リンクのアドレスをコピー",
     "resumed": "編集モードになりました。自動保存を再開しました。"
-  },
-  "themeHistory": {
-    "empty": "このテーマにはまだ保存されたバージョンがありません。",
-    "restoreAndApply": "復元して適用",
-    "confirmApplyDetail": "このバージョンが適用されます。現在のバージョンは履歴に残ります。",
-    "appliedCollaboration": "外部 AI クライアントによる変更を適用しました。",
-    "appliedRecovered": "以前適用されていたバージョン",
-    "title": "バージョン履歴",
-    "current": "現在の下書き",
-    "loading": "バージョンを読み込み中…",
-    "storageError": "このデバイスでテーマのバージョンを読み込み、または保存できませんでした。",
-    "changes": "変更内容",
-    "previous": "前のバージョンとの比較",
-    "noChanges": "テーマの内容は前のバージョンと同じです。",
-    "restore": "下書きとして復元",
-    "confirmRestore": "復元を確定",
-    "confirm": "{date} {time} のバージョンを復元しますか？",
-    "confirmDetail": "復元するとバージョンが追加され、現在の下書きは履歴に残ります。",
-    "restored": "{date} {time} のバージョンを復元しました。",
-    "applyHint": "使用中のテーマを更新するには「保存して適用」を選択します。",
-    "kind": {
-      "initial": "初期バージョン",
-      "manual": "手動編集",
-      "save": "保存",
-      "apply": "保存して適用",
-      "restore": "復元",
-      "undo": "元に戻す",
-      "collaboration": "共同編集",
-      "recovered": "復旧した下書き"
-    },
-    "description": {
-      "initial": "このテーマの最初の状態です。",
-      "manual": "テーマの下書きを手動で編集しました。",
-      "save": "テーマを保存しました。",
-      "apply": "テーマを保存して適用しました。",
-      "restore": "前のバージョンを復元しました。",
-      "undo": "下書きへの変更を元に戻しました。",
-      "collaboration": "共同編集フォルダーから下書きを更新しました。",
-      "recovered": "このデバイスに保存した下書きを復旧しました。"
-    },
-    "field": {
-      "name": "テーマ名",
-      "base": "ベーステーマ",
-      "css": "スタイル",
-      "sample": "プレビューの Markdown"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "著作権貢献者"
-  },
-  "drawing": {
-    "insert": "Excalidraw 図面を挿入",
-    "openInTab": "タブで開く",
-    "new": "新しい Excalidraw 図面",
-    "open": "Excalidraw 図面を開く",
-    "untitled": "無題の図面",
-    "addDocument": "Markdown 文書を追加",
-    "addDocumentButton": "文書を追加",
-    "searchDocuments": "Markdown 文書を検索",
-    "insertIntoNote": "文書に挿入",
-    "wholeDocument": "文書全体",
-    "addCard": "カードを追加",
-    "discardChanges": "この図面の未保存の変更を破棄しますか？",
-    "discard": "変更を破棄",
-    "changedOnDisk": "ディスク上の図面が変更されています。開き直して最新版を表示してください。",
-    "invalidFile": ".excalidraw ファイルを選択してください。",
-    "openFailed": "ファイルを開けませんでした。{reason}",
-    "saveFailed": "図面の保存または挿入ができませんでした。{reason}",
-    "cardFailed": "文書カードを追加できませんでした。{reason}",
-    "embedded": "Embedded drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
-  },
-  "history": {
-    "title": "履歴",
-    "document": "ドキュメント",
-    "theme": "テーマ",
-    "documentChanges": "AI によるドキュメントの変更",
-    "empty": "この履歴にはまだ変更がありません。",
-    "undated": "日付なし",
-    "viewConversation": "会話を表示"
   }
 }

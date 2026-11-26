@@ -1,7 +1,6 @@
 import type { ProjectRootsSnapshot, ProjectTreeEvent, SidebarMoveRequest, SidebarMoveResult } from './project'
 import type { MarkdownEdit } from '../markdownEdits'
 import type { LocalTheme, PreparedPreview } from '../localTheme'
-import type { AppliedThemeHistory } from '../themeVersion'
 import type { ThemeCatalogSnapshot } from '../themeCatalog'
 import type { ThemeCollaborationCapture, ThemeCollaborationConnection, ThemeCollaborationFiles, ThemeCollaborationState } from '../themeCollaboration'
 import type { UserPreferences } from './preferences'
@@ -33,17 +32,6 @@ export type ClipboardImageInput = string | { mime: string; data: Uint8Array } | 
 export type PlantumlFetchResult =
   { ok: true; mime: string; data: Uint8Array } | { ok: false; error: string }
 
-export type RemoteContentKind = 'about'
-
-export interface RemoteContent {
-  markdown: string
-}
-
-export interface RemoteContentSnapshot {
-  content: RemoteContent | null
-  status: 'ready' | 'failed'
-}
-
 export interface UpdateProgress {
   transferred: number
   total: number
@@ -74,9 +62,6 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::theme::preview': { args: [id: string, revision: number]; ret: LocalTheme }
   'mt::theme::install': { args: [id: string, revision: number, apply: boolean]; ret: UserPreferences | null }
   'mt::theme::save': { args: [theme: LocalTheme, apply: boolean]; ret: LocalTheme | null }
-  'mt::theme::active-history': { args: []; ret: AppliedThemeHistory }
-  'mt::theme::restore-active-version': { args: [themeId: string, revision: string, version: string]; ret: AppliedThemeHistory | null }
-  'mt::theme::apply-in-editor': { args: [theme: LocalTheme, sourceId: string, source: LocalTheme | null]; ret: LocalTheme | null }
   'mt::theme::delete': { args: [id: string]; ret: UserPreferences | null }
   'mt::theme::inspector-state': { args: []; ret: boolean }
   'mt::theme::set-inspector': { args: [open: boolean]; ret: void }
@@ -98,22 +83,15 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::project-remove-root': { args: [key: string]; ret: boolean }
   'mt::project-retry-root': { args: [key: string]; ret: boolean }
   'mt::project-open-containing-folder': { args: [documentId: string]; ret: string | null }
-  'mt::drawing::create': { args: [documentId: string, content: string, filename?: string]; ret: string }
-  'mt::drawing::write': { args: [pathname: string, content: string, expected?: string]; ret: void }
   'mt::clipboard::write-text': { args: [text: string]; ret: boolean }
   'mt::set-document-read-only': { args: [tabId: string, readOnly: boolean]; ret: void }
   'mt::ask-for-image-path': { args: [kind?: 'video']; ret: string }
   'mt::video::download': { args: [url: string]; ret: { mime: string; data: Uint8Array } }
   'mt::video::embed-file': { args: [pathname: string]; ret: string }
   'mt::video::copy-file': { args: [src: string, name: string]; ret: void }
-  'mt::boot-info-async': { args: []; ret: BootInfo }
   'mt::clipboard::guess-file-path': { args: []; ret: string | null }
   'mt::clipboard::read-text': { args: []; ret: string }
   'mt::link::fetch-html': { args: [url: string]; ret: string }
-  'mt::remote-content::fetch': {
-    args: [kind: RemoteContentKind, refresh: boolean]
-    ret: RemoteContentSnapshot
-  }
   'mt::clipboard::write-image': {
     args: [bytes: Uint8Array, options?: ClipboardImageWriteOptions]
     ret: boolean
@@ -149,9 +127,7 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::fs::stat': { args: [path: string]; ret: SerializedStat }
   'mt::fs::unlink': { args: [path: string]; ret: void }
   'mt::fs::write-file': { args: [path: string, data: string | Uint8Array]; ret: void }
-  'mt::i18n::is-supported': { args: [lang: string]; ret: boolean }
   'mt::i18n::load': { args: [language: string]; ret: Record<string, unknown> }
-  'mt::i18n::supported': { args: []; ret: string[] }
   'mt::keybinding-get-keyboard-info': { args: []; ret: KeyboardInfo }
   'mt::keybinding-get-pref-keybindings': {
     args: []
@@ -169,10 +145,6 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::spellchecker-set-enabled': { args: [enabled: boolean]; ret: void }
   'mt::spellchecker-switch-language': { args: [language: string]; ret: void }
   'mt::uploader::upload': { args: [req: unknown]; ret: unknown }
-  'mt::win::is-cursor-over': {
-    args: [bounds: { left: number; top: number; right: number; bottom: number }]
-    ret: boolean | null
-  }
   'mt::win::is-fullscreen': { args: []; ret: boolean }
   'mt::win::is-maximized': { args: []; ret: boolean }
   // Main derives the BrowserWindow via BrowserWindow.fromWebContents(e.sender);
@@ -195,11 +167,9 @@ export interface IpcSendChannels {
   'menu-add-recently-used': [filePath: string]
   'menu-clear-recently-used': []
   'mt::remove-recently-used-document': [pathname: string]
-  'mt::add-recently-used-document': [filePath: string]
   'mt::app-try-quit': []
   'mt::ask-for-image-auto-path': [payload: unknown]
   'mt::ask-for-modify-image-folder-path': [imagePath?: string]
-  'mt::ask-for-open-project-in-sidebar': []
   'mt::ask-for-user-data': []
   'mt::ask-for-user-preference': []
   'mt::check-for-update': []
@@ -226,7 +196,6 @@ export interface IpcSendChannels {
   'mt::open-file': [filePath: string, options?: SidebarOpenOptions]
   'mt::open-file-by-window-id': [windowId: number, filePath: string, options?: unknown]
   'mt::open-directory-by-window-id': [windowId: number, dirPath: string]
-  'mt::open-keybindings-config': []
   'mt::open-setting-window': [category?: 'theme']
   'mt::prepare-setting-window': []
   'mt::settings-ready': []
@@ -257,7 +226,6 @@ export interface IpcSendChannels {
   'mt::shell::show-item': [fullPath: string]
   'mt::update-format-menu': [windowId: number, state: Record<string, boolean>]
   'mt::update-line-ending-menu': [windowId: number, lineEnding: LineEnding]
-  'mt::update-sidebar-menu': [windowId: number, visible: boolean]
   'mt::view-layout-changed': [windowId: number, layout: unknown]
   'mt::win::close': []
   'mt::win::maximize': []
@@ -266,7 +234,6 @@ export interface IpcSendChannels {
   'mt::win::toggle-fullscreen': []
   'mt::win::toggle-maximize': []
   'mt::win::unmaximize': []
-  'mt::window-add-file-path': [windowId: number, filePath: string]
   'mt::window-initialized': []
   'mt::window-tab-closed': [pathname: string]
   'mt::window-toggle-always-on-top': []
@@ -294,7 +261,6 @@ export interface IpcSyncChannels {
 
 export interface IpcMainEventChannels extends StateIpcMainEvents {
   'mt::theme::show': [id: string, editing: boolean]
-  'mt::theme::show-active-history': []
   'mt::theme::inspector-changed': [open: boolean]
   'mt::theme::collaboration-state': [id: string, state: ThemeCollaborationState]
   'mt::theme::collaboration-capture': [id: string, event: ThemeCollaborationCapture]

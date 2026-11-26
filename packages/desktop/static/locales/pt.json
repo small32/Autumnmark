@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "URL do servidor PlantUML"
-        },
-        "newDrawingView": {
-          "title": "Abrir novos desenhos em",
-          "dialog": "Janela flutuante",
-          "tab": "Novo separador"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "Claro",
         "dark": "Escuro"
       },
-      "noResults": "Nenhum tema corresponde à busca."
+      "noResults": "Nenhum tema corresponde à busca.",
+      "previewRetry": "Tentar novamente"
     },
     "keybindings": {
       "title": "Atalhos de Teclado",
@@ -951,24 +943,6 @@
       "checking": "A verificar…",
       "recheck": "Verificar novamente",
       "failed": "A deteção falhou. Verifique novamente."
-    }
-  },
-  "remoteContent": {
-    "about": "Informações atualizadas",
-    "loading": "Carregando o conteúdo mais recente…",
-    "loadFailed": "Não foi possível carregar o conteúdo.",
-    "refreshFailed": "A atualização falhou. O último conteúdo recebido está sendo exibido.",
-    "refresh": "Atualizar",
-    "retry": "Tentar novamente",
-    "announcement": "Avisos",
-    "unreadAnnouncement": "Aviso não lido",
-    "unverified": "O GitHub está indisponível. Não foi possível confirmar se o aviso é o mais recente.",
-    "donation": {
-      "title": "Apoie o AutumnMark+",
-      "description": "Escaneie o código com o aplicativo correspondente para apoiar o desenvolvimento do AutumnMark+.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "Código QR para doar com {method}"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "Ver imagem",
     "copyLink": "Copiar endereço do link",
     "resumed": "O modo de edição está ativado. O salvamento automático foi retomado."
-  },
-  "themeHistory": {
-    "empty": "Ainda não há versões salvas para este tema.",
-    "restoreAndApply": "Restaurar e aplicar",
-    "confirmApplyDetail": "Esta versão será aplicada. A versão atual permanecerá no histórico.",
-    "appliedCollaboration": "As alterações de um cliente de IA externo foram aplicadas.",
-    "appliedRecovered": "Versão aplicada anteriormente",
-    "title": "Histórico de versões",
-    "current": "Rascunho atual",
-    "loading": "Carregando versões…",
-    "storageError": "Não foi possível ler ou salvar as versões do tema neste dispositivo.",
-    "changes": "Alterações",
-    "previous": "Comparação com a versão anterior",
-    "noChanges": "O conteúdo do tema é igual ao da versão anterior.",
-    "restore": "Restaurar como rascunho",
-    "confirmRestore": "Confirmar restauração",
-    "confirm": "Restaurar a versão de {date} às {time}?",
-    "confirmDetail": "A restauração adiciona uma versão. O rascunho atual permanecerá no histórico.",
-    "restored": "A versão de {date} às {time} foi restaurada.",
-    "applyHint": "Use «Salvar e aplicar» para atualizar o tema em uso.",
-    "kind": {
-      "initial": "Versão inicial",
-      "manual": "Edição manual",
-      "save": "Salvar",
-      "apply": "Salvar e aplicar",
-      "restore": "Restaurar",
-      "undo": "Desfazer",
-      "collaboration": "Edição colaborativa",
-      "recovered": "Rascunho recuperado"
-    },
-    "description": {
-      "initial": "Ponto de partida deste tema.",
-      "manual": "O rascunho do tema foi editado manualmente.",
-      "save": "O tema foi salvo.",
-      "apply": "O tema foi salvo e aplicado.",
-      "restore": "Uma versão anterior foi restaurada.",
-      "undo": "Uma alteração no rascunho foi desfeita.",
-      "collaboration": "O rascunho foi atualizado a partir da pasta de colaboração.",
-      "recovered": "Um rascunho salvo neste dispositivo foi recuperado."
-    },
-    "field": {
-      "name": "Nome do tema",
-      "base": "Tema base",
-      "css": "Estilo",
-      "sample": "Markdown de visualização"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Copyright Contribuidores"
-  },
-  "drawing": {
-    "insert": "Inserir desenho do Excalidraw",
-    "openInTab": "Abrir num separador",
-    "new": "Novo desenho do Excalidraw",
-    "open": "Abrir desenho do Excalidraw",
-    "untitled": "Desenho sem título",
-    "addDocument": "Adicionar documento Markdown",
-    "addDocumentButton": "Adicionar documento",
-    "searchDocuments": "Pesquisar documentos Markdown",
-    "insertIntoNote": "Inserir no documento",
-    "wholeDocument": "Documento inteiro",
-    "addCard": "Adicionar cartão",
-    "discardChanges": "Descartar as alterações não salvas neste desenho?",
-    "discard": "Descartar alterações",
-    "changedOnDisk": "O desenho foi alterado no disco. Reabra-o para ver a versão mais recente.",
-    "invalidFile": "Selecione um arquivo .excalidraw.",
-    "openFailed": "Não foi possível abrir o arquivo. {reason}",
-    "saveFailed": "Não foi possível salvar ou inserir o desenho. {reason}",
-    "cardFailed": "Não foi possível adicionar o cartão do documento. {reason}",
-    "embedded": "Embedded drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
-  },
-  "history": {
-    "title": "Histórico",
-    "document": "Documento",
-    "theme": "Tema",
-    "documentChanges": "Alterações no documento feitas pela IA",
-    "empty": "Este histórico ainda não contém alterações.",
-    "undated": "Sem data",
-    "viewConversation": "Ver conversa"
   }
 }

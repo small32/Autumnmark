@@ -76,7 +76,6 @@ test('a file-based agent can edit a draft and request a screenshot through the s
     await expect.poll(() => readFile(cssPath, 'utf8')).toBe('')
     await expect.poll(() => readFile(samplePath, 'utf8')).toBe(original)
 
-    await studio.getByRole('button', { name: 'CSS source', exact: true }).click()
     await studio.getByRole('textbox', { name: 'CSS source' }).focus()
     await studio.keyboard.insertText('.mu-container h1 { color: teal }')
     await expect.poll(() => readFile(cssPath, 'utf8')).toBe('.mu-container h1 { color: teal }')

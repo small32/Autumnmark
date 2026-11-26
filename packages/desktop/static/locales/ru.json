@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "URL сервера PlantUML"
-        },
-        "newDrawingView": {
-          "title": "Открывать новые рисунки в",
-          "dialog": "Плавающее окно",
-          "tab": "Новая вкладка"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "Светлые",
         "dark": "Тёмные"
       },
-      "noResults": "Подходящих тем нет."
+      "noResults": "Подходящих тем нет.",
+      "previewRetry": "Повторить"
     },
     "keybindings": {
       "title": "Горячие клавиши",
@@ -951,24 +943,6 @@
       "checking": "Проверка…",
       "recheck": "Проверить снова",
       "failed": "Ошибка обнаружения. Повторите проверку."
-    }
-  },
-  "remoteContent": {
-    "about": "Актуальная информация",
-    "loading": "Загрузка последних данных…",
-    "loadFailed": "Не удалось загрузить содержимое.",
-    "refreshFailed": "Не удалось обновить данные. Показано последнее загруженное содержимое.",
-    "refresh": "Обновить",
-    "retry": "Повторить",
-    "announcement": "Объявления",
-    "unreadAnnouncement": "Непрочитанное объявление",
-    "unverified": "GitHub недоступен. Не удалось проверить актуальность объявления.",
-    "donation": {
-      "title": "Поддержать AutumnMark+",
-      "description": "Отсканируйте код в соответствующем приложении, чтобы поддержать разработку AutumnMark+.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "QR-код для пожертвования через {method}"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "Просмотреть изображение",
     "copyLink": "Копировать адрес ссылки",
     "resumed": "Режим редактирования включён. Автосохранение возобновлено."
-  },
-  "themeHistory": {
-    "empty": "У этой темы пока нет сохранённых версий.",
-    "restoreAndApply": "Восстановить и применить",
-    "confirmApplyDetail": "Эта версия будет применена. Текущая версия останется в истории.",
-    "appliedCollaboration": "Применены изменения от внешнего ИИ-клиента.",
-    "appliedRecovered": "Ранее применённая версия",
-    "title": "История версий",
-    "current": "Текущий черновик",
-    "loading": "Загрузка версий…",
-    "storageError": "Не удалось прочитать или сохранить версии темы на этом устройстве.",
-    "changes": "Изменения",
-    "previous": "Сравнение с предыдущей версией",
-    "noChanges": "Содержимое темы совпадает с предыдущей версией.",
-    "restore": "Восстановить как черновик",
-    "confirmRestore": "Подтвердить восстановление",
-    "confirm": "Восстановить версию от {date}, {time}?",
-    "confirmDetail": "При восстановлении создаётся версия. Текущий черновик останется в истории.",
-    "restored": "Восстановлена версия от {date}, {time}.",
-    "applyHint": "Чтобы обновить используемую тему, выберите «Сохранить и применить».",
-    "kind": {
-      "initial": "Начальная версия",
-      "manual": "Ручная правка",
-      "save": "Сохранить",
-      "apply": "Сохранить и применить",
-      "restore": "Восстановление",
-      "undo": "Отмена правки",
-      "collaboration": "Совместная правка",
-      "recovered": "Восстановленный черновик"
-    },
-    "description": {
-      "initial": "Исходное состояние темы.",
-      "manual": "Черновик темы изменён вручную.",
-      "save": "Тема сохранена.",
-      "apply": "Тема сохранена и применена.",
-      "restore": "Восстановлена предыдущая версия.",
-      "undo": "Изменение в черновике отменено.",
-      "collaboration": "Черновик обновлён из папки совместной работы.",
-      "recovered": "Восстановлен черновик, сохранённый на этом устройстве."
-    },
-    "field": {
-      "name": "Название темы",
-      "base": "Базовая тема",
-      "css": "Стиль",
-      "sample": "Markdown для предпросмотра"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Сделано с <3 участниками GitHub"
-  },
-  "drawing": {
-    "insert": "Вставить рисунок Excalidraw",
-    "openInTab": "Открыть во вкладке",
-    "new": "Новый рисунок Excalidraw",
-    "open": "Открыть рисунок Excalidraw",
-    "untitled": "Рисунок без названия",
-    "addDocument": "Добавить документ Markdown",
-    "addDocumentButton": "Добавить документ",
-    "searchDocuments": "Поиск документов Markdown",
-    "insertIntoNote": "Вставить в документ",
-    "wholeDocument": "Весь документ",
-    "addCard": "Добавить карточку",
-    "discardChanges": "Отменить несохранённые изменения рисунка?",
-    "discard": "Отменить изменения",
-    "changedOnDisk": "Рисунок изменён на диске. Откройте его заново, чтобы увидеть последнюю версию.",
-    "invalidFile": "Выберите файл .excalidraw.",
-    "openFailed": "Не удалось открыть файл. {reason}",
-    "saveFailed": "Не удалось сохранить или вставить рисунок. {reason}",
-    "cardFailed": "Не удалось добавить карточку документа. {reason}",
-    "embedded": "Embedded drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point."
-  },
-  "history": {
-    "title": "История",
-    "document": "Документ",
-    "theme": "Тема",
-    "documentChanges": "Изменения документа, внесённые ИИ",
-    "empty": "В этой истории пока нет изменений.",
-    "undated": "Без даты",
-    "viewConversation": "Просмотреть беседу"
   }
 }

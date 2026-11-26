@@ -105,12 +105,12 @@ it('loads current source translations in a checkout and minified translations in
   const { setLocalesDirectory, loadTranslations } = await import('../../../src/common/i18n')
   const dir = mkdtempSync(path.join(tmpdir(), 'autumnmark-locales-'))
   try {
-    writeFileSync(path.join(dir, 'zh-CN.json'), JSON.stringify({ ai: { add: '添加模型' } }))
+    writeFileSync(path.join(dir, 'zh-CN.json'), JSON.stringify({ studio: { css: 'CSS 源码' } }))
     writeFileSync(path.join(dir, 'zh-CN.min.json'), '{}')
-    writeFileSync(path.join(dir, 'zh-TW.min.json'), JSON.stringify({ ai: { add: '新增模型' } }))
+    writeFileSync(path.join(dir, 'zh-TW.min.json'), JSON.stringify({ studio: { css: 'CSS 原始碼' } }))
     setLocalesDirectory(dir)
-    expect(loadTranslations('zh-CN')).toEqual({ ai: { add: '添加模型' } })
-    expect(loadTranslations('zh-TW')).toEqual({ ai: { add: '新增模型' } })
+    expect(loadTranslations('zh-CN')).toEqual({ studio: { css: 'CSS 源码' } })
+    expect(loadTranslations('zh-TW')).toEqual({ studio: { css: 'CSS 原始碼' } })
   } finally {
     rmSync(dir, { recursive: true, force: true })
     vi.resetModules()

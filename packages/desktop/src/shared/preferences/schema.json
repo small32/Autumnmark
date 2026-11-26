@@ -393,16 +393,6 @@
     "type": "boolean",
     "default": false
   },
-  "embedDrawings": {
-    "description": "Markdown--Embed drawings in the document",
-    "type": "boolean",
-    "default": true
-  },
-  "newDrawingView": {
-    "description": "Markdown--New drawing view",
-    "default": "dialog",
-    "enum": ["dialog", "tab"]
-  },
   "sequenceTheme": {
     "description": "Markdown--Sequence diagram theme",
     "enum": ["hand", "simple"],

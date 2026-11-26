@@ -35,19 +35,3 @@ export function themeWindowBackground(css: string): string | undefined {
   }
   return color
 }
-
-/** An empty match appends a rule. Replacements must locate exactly one passage in the current source. */
-export function editThemeCss(source: string, find: string, replace: string): string {
-  let next: string
-  if (find) {
-    const start = source.indexOf(find)
-    if (start < 0) throw new Error('invalidReply:missingMatch')
-    if (start !== source.lastIndexOf(find)) throw new Error('invalidReply:ambiguousMatch')
-    next = source.slice(0, start) + replace + source.slice(start + find.length)
-  } else {
-    next = source && replace ? source + '\n\n' + replace : source + replace
-  }
-  const issue = themeCssIssue(next)
-  if (issue) throw new Error('invalidReply:css · ' + issue)
-  return next
-}

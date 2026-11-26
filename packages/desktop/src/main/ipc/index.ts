@@ -1,4 +1,3 @@
-import { app, ipcMain, net } from 'electron'
 import { registerBootInfo } from './bootInfo'
 import { registerFsHandlers, type FileOperations } from './fs'
 import { registerPathHandlers } from './paths'
@@ -13,7 +12,6 @@ import { registerDialogHandlers } from './dialog'
 import { registerDiagramHandlers } from './diagram'
 import { registerLinkHtmlHandler } from './linkHtml'
 import { registerImageClipboardHandlers } from './clipboardImage'
-import { RemoteContentCache } from './remoteContent'
 import { registerEmbeddedImageDrag } from './embeddedImageDrag'
 
 export const registerSandboxIpcHandlers = (
@@ -38,11 +36,4 @@ export const registerSandboxIpcHandlers = (
   registerLinkHtmlHandler()
   registerImageClipboardHandlers()
   registerEmbeddedImageDrag()
-  const remoteContent = new RemoteContentCache(net.fetch)
-  ipcMain.handle('mt::remote-content::fetch', (_event, kind: unknown, refresh: unknown) =>
-    remoteContent.load(kind, refresh === true)
-  )
-  void app.whenReady().then(() => {
-    void remoteContent.load('about')
-  })
 }

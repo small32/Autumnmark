@@ -778,15 +778,6 @@
         },
         "plantumlServer": {
           "title": "PlantUML Server URL"
-        },
-        "embedDrawings": {
-          "title": "Embed drawings in Markdown",
-          "description": "Turn off to create and reference a separate .excalidraw file when inserting a drawing."
-        },
-        "newDrawingView": {
-          "title": "Open new drawings in",
-          "dialog": "Floating editor",
-          "tab": "New tab"
         }
       },
       "misc": {
@@ -898,7 +889,8 @@
         "light": "Light",
         "dark": "Dark"
       },
-      "noResults": "No themes match your search."
+      "noResults": "No themes match your search.",
+      "previewRetry": "Retry"
     },
     "keybindings": {
       "title": "Keybindings",
@@ -951,24 +943,6 @@
       "checking": "Checking…",
       "recheck": "Check again",
       "failed": "Detection failed. Please check again."
-    }
-  },
-  "remoteContent": {
-    "about": "Live information",
-    "loading": "Fetching the latest content…",
-    "loadFailed": "Could not load the content.",
-    "refreshFailed": "Refresh failed. Showing the last fetched content.",
-    "refresh": "Refresh",
-    "retry": "Retry",
-    "announcement": "Announcements",
-    "unreadAnnouncement": "Unread announcement",
-    "unverified": "GitHub is unavailable. The latest announcement could not be verified.",
-    "donation": {
-      "title": "Support AutumnMark+",
-      "description": "Scan with the matching app to support AutumnMark+’s development.",
-      "alipay": "Alipay",
-      "wechatPay": "WeChat Pay",
-      "qrCode": "{method} donation QR code"
     }
   },
   "commands": {
@@ -1351,96 +1325,5 @@
     "viewImage": "View Image",
     "copyLink": "Copy Link Address",
     "resumed": "Edit Mode is on. Auto-save has resumed."
-  },
-  "history": {
-    "title": "History",
-    "document": "Document",
-    "theme": "Theme",
-    "documentChanges": "AI document changes",
-    "empty": "There are no changes in this history yet.",
-    "undated": "Undated",
-    "viewConversation": "View conversation"
-  },
-  "themeHistory": {
-    "empty": "No versions have been saved for this theme yet.",
-    "restoreAndApply": "Restore and apply",
-    "confirmApplyDetail": "This version will become the applied theme. The current version will stay in the history.",
-    "appliedCollaboration": "Applied changes from an external AI client.",
-    "appliedRecovered": "Previous applied version",
-    "title": "Version history",
-    "current": "Current draft",
-    "loading": "Loading versions…",
-    "storageError": "Could not read or save theme versions on this device.",
-    "changes": "Changes",
-    "previous": "Compared with the previous version",
-    "noChanges": "The theme content matches the previous version.",
-    "restore": "Restore as draft",
-    "confirmRestore": "Confirm restore",
-    "confirm": "Restore the version from {date} at {time}?",
-    "confirmDetail": "Restoring adds a version. The draft you have now will stay in history.",
-    "restored": "Restored the version from {date} at {time}.",
-    "applyHint": "Use Save and apply to update the theme in use.",
-    "kind": {
-      "initial": "Initial version",
-      "manual": "Manual edit",
-      "save": "Save",
-      "apply": "Save and apply",
-      "restore": "Restore",
-      "undo": "Undo",
-      "collaboration": "Collaboration edit",
-      "recovered": "Recovered draft"
-    },
-    "description": {
-      "initial": "Starting point for this theme.",
-      "manual": "Edited the theme draft.",
-      "save": "Saved the theme.",
-      "apply": "Saved and applied the theme.",
-      "restore": "Restored a previous version.",
-      "undo": "Undid a change to the draft.",
-      "collaboration": "Updated the draft from the collaboration folder.",
-      "recovered": "Recovered a draft saved on this device."
-    },
-    "field": {
-      "name": "Theme name",
-      "base": "Base theme",
-      "css": "Style",
-      "sample": "Preview Markdown"
-    }
-  },
-  "about": {
-    "copyright": "Copyright © Luo Ran 2017-{year}",
-    "copyrightContributors": "Made with <3 by Github Contributors"
-  },
-  "drawing": {
-    "new": "New Excalidraw Drawing",
-    "insert": "Insert Excalidraw Drawing",
-    "openInTab": "Open in Tab",
-    "open": "Open Excalidraw Drawing",
-    "embedded": "Embedded drawing",
-    "untitled": "Untitled Drawing",
-    "filename": "Drawing filename",
-    "invalidName": "Enter a valid drawing filename.",
-    "renameFailed": "Could not rename the drawing. {reason}",
-    "documentUnavailable": "The source document is unavailable.",
-    "addDocument": "Add Markdown Document",
-    "addDocumentButton": "Add Document",
-    "searchDocuments": "Search Markdown documents",
-    "browseDocuments": "Browse Files…",
-    "canvas": "Canvas",
-    "source": "Source",
-    "invalidSource": "The drawing source is invalid. {reason}",
-    "sourceChanged": "The canvas changed while you were editing the source. Discard the draft to reload the latest source.",
-    "discardSource": "Discard the unapplied changes to the drawing source?",
-    "insertionChanged": "The document changed. Start the drawing again from the intended insertion point.",
-    "insertIntoNote": "Insert into Document",
-    "wholeDocument": "Whole document",
-    "addCard": "Add Card",
-    "discardChanges": "Discard the unsaved changes to this drawing?",
-    "discard": "Discard Changes",
-    "changedOnDisk": "This drawing changed on disk. Reopen it to see the latest version.",
-    "invalidFile": "Select an .excalidraw file.",
-    "openFailed": "Could not open the file. {reason}",
-    "saveFailed": "Could not save or insert the drawing. {reason}",
-    "cardFailed": "Could not add the document card. {reason}"
   }
 }

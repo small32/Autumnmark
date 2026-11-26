@@ -311,17 +311,6 @@ class WindowManager extends TypedEmitter<WindowManagerEvents> {
   private _listenForIpcMain(): void {
     // HACK: Don't use this event! Please see #1034 and #1035
     // The contract carries the window id; accept it only from that same window.
-    ipcMain.on('mt::window-add-file-path', (e, windowId: number, filePath: string) => {
-      const win = BrowserWindow.fromWebContents(e.sender)
-      if (!win || win.id !== windowId) return
-      const editor = this.get(windowId) as EditorWindow | undefined
-      if (!editor) {
-        log.error(`Cannot find window id "${windowId}" to add opened file.`)
-        return
-      }
-      editor.addToOpenedFiles(filePath)
-    })
-
     ipcMain.on('mt::open-file', (e, filePath: string, options: Record<string, unknown>) => {
       const win = BrowserWindow.fromWebContents(e.sender)
       if (!win) return
