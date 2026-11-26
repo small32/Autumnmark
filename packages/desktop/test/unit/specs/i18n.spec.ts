@@ -95,8 +95,8 @@ describe('renderer i18n language loading', () => {
   it('fills missing Chinese UI strings when a running main process returns an older catalog', async() => {
     const { setLanguage, t } = await import('../../../src/renderer/src/i18n')
     await setLanguage('zh-CN')
-    expect(t('preferences.categories.ai')).toBe('AI 模型')
-    expect(t('ai.restartRequired')).toContain('重新启动')
+    expect(t('studio.cssIssue')).toBe('请检查 CSS')
+    expect(t('studio.nameRequired')).toContain('主题名称')
   })
 })
 

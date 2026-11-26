@@ -1,22 +1,17 @@
 import { randomUUID } from 'node:crypto'
 import { dialog, ipcMain, nativeTheme, type IpcMainInvokeEvent } from 'electron'
 import log from 'electron-log'
-import { isLocalTheme, localThemeList, maxThemeNameLength, themeBases, themeSelectionPatch, type ThemeModelEvent, type ThemeModelRequest } from '@shared/localTheme'
+import { isLocalTheme, localThemeList, maxThemeNameLength, themeBases, themeSelectionPatch } from '@shared/localTheme'
 import type Accessor from '../app/accessor'
 import { WindowLifecycle, WindowType, type WindowTypeValue } from '../windows/base'
 import { t } from '../i18n'
 import { onInternalChannel } from '../utils/internalIpc'
 import ThemeStudioWindow, { loadThemeInspector } from '../windows/themeStudio'
-import { generateTheme, type ThemeSettings } from './themeModel'
-import { previewCaptureTool } from './themePreviewCapture'
-import { runThemeTools } from './themeTools'
 import { registerThemeCollaboration } from './themeCollaboration'
-import { requireModelWindow } from './aiModels'
-import type { ChatSettings } from './openAi'
+import { requireModelWindow } from './windowAuth'
 
-export const registerThemeStudio = (app: Accessor, savedSettings: (id: string) => Promise<ChatSettings>): void => {
+export const registerThemeStudio = (app: Accessor): void => {
   registerThemeCollaboration(app)
-  const pending = new Map<number, { id: string; controller: AbortController }>()
   let openingStudio: Promise<void> | undefined
   const authorize = (event: IpcMainInvokeEvent, type: WindowTypeValue = WindowType.STUDIO): void =>
     requireModelWindow(app, event, type)
@@ -116,63 +111,5 @@ export const registerThemeStudio = (app: Accessor, savedSettings: (id: string) =
       if (contents !== event.sender) contents?.send('mt::preferences::changed', next)
     }
     return next
-  })
-  const generate = async(event: IpcMainInvokeEvent, request: ThemeModelRequest, withTools: boolean) => {
-    authorize(event)
-    const { sender } = event
-    if (!request || typeof request.id !== 'string' || pending.has(sender.id)) throw new Error('invalidRequest')
-    const controller = new AbortController()
-    const abort = (): void => controller.abort()
-    const senderId = sender.id
-    pending.set(senderId, { id: request.id, controller })
-    sender.once('destroyed', abort)
-    // A renderer-initiated navigation can still be vetoed by the application's will-navigate handler.
-    sender.once('did-navigate', abort)
-    sender.once('render-process-gone', abort)
-    const timer = withTools ? undefined : setTimeout(() => controller.abort(new Error('requestTimeout')), 120000)
-    const trace = { wireBytes: 0, replyBytes: 0, assistantText: '' }
-    let settings: ThemeSettings | undefined
-    try {
-      settings = { ...await savedSettings(request.profileId), systemPrompt: app.preferences.getItem<string>('themeSystemPrompt') }
-      let reply = ''
-      let sampleMarkdown: string | undefined
-      const progress = (change: ThemeModelEvent): void => {
-        if (controller.signal.aborted) return
-        if ('message' in change) reply = change.message
-        if ('sampleMarkdown' in change) sampleMarkdown = change.sampleMarkdown
-        if (!sender.isDestroyed()) sender.send('mt::theme::progress', request.id, change)
-      }
-      const css = withTools
-        ? await runThemeTools(settings, request, controller.signal, progress, previewCaptureTool(sender, controller.signal, progress), trace)
-        : await generateTheme(settings, request, controller.signal, progress, fetch, trace)
-      controller.signal.throwIfAborted()
-      return { css, reply, sampleMarkdown }
-    } catch (cause) {
-      if (controller.signal.aborted && controller.signal.reason?.name === 'AbortError') return { cancelled: true }
-      if (!sender.isDestroyed()) {
-        const reason = cause instanceof Error ? cause.message : 'requestFailed'
-        const metadata = { time: new Date().toISOString(), requestId: request.id, model: settings?.model ?? request.profileId,
-          requestType: settings?.requestType, phase: withTools ? 'tools' : 'text', reason,
-          wireBytes: trace.wireBytes, replyBytes: trace.replyBytes }
-        log.warn('Theme assistant request failed', metadata)
-        return { diagnostic: {
-          ...metadata, inputCss: request.css, assistantText: trace.assistantText
-        } }
-      }
-      throw cause
-    } finally {
-      clearTimeout(timer)
-      sender.removeListener('destroyed', abort)
-      sender.removeListener('did-navigate', abort)
-      sender.removeListener('render-process-gone', abort)
-      pending.delete(senderId)
-    }
-  }
-  ipcMain.handle('mt::theme::generate', (event, request: ThemeModelRequest) => generate(event, request, false))
-  ipcMain.handle('mt::theme::generate-with-tools', (event, request: ThemeModelRequest) => generate(event, request, true))
-  ipcMain.handle('mt::theme::cancel', (event, id: string) => {
-    authorize(event)
-    const task = pending.get(event.sender.id)
-    if (task && task.id === id) task.controller.abort()
   })
 }

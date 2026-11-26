@@ -637,7 +637,7 @@ class App {
       if (owner?.isFocused()) this._prepareSettingsWindow(owner)
     })
     ipcMain.on('mt::open-setting-window', (_event, category?: string) => {
-      this._openSettingsWindow(category === 'ai' || category === 'theme' ? category : undefined)
+      this._openSettingsWindow(category === 'theme' ? category : undefined)
     })
 
     ipcMain.on('mt::make-screenshot', (e) => {

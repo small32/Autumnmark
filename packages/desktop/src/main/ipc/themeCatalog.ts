@@ -4,7 +4,7 @@ import { ipcMain, nativeTheme, net } from 'electron'
 import { isCatalogThemeId, localThemeList, themeSelectionPatch, type LocalTheme } from '@shared/localTheme'
 import type Accessor from '../app/accessor'
 import { WindowType } from '../windows/base'
-import { requireModelWindow } from './aiModels'
+import { requireModelWindow } from './windowAuth'
 import { ThemeCatalogDownload } from './themeCatalogDownload'
 
 export const registerThemeCatalog = (app: Accessor): void => {

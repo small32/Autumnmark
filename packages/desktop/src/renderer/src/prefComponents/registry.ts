@@ -14,8 +14,6 @@ export interface PreferenceDefinition {
 
 // IDs are persisted keys where available; auxiliary controls use stable UI IDs.
 export const preferenceDefinitions: Record<string, PreferenceDefinition> = {
-  aiModels: { category: 'ai', label: 'preferences.categories.ai', aliases: ['OpenAI', 'Base URL', 'API Key'] },
-  themeSystemPrompt: { category: 'ai', label: 'ai.systemPrompt' },
   "imageInsertAction": { "category": "images", "label": "preferences.image.defaultBehavior" },
   "embedVideos": { "category": "video", "label": "video.embed", "notes": "video.note" },
   "defaultOpenMode": {

@@ -29,7 +29,7 @@
             :aria-label="t('studio.base')"
             :title="t('studio.base')"
             :value="draft.base"
-            :disabled="editing || busy || collaborationOpening || switching"
+            :disabled="editing || externalCapturing || collaborationOpening || switching"
             @change="changeBase"
           >
             <option
@@ -104,7 +104,7 @@
       </div>
     </header>
 
-    <main :class="{ inspecting: inspectorOpen && tab === 'css' }">
+    <main :class="{ inspecting: inspectorOpen }">
       <section class="preview panel">
         <div
           class="preview-frame"
@@ -127,32 +127,7 @@
 
       <section class="tools panel">
         <div class="bar tools-bar">
-          <div class="tabs">
-            <button
-              :aria-pressed="tab === 'ai'"
-              @click="selectTab('ai')"
-            >
-              <MagicStick aria-hidden="true" />
-              {{ t('studio.assistant') }}
-            </button>
-            <button
-              :aria-pressed="tab === 'css'"
-              @click="selectTab('css')"
-            >
-              {{ t('studio.css') }}
-            </button>
-          </div>
           <button
-            v-if="tab === 'ai'"
-            class="toolbar-action tool-icon"
-            :aria-label="t('preferences.categories.ai')"
-            :title="t('preferences.categories.ai')"
-            @click="openModelSettings"
-          >
-            <Setting aria-hidden="true" />
-          </button>
-          <button
-            v-else
             class="toolbar-action tool-icon"
             :aria-pressed="inspectorOpen"
             :aria-label="t('studio.inspect')"
@@ -162,220 +137,46 @@
             <Aim aria-hidden="true" />
           </button>
         </div>
-        <template v-if="tab === 'css'">
-          <div class="source-options">
-            <label><input
-              v-model="showBase"
-              type="checkbox"
-              @change="finishTyping"
-            > {{ t('studio.baseSource') }}</label>
-            <div
-              v-if="inspectorOpen"
-              class="selector-action"
+        <div class="source-options">
+          <label><input
+            v-model="showBase"
+            type="checkbox"
+            @change="finishTyping"
+          > {{ t('studio.baseSource') }}</label>
+          <div
+            v-if="inspectorOpen"
+            class="selector-action"
+          >
+            <select
+              v-if="selectorChoices.length"
+              v-model="chosenSelector"
+              :aria-label="t('studio.selector')"
             >
-              <select
-                v-if="selectorChoices.length"
-                v-model="chosenSelector"
-                :aria-label="t('studio.selector')"
+              <option
+                v-for="item in selectorChoices"
+                :key="item.selector"
+                :value="item.selector"
               >
-                <option
-                  v-for="item in selectorChoices"
-                  :key="item.selector"
-                  :value="item.selector"
-                >
-                  {{ item.selector }}
-                </option>
-              </select>
-              <button
-                :disabled="!choice || busy || !!issue || choicesCss !== css"
-                @click="useSelectedRule"
-              >
-                {{ t(choice && choice.offset !== null ? 'studio.locateSelector' : 'studio.addSelector') }}
-              </button>
-            </div>
-          </div>
-          <css-source
-            ref="sourceEditor"
-            :key="String(showBase)"
-            :model-value="showBase ? formattedBase : css"
-            :readonly="showBase"
-            :dark="isDarkThemeId(draft.base)"
-            :label="showBase ? t('studio.baseSource') : t('studio.css')"
-            @update:model-value="typeCss"
-          />
-        </template>
-        <template v-else>
-          <div class="chat">
-            <div class="chat-picker">
-              <chat-picker
-                :items="chats"
-                :current="chat"
-                :disabled="!chatReady || chatRemoving || (chatWorking && !busy)"
-                :selection-locked="chatWorking"
-                :title="chatTitle"
-                @select="selectChat"
-                @remove="deleteChat"
-              />
-              <button
-                class="toolbar-action new-chat"
-                :disabled="!chatReady || chatWorking"
-                @click="newChat"
-              >
-                <Plus aria-hidden="true" />
-                {{ t('studio.newChat') }}
-              </button>
-            </div>
-            <div
-              ref="conversation"
-              class="conversation"
-              role="log"
-              aria-live="polite"
+                {{ item.selector }}
+              </option>
+            </select>
+            <button
+              :disabled="!choice || externalCapturing || !!issue || choicesCss !== css"
+              @click="useSelectedRule"
             >
-              <template
-                v-for="(turn, i) in turns"
-                :key="turn.id"
-              >
-                <article
-                  class="user"
-                  :aria-label="t('studio.user')"
-                >
-                  <p>{{ turn.prompt }}</p>
-                </article>
-                <article
-                  class="assistant"
-                  :aria-label="t('studio.assistant')"
-                >
-                  <span class="assistant-mark">
-                    <MagicStick aria-hidden="true" />
-                  </span>
-                  <div class="assistant-content">
-                    <div
-                      v-if="turn.screenshots.length"
-                      class="captures"
-                    >
-                      <button
-                        v-for="(src, n) in turn.screenshots"
-                        :key="n"
-                        class="capture"
-                        :aria-label="t('studio.screenshot', { n: n + 1 })"
-                        @click="viewScreenshot(src, n + 1)"
-                      >
-                        <img
-                          :src="src"
-                          alt=""
-                        >
-                      </button>
-                    </div>
-                    <p>{{ active === turn.id ? progressText || t('studio.generating') : turn.reply || t('studio.stopped') }}</p>
-                    <p
-                      v-if="turn.notice"
-                      class="muted"
-                    >
-                      {{ turn.notice }}
-                    </p>
-                    <details
-                      v-if="turn.diagnostics?.length"
-                      class="diagnostics"
-                    >
-                      <summary>{{ t('studio.diagnostics') }} ({{ turn.diagnostics.length }})</summary>
-                      <template
-                        v-for="diagnostic in turn.diagnostics"
-                        :key="diagnostic.time"
-                      >
-                        <p>{{ new Date(diagnostic.time).toLocaleString(locale) }} · {{ diagnostic.model }} · {{ diagnostic.phase }}</p>
-                        <code>{{ diagnostic.reason }}</code>
-                        <pre v-if="diagnostic.assistantText">{{ diagnostic.assistantText }}</pre>
-                      </template>
-                      <button
-                        class="toolbar-action"
-                        @click="exportDiagnostics(turn)"
-                      >
-                        {{ t('studio.exportDiagnostics') }}
-                      </button>
-                    </details>
-                    <div
-                      v-if="!chatWorking"
-                      class="turn-actions"
-                    >
-                      <button
-                        class="toolbar-action"
-                        :disabled="!chatReady"
-                        @click="retractTurn(i)"
-                      >
-                        {{ t('studio.retract') }}
-                      </button>
-                      <button
-                        class="toolbar-action"
-                        :disabled="!chatReady || !profileId || !!issue || externalCapturing"
-                        @click="retryTurn(i)"
-                      >
-                        {{ t('remoteContent.retry') }}
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              </template>
-            </div>
-            <div class="compose">
-              <textarea
-                v-model="prompt"
-                rows="2"
-                :maxlength="maxThemeMessageLength"
-                :aria-label="t('studio.prompt')"
-                :title="t('studio.composeHint')"
-                :placeholder="t('studio.composePlaceholder')"
-                @keydown.enter="promptEnter"
-              />
-              <div class="composer-footer">
-                <div
-                  v-if="profiles.length"
-                  class="select-control profile-picker"
-                >
-                  <select
-                    v-model="profileId"
-                    :aria-label="t('ai.model')"
-                    :disabled="busy"
-                  >
-                    <option
-                      v-for="profile in profiles"
-                      :key="profile.id"
-                      :value="profile.id"
-                    >
-                      {{ profile.displayName || `${profile.model} · ${profile.baseUrl}` }}
-                    </option>
-                  </select>
-                </div>
-                <button
-                  v-if="busy"
-                  class="toolbar-action composer-action"
-                  @click="stop"
-                >
-                  {{ t('studio.stop') }}
-                </button>
-                <button
-                  v-else
-                  class="primary composer-action"
-                  :class="{ 'send-message': !!profileId }"
-                  :aria-label="t(profileId ? 'studio.send' : 'studio.configure')"
-                  :title="t(profileId ? 'studio.send' : 'studio.configure')"
-                  :disabled="switching || !configLoaded || !chatReady || chatWorking || !!issue || externalCapturing || (!!profileId && !prompt.trim())"
-                  @click="send"
-                >
-                  <Top
-                    v-if="profileId"
-                    aria-hidden="true"
-                  />
-                  <template v-else>
-                    {{ t('studio.configure') }}
-                  </template>
-                </button>
-              </div>
-            </div>
+              {{ t(choice && choice.offset !== null ? 'studio.locateSelector' : 'studio.addSelector') }}
+            </button>
           </div>
-          <p class="privacy muted">
-            {{ t(imageCapable ? 'ai.previewPrivacy' : 'studio.privacy') }}
-          </p>
-        </template>
+        </div>
+        <css-source
+          ref="sourceEditor"
+          :key="String(showBase)"
+          :model-value="showBase ? formattedBase : css"
+          :readonly="showBase"
+          :dark="isDarkThemeId(draft.base)"
+          :label="showBase ? t('studio.baseSource') : t('studio.css')"
+          @update:model-value="typeCss"
+        />
       </section>
     </main>
     <footer>
@@ -383,7 +184,7 @@
         class="toolbar-action"
         :aria-label="t('studio.undo')"
         :title="t('studio.undo')"
-        :disabled="switching || busy || (!undoStack.length && typingStart === undefined)"
+        :disabled="switching || externalCapturing || (!undoStack.length && typingStart === undefined)"
         @click="undo"
       >
         <RefreshLeft aria-hidden="true" />
@@ -411,7 +212,7 @@
       >
         <button
           class="toolbar-action"
-          :disabled="busy || collaborationOpening"
+          :disabled="externalCapturing || collaborationOpening"
           @click="chooseThemeImport"
         >
           <Upload aria-hidden="true" />
@@ -419,7 +220,7 @@
         </button>
         <button
           class="toolbar-action"
-          :disabled="busy || !!issue"
+          :disabled="externalCapturing || !!issue"
           @click="exportTheme"
         >
           <Download aria-hidden="true" />
@@ -463,7 +264,7 @@
           </button>
           <button
             v-if="!collaborationDirectory"
-            :disabled="collaborationOpening || chatWorking || !!issue"
+            :disabled="collaborationOpening || !!issue"
             @click="startCollaboration"
           >
             {{ t('themeCollaboration.start') }}
@@ -492,9 +293,9 @@
       </div>
       <div class="footer-status">
         <span
-          v-if="issue || error || storageError || collaborationError || workspaceError"
+          v-if="issue || error || collaborationError || workspaceError"
           role="alert"
-        >{{ issue ? t('studio.cssIssue') + ' · ' + issue : storageError || error || collaborationError || workspaceError }}</span>
+        >{{ issue ? t('studio.cssIssue') + ' · ' + issue : error || collaborationError || workspaceError }}</span>
         <span
           v-else-if="!collaborationDirectory"
           class="muted"
@@ -507,39 +308,27 @@
         >{{ t('themeCollaboration.active') }}</span>
       </div>
     </footer>
-    <screenshot-viewer
-      v-if="viewing"
-      v-bind="viewing"
-      @close="closeScreenshot"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Aim, ArrowDown, Check, Connection, Document, Download, Files,
-  MagicStick, Moon, Plus, RefreshLeft, Setting, Sunny, Tickets, Top, Upload } from '@element-plus/icons-vue'
+import { Aim, ArrowDown, Check, Document, Download, Files,
+  Moon, RefreshLeft, Sunny, Tickets, Upload } from '@element-plus/icons-vue'
 import { getThemeBackgroundColor, isDarkThemeId } from 'common/theme'
 import { themeCssIssue } from '@shared/themeCss'
 import { parse } from 'postcss'
 import { builtinThemeCss } from '@/util/builtinTheme'
 import { localThemeCss } from '@/util/themeOverrides'
 import CssSource from './cssSource.vue'
-import ChatPicker from './chatPicker.vue'
-import { deferThemeDevUpdates } from './devUpdates'
-import ScreenshotViewer from './screenshotViewer.vue'
-import { useThemeChats } from './useThemeChats'
-import { useThemeCollaboration } from './useThemeCollaboration'
-import type { ThemeChat, ThemeTurn } from './chatHistory'
 import type { SelectorChoice } from './selectorRules'
-import { isLocalTheme, isThemeSample, maxThemeMessageLength, maxThemeNameLength, themeBases, type LocalTheme, type PreparedPreview, type PreviewTarget, type ThemeMessage } from '@shared/localTheme'
+import { isLocalTheme, maxThemeNameLength, themeBases, type LocalTheme, type PreparedPreview, type PreviewTarget } from '@shared/localTheme'
 import { themeLabel } from './config'
 import { themeSample } from './sample'
-import { isCancelledRequest, modelError } from './studioErrors'
 import { editableTheme, readDraftSample, type ThemeDraftEntry } from './themeDrafts'
-import type { AiModelProfile } from '@shared/aiModel'
 import type { ThemeCollaborationCapture, ThemeCollaborationFiles } from '@shared/themeCollaboration'
+import { useThemeCollaboration } from './useThemeCollaboration'
 
 const props = defineProps<{
   entry: ThemeDraftEntry
@@ -559,7 +348,6 @@ const restoredPreview = props.entry.draft.previewCss
 const draft = ref(editableTheme(props.entry.draft))
 const editing = computed(() => props.savedTheme?.id === draft.value.id)
 const source = ref(false)
-const tab = ref<'css' | 'ai'>('ai')
 const showBase = ref(false)
 const inspectorOpen = ref(false)
 const sourceEditor = ref<InstanceType<typeof CssSource>>()
@@ -593,40 +381,17 @@ const formattedBase = computed(() => {
 interface DraftEdits { css: string; sample: string | null }
 const undoStack = ref<DraftEdits[]>([])
 const typingStart = ref<DraftEdits>()
-let generationStart: DraftEdits | undefined
 const frame = ref<HTMLIFrameElement>()
 const themePicker = ref<HTMLInputElement>()
-const themeFilesMenu = ref<HTMLElement>()
-const conversation = ref<HTMLDivElement>()
 const collaborationMenu = ref<HTMLElement>()
 const sampleOverride = ref(readDraftSample(storageKey))
 const sampleMarkdown = computed(() => sampleOverride.value ?? themeSample(locale.value).markdown)
-const profiles = ref<AiModelProfile[]>([])
-const selectionKey = 'autumnmark.theme-model-id'
-const profileId = ref(localStorage.getItem(selectionKey) ?? '')
-const selectedProfile = computed(() => profiles.value.find(profile => profile.id === profileId.value))
-const imageCapable = computed(() => selectedProfile.value?.inputTypes?.includes('image') === true)
-let turnController: AbortController | undefined
-const configLoaded = ref(false)
-const history = useThemeChats(storageKey + '.chat', draft.value.id.split(':')[2], t)
-if (import.meta.hot) onBeforeUnmount(deferThemeDevUpdates(import.meta.hot, history.whenIdle))
-const { chats, selected, chat, turns, prompt, ready: chatReady, working: chatWorking, removing: chatRemoving, storageError, newChat } = history
-const viewing = ref<{ src: string; number: number }>()
-let queuedViewer: typeof viewing.value
-let capturing = false
 let captureRequest: { token: string; controller: AbortController; port?: MessagePort; snapshot?: ThemeCollaborationFiles } | undefined
 const externalCapturing = ref(false)
-let viewerClosed: (() => void) | undefined
-const active = ref('')
-const busy = computed(() => !!active.value)
 const saving = ref(false)
 const saveOptions = ref<HTMLElement>()
 let leaving = false
 const error = ref('')
-watch(selected, id => {
-  error.value = ''
-  if (id && temporaryDraft) saveDraft()
-})
 const collaboration = useThemeCollaboration({
   files: () => ({ css: css.value, sampleMarkdown: sampleMarkdown.value }),
   baseCss: () => baseCss.value,
@@ -636,7 +401,7 @@ const collaboration = useThemeCollaboration({
 })
 const { directory: collaborationDirectory, issue: collaborationIssue, opening: collaborationOpening,
   stopping: collaborationStopping, installing: collaborationInstalling, notice: collaborationNotice } = collaboration
-const saveDisabled = computed(() => props.switching || chatWorking.value || saving.value ||
+const saveDisabled = computed(() => props.switching || saving.value ||
   collaborationOpening.value || collaborationStopping.value || !!collaborationIssue.value || !!issue.value || !draft.value.name.trim())
 const collaborationError = computed(() => {
   const problem = collaborationIssue.value
@@ -644,12 +409,6 @@ const collaborationError = computed(() => {
   if (problem?.kind === 'sample') return t('themeCollaboration.sampleError')
   return problem || collaboration.failure.value ? t('themeCollaboration.filesError') : ''
 })
-
-const progressText = ref('')
-let assistantReply = ''
-let stopped = false
-let unsubscribe: (() => void) | undefined
-let unsubscribeModels: (() => void) | undefined
 let unsubscribeInspector: (() => void) | undefined
 
 function updatePreview(paintPort?: MessagePort, captureTarget?: PreviewTarget): void {
@@ -691,8 +450,7 @@ function previewReady(): void {
 }
 function inspectorChanged(open: boolean): void {
   inspectorOpen.value = open
-  if (open) tab.value = 'css'
-  else selectorChoices.value = []
+  if (!open) selectorChoices.value = []
   sendInspectorMode()
 }
 async function setInspector(open: boolean): Promise<void> {
@@ -704,7 +462,7 @@ async function setInspector(open: boolean): Promise<void> {
 }
 async function useSelectedRule(): Promise<void> {
   const selected = choice.value
-  if (!selected || !inspectorOpen.value || busy.value || issue.value || choicesCss.value !== css.value) return
+  if (!selected || !inspectorOpen.value || externalCapturing.value || issue.value || choicesCss.value !== css.value) return
   finishTyping()
   showBase.value = false
   await nextTick()
@@ -757,16 +515,8 @@ function finishTyping(): void {
   remember(typingStart.value)
   typingStart.value = undefined
 }
-function finishGeneration(): void {
-  remember(generationStart)
-  generationStart = undefined
-}
 function typeCss(value: string): void {
   if (leaving || props.switching) return
-  if (busy.value) {
-    if (!stopped) stop()
-    finishGeneration()
-  }
   typingStart.value ??= currentEdits()
   draft.value.css = value
 }
@@ -779,8 +529,6 @@ function undo(): void {
 async function prepareToLeave(): Promise<void> {
   if (saving.value || collaborationOpening.value || collaborationStopping.value) throw new Error('studioBusy')
   leaving = true
-  if (active.value && !stopped) stop()
-  await history.whenIdle()
   finishTyping()
   if (collaborationDirectory.value) {
     await collaboration.stop()
@@ -802,7 +550,7 @@ function copyDraft(): { theme: LocalTheme; sample: string | null } {
 defineExpose({ prepareToLeave, resumeDraft, copyDraft })
 
 async function startCollaboration(): Promise<void> {
-  if (chatWorking.value || leaving) return
+  if (leaving) return
   finishTyping()
   saveDraft()
   const id = draft.value.id.split(':')[2]
@@ -821,67 +569,29 @@ function applyCollaborationFiles(files: Partial<ThemeCollaborationFiles>): void 
   const cssChanged = files.css !== undefined && files.css !== css.value
   const sampleChanged = files.sampleMarkdown !== undefined && files.sampleMarkdown !== sampleMarkdown.value
   if (!cssChanged && !sampleChanged) return
-  if (busy.value && !stopped) {
-    stop()
-    finishGeneration()
-  }
   finishTyping()
   const before = currentEdits()
   if (cssChanged) draft.value.css = files.css
   if (sampleChanged) sampleOverride.value = files.sampleMarkdown ?? null
   remember(before)
 }
-function selectTab(value: 'css' | 'ai'): void {
-  finishTyping()
-  tab.value = value
-  if (value === 'ai' && inspectorOpen.value) void setInspector(false)
-}
-function updateProfiles(list: AiModelProfile[]): void {
-  profiles.value = list
-  if (!list.some(item => item.id === profileId.value)) profileId.value = list[0]?.id ?? ''
-}
-watch(profileId, id => localStorage.setItem(selectionKey, id))
-watch([profileId, () => selectedProfile.value?.baseUrl, () => selectedProfile.value?.model,
-  () => selectedProfile.value?.inputTypes?.includes('image')], () => {
-  if (active.value) stop()
-})
-
-async function prepareCapture(token: string, target: PreviewTarget, turn?: AbortSignal, snapshot?: ThemeCollaborationFiles): Promise<void> {
+async function prepareCapture(token: string, target: PreviewTarget, snapshot: ThemeCollaborationFiles): Promise<void> {
   captureFinished()
   const controller = new AbortController()
   const pending: NonNullable<typeof captureRequest> = { token, controller, snapshot }
   captureRequest = pending
-  externalCapturing.value = !!snapshot
-  const signal = turn ? AbortSignal.any([turn, controller.signal]) : controller.signal
+  externalCapturing.value = true
   try {
-    signal.throwIfAborted()
-    if (viewing.value) {
-      await new Promise<void>((resolve, reject) => {
-        const abort = (): void => reject(signal.reason)
-        viewerClosed = () => { signal.removeEventListener('abort', abort); resolve() }
-        signal.addEventListener('abort', abort, { once: true })
-      })
-    }
-    // Keep the image viewer outside the composed pixels captured for the model.
-    capturing = true
-    await nextTick()
-    signal.throwIfAborted()
+    controller.signal.throwIfAborted()
     const { port1, port2 } = new MessageChannel()
     pending.port = port1
     port1.onmessage = (event: MessageEvent<PreparedPreview>) => {
-      if (!signal.aborted) ipc.send('mt::theme::preview-painted', token, event.data)
+      if (!controller.signal.aborted) ipc.send('mt::theme::preview-painted', token, event.data)
     }
     updatePreview(port2, target)
   } catch {
-    if (!signal.aborted) ipc.send('mt::theme::preview-painted', token, { error: 'Preview unavailable.' })
+    if (!controller.signal.aborted) ipc.send('mt::theme::preview-painted', token, { error: 'Preview unavailable.' })
   }
-}
-function openModelSettings(): void {
-  ipc.send('mt::open-setting-window', 'ai')
-}
-function viewScreenshot(src: string, number: number): void {
-  if (capturing) queuedViewer = { src, number }
-  else viewing.value = { src, number }
 }
 function captureFinished(): void {
   const restorePreview = !!captureRequest?.snapshot
@@ -890,12 +600,6 @@ function captureFinished(): void {
   captureRequest?.port?.close()
   captureRequest = undefined
   externalCapturing.value = false
-  viewerClosed = undefined
-  capturing = false
-  if (queuedViewer) {
-    viewing.value = queuedViewer
-    queuedViewer = undefined
-  }
   if (restorePreview) updatePreview()
 }
 function captureCollaborationPreview(event: ThemeCollaborationCapture): void {
@@ -903,205 +607,12 @@ function captureCollaborationPreview(event: ThemeCollaborationCapture): void {
     if (captureRequest?.token === event.releaseCapture) captureFinished()
     return
   }
-  if (chatWorking.value || captureRequest || viewing.value) {
+  if (captureRequest) {
     ipc.send('mt::theme::preview-painted', event.prepareCapture, { error: 'The theme preview is busy. Retry after the current operation.' })
     return
   }
   collaborationMenu.value?.hidePopover()
-  void prepareCapture(event.prepareCapture, event.target, undefined, { css: event.css, sampleMarkdown: event.sampleMarkdown })
-}
-function closeScreenshot(): void {
-  viewing.value = undefined
-  viewerClosed?.()
-  viewerClosed = undefined
-}
-function chatTitle(item: ThemeChat): string {
-  return item.title || t('studio.untitledChat', { time: new Date(item.created).toLocaleString(locale.value) })
-}
-async function selectChat(id: string): Promise<void> {
-  error.value = ''
-  await history.select(id)
-}
-async function deleteChat(item: ThemeChat): Promise<void> {
-  const confirmed = window.confirm(t('studio.confirmDeleteChat', { name: chatTitle(item) }))
-  if (confirmed) await history.remove(item)
-}
-function confirmBranch(position: number): boolean {
-  if (position === turns.value.length - 1) return true
-  return window.confirm(t('studio.confirmBranch'))
-}
-function cssBeforeBranch(position: number): string {
-  let restored = css.value
-  for (let i = turns.value.length - 1; i >= position; i--) {
-    const turn = turns.value[i]
-    if (turn.draftId !== draft.value.id || restored !== turn.after) break
-    restored = turn.before
-  }
-  return restored
-}
-function sampleBeforeBranch(position: number): string | null {
-  let restored = sampleOverride.value
-  for (let i = turns.value.length - 1; i >= position; i--) {
-    const turn = turns.value[i]
-    if (turn.draftId !== draft.value.id) break
-    if (!turn.sample) continue
-    if (restored !== turn.sample.after) break
-    restored = turn.sample.before
-  }
-  return restored
-}
-function editsBeforeBranch(position: number): DraftEdits {
-  return { css: cssBeforeBranch(position), sample: sampleBeforeBranch(position) }
-}
-function applySampleEdit(turn: ThemeTurn, markdown: string): void {
-  turn.sample ??= { before: sampleOverride.value, after: markdown }
-  turn.sample.after = markdown
-  sampleOverride.value = markdown
-}
-async function retractTurn(position: number): Promise<void> {
-  if (leaving || props.switching) return
-  const confirmed = confirmBranch(position)
-  if (!confirmed) return
-  await history.withChat(async item => {
-    const original = currentEdits()
-    const draftId = draft.value.id
-    const restored = editsBeforeBranch(position)
-    const instruction = turns.value[position].prompt
-    await history.retract(item, position)
-    if (draftId === draft.value.id && matchesCurrentEdits(original)) {
-      finishTyping()
-      restoreEdits(restored)
-      remember(original)
-    }
-    if (!prompt.value.trim()) prompt.value = instruction
-    error.value = ''
-  })
-}
-async function retryTurn(position: number): Promise<void> {
-  if (externalCapturing.value || leaving || props.switching) return
-  const confirmed = confirmBranch(position)
-  if (!confirmed) return
-  await history.withChat(item => generate(item, turns.value[position].prompt, position))
-}
-function promptEnter(event: KeyboardEvent): void {
-  if (event.isComposing || event.keyCode === 229 || event.altKey) return
-  if (event.shiftKey) {
-    const input = event.currentTarget as HTMLTextAreaElement
-    const caret = input.selectionDirection === 'backward' ? input.selectionStart : input.selectionEnd
-    const nextBreak = input.value.indexOf('\n', caret)
-    const end = nextBreak < 0 ? input.value.length : nextBreak
-    // The native newline at this position keeps textarea undo, scrolling and maxlength intact.
-    input.setSelectionRange(end, end)
-    return
-  }
-  event.preventDefault()
-  if (!event.repeat && prompt.value.trim()) void send()
-}
-async function send(): Promise<void> {
-  const instruction = prompt.value.trim()
-  if (leaving || props.switching || chatWorking.value || !chatReady.value || issue.value || !configLoaded.value || externalCapturing.value) return
-  if (!profileId.value) {
-    openModelSettings()
-    return
-  }
-  if (!instruction) return
-  await history.withChat(item => generate(item, instruction))
-}
-async function generate(item: ThemeChat, instruction: string, replaceFrom?: number): Promise<void> {
-  if (leaving) return
-  const original = currentEdits()
-  const before = replaceFrom === undefined ? original : editsBeforeBranch(replaceFrom)
-  const id = crypto.randomUUID()
-  const turn = reactive<ThemeTurn>({ id, chatId: item.id, position: replaceFrom ?? turns.value.length, draftId: draft.value.id,
-    before: before.css, after: before.css, prompt: instruction, reply: '', screenshots: [],
-    diagnostics: replaceFrom === undefined ? [] : [...(turns.value[replaceFrom].diagnostics ?? [])] })
-  await history.save(item, turn, replaceFrom)
-  finishTyping()
-  if (draft.value.id === turn.draftId && matchesCurrentEdits(original)) restoreEdits(before)
-  else {
-    turn.draftId = draft.value.id
-    turn.before = css.value
-    turn.after = css.value
-  }
-  turns.value.splice(turn.position, turns.value.length - turn.position, turn)
-  if (replaceFrom === undefined) prompt.value = ''
-  const controller = new AbortController()
-  turnController = controller
-  const profile = selectedProfile.value
-  const withImages = imageCapable.value
-  active.value = id
-  stopped = false
-  progressText.value = ''
-  assistantReply = ''
-  error.value = ''
-  generationStart = currentEdits()
-  const phaseName = withImages ? 'tools' : 'text'
-  let reported = false
-  let interrupted = false
-  try {
-    if (leaving) {
-      stopped = true
-      return
-    }
-    const messages = turns.value.slice(-8).flatMap<ThemeMessage>(entry => {
-      const user: ThemeMessage = { role: 'user', content: entry.prompt }
-      return entry.reply ? [user, { role: 'assistant', content: entry.reply.slice(0, maxThemeMessageLength) }] : [user]
-    })
-    const request = { id, profileId: profileId.value, base: draft.value.base, css: css.value, baseCss: baseCss.value,
-      sampleMarkdown: sampleMarkdown.value, messages }
-    const result = withImages && profile
-      ? await ipc.invoke('mt::theme::generate-with-tools', { ...request, previewTools: { baseUrl: profile.baseUrl } })
-      : await ipc.invoke('mt::theme::generate', request)
-    if (stopped || active.value !== id) return
-    if (typeof result === 'string') {
-      draft.value.css = result
-    } else if ('cancelled' in result) {
-      interrupted = true
-    } else if ('diagnostic' in result) {
-      turn.diagnostics ??= []
-      turn.diagnostics.push(result.diagnostic)
-      reported = true
-      throw new Error(result.diagnostic.reason)
-    } else {
-      draft.value.css = result.css
-      if (isThemeSample(result.sampleMarkdown) && turn.sample?.after !== result.sampleMarkdown) {
-        applySampleEdit(turn, result.sampleMarkdown)
-      }
-      if (result.reply) assistantReply = result.reply
-    }
-    turn.after = css.value
-  } catch (cause) {
-    if (!stopped && active.value === id) {
-      if (isCancelledRequest(cause)) {
-        interrupted = true
-        return
-      }
-      if (!reported) {
-        turn.diagnostics ??= []
-        turn.diagnostics.push({ time: new Date().toISOString(), requestId: id, phase: phaseName,
-          model: profile?.model ?? profileId.value, requestType: profile?.requestType, inputCss: turn.before,
-          reason: cause instanceof Error ? cause.message : String(cause), assistantText: '', wireBytes: 0, replyBytes: 0 })
-      }
-      error.value = modelError(cause, t)
-    }
-  } finally {
-    captureFinished()
-    if (active.value === id) {
-      const changed = generationStart !== undefined && !matchesCurrentEdits(generationStart)
-      finishGeneration()
-      const status = stopped ? t('studio.stopped') : interrupted ? t('studio.interrupted') : error.value
-      turn.reply = assistantReply || status || t(changed ? 'studio.updated' : 'studio.unchanged')
-      if (assistantReply && status) turn.notice = [turn.notice, status].filter(Boolean).join('\n')
-      active.value = ''
-      turnController = undefined
-      await history.save(item, turn)
-    }
-  }
-}
-function stop(): void {
-  stopped = true
-  turnController?.abort()
-  void ipc.invoke('mt::theme::cancel', active.value).catch(() => {})
+  void prepareCapture(event.prepareCapture, event.target, { css: event.css, sampleMarkdown: event.sampleMarkdown })
 }
 async function saveTheme(apply: boolean): Promise<void> {
   if (leaving || saveDisabled.value || (apply ? alreadyApplied.value : alreadySaved.value)) return
@@ -1123,7 +634,6 @@ async function saveTheme(apply: boolean): Promise<void> {
   finally { saving.value = false }
 }
 async function exportTheme(): Promise<void> {
-  themeFilesMenu.value?.hidePopover()
   if (!isLocalTheme(draft.value)) { error.value = t('studio.nameRequired'); return }
   const filename = draft.value.name.replace(/[^\p{L}\p{N} _-]/gu, '-')
   const json = JSON.stringify(draft.value, null, 2)
@@ -1134,17 +644,7 @@ async function exportTheme(): Promise<void> {
     if (path) await window.fileUtils.writeFile(path, json)
   } catch { error.value = t('studio.storageError') }
 }
-async function exportDiagnostics(turn: ThemeTurn): Promise<void> {
-  try {
-    const path = await window.electron.dialog.showSave({
-      title: t('studio.exportDiagnostics'), defaultPath: 'theme-chat-' + turn.id + '.json',
-      filters: [{ name: 'JSON', extensions: ['json'] }]
-    })
-    if (path) await window.fileUtils.writeFile(path, JSON.stringify({ prompt: turn.prompt, attempts: turn.diagnostics }, null, 2))
-  } catch { storageError.value = t('studio.historyError') }
-}
 function chooseThemeImport(): void {
-  themeFilesMenu.value?.hidePopover()
   themePicker.value?.click()
 }
 async function importTheme(event: Event): Promise<void> {
@@ -1161,63 +661,14 @@ async function importTheme(event: Event): Promise<void> {
   } catch { error.value = t('studio.invalidFile') }
 }
 onMounted(async() => {
-  void history.open()
   if (localStorage.getItem(collaborationKey) === draft.value.id.split(':')[2]) void startCollaboration()
   window.addEventListener('message', previewEvent)
   unsubscribeInspector = ipc.on('mt::theme::inspector-changed', (_event, open) => inspectorChanged(open))
   void ipc.invoke('mt::theme::inspector-state').then(inspectorChanged).catch(() => { error.value = t('studio.inspectorFailed') })
-  unsubscribe = ipc.on('mt::theme::progress', (_event, id, change) => {
-    const turn = turns.value.at(-1)
-    if (id !== active.value || id !== turn?.id || !chat.value) return
-    if ('releaseCapture' in change) {
-      if (captureRequest?.token === change.releaseCapture) captureFinished()
-      return
-    }
-    if (stopped) return
-    if ('prepareCapture' in change) {
-      if (!turnController) return
-      draft.value.css = change.css
-      progressText.value = t('ai.checkingPreview')
-      void prepareCapture(change.prepareCapture, change.target, turnController.signal)
-      return
-    }
-    if ('screenshot' in change) {
-      turn.screenshots.push(change.screenshot)
-    } else if ('message' in change) {
-      assistantReply = change.message
-      progressText.value = change.message
-      turn.reply = change.message
-    } else if ('sampleMarkdown' in change) {
-      applySampleEdit(turn, change.sampleMarkdown)
-      progressText.value = t('studio.updated')
-    } else {
-      draft.value.css = change.css
-      turn.after = change.css
-      progressText.value = t('studio.updated')
-    }
-    void history.save(chat.value, turn).catch(() => { storageError.value = t('studio.historyError') })
-  })
-  unsubscribeModels = ipc.on('mt::ai::changed', (_event, list) => updateProfiles(list))
-  try {
-    updateProfiles(await ipc.invoke('mt::ai::list'))
-  } catch (cause) { error.value = modelError(cause, t) }
-  finally { configLoaded.value = true }
 })
-watch([turns, progressText], async() => {
-  await nextTick()
-  if (conversation.value) conversation.value.scrollTop = conversation.value.scrollHeight
-}, { deep: true })
 onBeforeUnmount(() => {
   captureFinished()
-  if (active.value) {
-    stop()
-    finishGeneration()
-  }
-  active.value = ''
-  history.close()
-  unsubscribe?.()
   unsubscribeInspector?.()
-  unsubscribeModels?.()
   window.removeEventListener('message', previewEvent)
 })
 </script>

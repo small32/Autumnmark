@@ -448,11 +448,6 @@
     "pattern": "^(https?://|$)",
     "default": "https://www.plantuml.com/plantuml"
   },
-  "themeSystemPrompt": {
-    "description": "System prompt for theme assistant conversations. Empty uses the built-in prompt.",
-    "type": "string",
-    "default": ""
-  },
   "localThemes": {
     "description": "Local themes created in the theme editor.",
     "type": "array",

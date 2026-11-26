@@ -1,9 +1,7 @@
 import type { ProjectRootsSnapshot, ProjectTreeEvent, SidebarMoveRequest, SidebarMoveResult } from './project'
 import type { MarkdownEdit } from '../markdownEdits'
-import type { AiConnectionDraft, AiModelDraft, AiModelProfile } from '../aiModel'
-import type { DocumentChat, DocumentChatEffects, DocumentChatHistoryEntry, DocumentChatRequest, DocumentChatSummary, DocumentChatTarget, DocumentChatThemeEffect, DocumentChatTurn } from '../documentChat'
-import type { LocalTheme, PreparedPreview, ThemeGenerationResult, ThemeModelEvent, ThemeModelRequest } from '../localTheme'
-import type { AppliedThemeHistory, ThemeVersionChange } from '../themeVersion'
+import type { LocalTheme, PreparedPreview } from '../localTheme'
+import type { AppliedThemeHistory } from '../themeVersion'
 import type { ThemeCatalogSnapshot } from '../themeCatalog'
 import type { ThemeCollaborationCapture, ThemeCollaborationConnection, ThemeCollaborationFiles, ThemeCollaborationState } from '../themeCollaboration'
 import type { UserPreferences } from './preferences'
@@ -87,28 +85,6 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::theme::collaboration-start': { args: [draftId: string, files: ThemeCollaborationFiles, baseCss: string]; ret: ThemeCollaborationConnection }
   'mt::theme::collaboration-write': { args: [id: string, revision: number, files: ThemeCollaborationFiles, baseCss: string]; ret: { saved: boolean; state: ThemeCollaborationState } }
   'mt::theme::collaboration-stop': { args: [id: string]; ret: void }
-  'mt::ai::list': { args: []; ret: AiModelProfile[] }
-  'mt::ai::save': { args: [draft: AiModelDraft]; ret: AiModelProfile[] }
-  'mt::ai::copy': { args: [id: string]; ret: AiModelProfile[] }
-  'mt::ai::delete': { args: [id: string]; ret: AiModelProfile[] }
-  'mt::ai::discover': { args: [draft: AiConnectionDraft]; ret: string[] }
-  'mt::ai::test': { args: [draft: AiModelDraft | string]; ret: void }
-  'mt::document-chat::list': { args: []; ret: DocumentChatSummary[] }
-  'mt::document-chat::read': { args: [id: string]; ret: (DocumentChat & { inFlight: boolean }) | null }
-  'mt::document-chat::history': { args: [target?: Pick<DocumentChatTarget, 'id' | 'pathname'>]; ret: DocumentChatHistoryEntry[] }
-  'mt::document-chat::new': { args: []; ret: string }
-  'mt::document-chat::send': { args: [request: DocumentChatRequest]; ret: DocumentChatTurn }
-  'mt::document-chat::stop': { args: [id: string]; ret: void }
-  'mt::document-chat::capture': { args: [id: string, turnId: string]; ret: void }
-  'mt::document-chat::effects': { args: [id: string, turnId: string, patch: DocumentChatEffects]; ret: void }
-  'mt::document-chat::delete': { args: [id: string, turnId?: string]; ret: void }
-  'mt::document-chat::apply-theme': { args: [theme: LocalTheme, sourceId: string, source: LocalTheme | null, beforeCss: string]; ret: DocumentChatThemeEffect | null }
-  'mt::document-chat::revert-theme': { args: [effect: DocumentChatThemeEffect]; ret: boolean }
-  // Renderer hot reload can leave the earlier main handler running. Its string result is the final CSS.
-  'mt::theme::generate': { args: [request: ThemeModelRequest]; ret: ThemeGenerationResult | string }
-  'mt::theme::generate-with-tools': { args: [request: ThemeModelRequest]; ret: ThemeGenerationResult }
-  'mt::theme::summarize-version': { args: [profileId: string, locale: string, changes: ThemeVersionChange[]]; ret: string }
-  'mt::theme::cancel': { args: [id: string]; ret: void }
   'mt::menu::application-categories': { args: []; ret: ApplicationMenuCategory[] }
   'mt::menu::popup-application-category': {
     args: [index: number, position: MenuPopupPosition]
@@ -251,7 +227,7 @@ export interface IpcSendChannels {
   'mt::open-file-by-window-id': [windowId: number, filePath: string, options?: unknown]
   'mt::open-directory-by-window-id': [windowId: number, dirPath: string]
   'mt::open-keybindings-config': []
-  'mt::open-setting-window': [category?: 'ai' | 'theme']
+  'mt::open-setting-window': [category?: 'theme']
   'mt::prepare-setting-window': []
   'mt::settings-ready': []
   'mt::theme::ready': []
@@ -317,11 +293,8 @@ export interface IpcSyncChannels {
 }
 
 export interface IpcMainEventChannels extends StateIpcMainEvents {
-  'mt::ai::changed': [profiles: AiModelProfile[]]
-  'mt::document-chat::changed': []
   'mt::theme::show': [id: string, editing: boolean]
   'mt::theme::show-active-history': []
-  'mt::theme::progress': [id: string, change: ThemeModelEvent]
   'mt::theme::inspector-changed': [open: boolean]
   'mt::theme::collaboration-state': [id: string, state: ThemeCollaborationState]
   'mt::theme::collaboration-capture': [id: string, event: ThemeCollaborationCapture]

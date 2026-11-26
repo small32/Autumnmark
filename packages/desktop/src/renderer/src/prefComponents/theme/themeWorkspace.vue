@@ -37,7 +37,6 @@ import { addThemeStyle } from '@/util/theme'
 import { localThemeCss } from '@/util/themeOverrides'
 import Studio from './studio.vue'
 import ThemeLibrary from './themeLibrary.vue'
-import { openChatHistory } from './chatHistory'
 import { themeLabel } from './config'
 import { editableTheme, listThemeDrafts, newThemeDraft, readThemeDraft, removeThemeDraft, themeDraftPrefix,
   type ThemeDraftEntry, type ThemeLibraryItem } from './themeDrafts'
@@ -195,17 +194,8 @@ function deleteTheme(item: ThemeLibraryItem): void {
       await nextTick()
     }
 
-    const selected = deleted.map(({ key }) => localStorage.getItem(key + '.chat')).find(Boolean) ?? ''
     for (const { key } of deleted) removeThemeDraft(key)
     refreshDrafts()
-
-    const archive = await openChatHistory()
-    try {
-      const chats = await archive.list(item.id.split(':')[2], selected)
-      if (chats.length) await archive.remove(...chats.map(chat => chat.id))
-    } finally {
-      archive.close()
-    }
   }, 'themeLibrary.deleteFailed')
 }
 

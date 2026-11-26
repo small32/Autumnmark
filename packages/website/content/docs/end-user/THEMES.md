@@ -91,13 +91,11 @@ In **Local themes**, use **Uninstall theme** for a downloaded theme or **Delete 
 
 ## Custom Themes
 
-Open **Preferences → Theme → Create from current theme** to open the theme editor in its own window. Describe a change in **AI assistant**, or open **CSS source** to edit the same stylesheet directly. **View base CSS** shows the inherited rules. The preview updates as you edit, and drafts are saved automatically.
+Open **Preferences → Theme → Create from current theme** to open the theme editor in its own window. Edit the stylesheet directly in **CSS source**. **View base CSS** shows the inherited rules. The preview updates as you edit, and drafts are saved automatically.
 
 Use **Save theme only** to add the theme to the picker for later. Saving changes to a downloaded theme creates a custom copy. Open **Save options** and select **Save and apply** to use the saved theme. If you follow the system appearance, this assigns the saved theme to the light or dark slot of its base theme. Use **Export theme** and **Import as a copy** inside the editor to share a theme JSON file.
 
-For conversational editing, open **AI assistant** and enter the base URL of your Chat Completions API, model ID and API key. Local servers can use a loopback HTTP address and an empty key. The model receives the base theme CSS, your CSS overrides and the conversation. Documents you open for preview stay on your device. You can stop generation or undo its changes.
-
-In the theme window, choose **CSS source → Inspect element** to dock Chromium DevTools on the right. Click a heading, paragraph or code block in the preview to select its HTML in **Elements**. Try declarations in **Styles** and copy the ones you want to keep into the CSS editor below the preview. Close DevTools to restore the side-by-side editing layout.
+In the theme window, choose **Inspect element** to dock Chromium DevTools on the right. Click a heading, paragraph or code block in the preview to select its HTML in **Elements**. Try declarations in **Styles** and copy the ones you want to keep into the CSS editor below the preview. Close DevTools to restore the side-by-side editing layout.
 
 Select a preview node in the **Elements** tree. The CSS toolbar lists its classes. Choose **Add selector** to insert a rule and place the cursor inside it, or **Go to rule** to edit an existing match in your theme. For elements without classes, the toolbar uses the ID or tag name. Both actions take you to the editable stylesheet.
 

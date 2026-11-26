@@ -11,7 +11,7 @@ import { maxThemeCss, themeCssIssue } from '@shared/themeCss'
 import type { ThemeCollaborationConnection, ThemeCollaborationFiles, ThemeCollaborationIssue, ThemeCollaborationState } from '@shared/themeCollaboration'
 import type Accessor from '../app/accessor'
 import { WindowType } from '../windows/base'
-import { requireModelWindow } from './aiModels'
+import { requireModelWindow } from './windowAuth'
 import { previewCaptureTool } from './themePreviewCapture'
 
 const uuid = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i

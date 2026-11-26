@@ -16,8 +16,6 @@ import { registerSandboxIpcHandlers } from './ipc'
 import { setPlantumlServerSource } from './ipc/diagram'
 import { registerThemeStudio } from './ipc/themeStudio'
 import { registerThemeCatalog } from './ipc/themeCatalog'
-import { registerAiModels } from './ipc/aiModels'
-import { registerDocumentChat } from './ipc/documentChat'
 import { APP_ID, APP_NAME } from '@shared/brand'
 
 process.env.MARKTEXT_VERSION = MARKTEXT_VERSION
@@ -131,9 +129,7 @@ try {
 // knows which server the user configured.
 setPlantumlServerSource(() => accessor.preferences.getItem<string>('plantumlServer') ?? '')
 
-const savedModelSettings = registerAiModels(accessor)
-registerDocumentChat(accessor, savedModelSettings)
-registerThemeStudio(accessor, savedModelSettings)
+registerThemeStudio(accessor)
 registerThemeCatalog(accessor)
 
 const appController = new App(accessor, args as unknown as { _: string[] })

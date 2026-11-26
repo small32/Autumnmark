@@ -1,7 +1,8 @@
 import type { IpcMainEvent, Rectangle, WebContents } from 'electron'
 import { randomUUID } from 'node:crypto'
 import type { PreparedPreview, PreviewCrop, PreviewTarget, ThemeCaptureEvent } from '@shared/localTheme'
-import type { CapturePreview } from './themeTools'
+
+export type CapturePreview = (target: PreviewTarget, css: string) => Promise<{ text: string; image?: string }>
 
 async function previewBounds(contents: WebContents, crop: PreviewCrop): Promise<Rectangle> {
   const bounds = await contents.executeJavaScript(`(() => {

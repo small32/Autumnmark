@@ -1,8 +1,3 @@
-import { createServer, type ServerResponse } from 'node:http'
-import { once } from 'node:events'
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
-import type { AddressInfo } from 'node:net'
 import { expect, test } from '@playwright/test'
 import type { ElectronApplication, Locator, Page } from 'playwright'
 import { clickMenuById, launchWithMarkdown } from './helpers'
@@ -24,11 +19,6 @@ async function openStudio(app: ElectronApplication, settings: Page, edit = false
 }
 
 const layout = ':root .mu-container h2:is(.mu-atx-heading, .mu-setext-heading) { margin-top: 47px; }'
-const paragraph = '.mu-container p.mu-paragraph { padding-inline: 18px; }'
-const streamEdit = (replace: string) => 'data: ' + JSON.stringify({
-  choices: [{ delta: { content: JSON.stringify({ find: '', replace }) + '\n' } }]
-}) + '\n\n'
-
 test('the Theme menu opens the current theme with a visible editor and rendered preview', async() => {
   const { app, page } = await launchWithMarkdown('Document', { preferences: {
     language: 'zh-CN', theme: 'nord', followSystemTheme: false
@@ -288,118 +278,4 @@ test('saving an active theme creates a copy that can be applied separately', asy
     expect(applied.theme).toBe(copyId)
     expect(applied.localThemes).toHaveLength(2)
   } finally { await app.close() }
-})
-
-test('AI and CSS edit one theme in an independent, reusable window', async() => {
-  const headingBackground = '.mu-container h2.mu-atx-heading,\n.mu-container h2.mu-setext-heading {\n  background: #1f6feb;\n}'
-  let body = ''
-  let authorization = ''
-  let reply: ServerResponse | undefined
-  const server = createServer(async(req, res) => {
-    authorization = req.headers.authorization ?? ''
-    for await (const part of req) body += part
-    res.writeHead(200, { 'content-type': 'text/event-stream' })
-    res.write(streamEdit(layout) + streamEdit(headingBackground))
-    reply = res
-  })
-  server.listen(0, '127.0.0.1')
-  await once(server, 'listening')
-  const { app, page } = await launchWithMarkdown('## PRIVATE_DOCUMENT_SENTINEL', {
-    preferences: { language: 'en', theme: 'light', followSystemTheme: false }
-  })
-  try {
-    let settings = await openSettings(app, page)
-    const studio = await openStudio(app, settings)
-    await expect(studio.getByRole('button', { name: 'AI assistant' })).toHaveAttribute('aria-pressed', 'true')
-    await expect(settings.locator('.theme-studio')).toHaveCount(0)
-    await settings.getByRole('button', { name: 'Create from current theme' }).click()
-    expect(app.windows().filter(win => win.url().includes('theme-studio.html'))).toHaveLength(1)
-    await (await app.browserWindow(settings)).evaluate(win => win.close())
-    const preview = studio.frameLocator('iframe')
-    await expect(preview.locator('h2')).toContainText('Field journal')
-    await studio.getByLabel('Theme name').fill('Cedar notes')
-    const reopenedSettings = app.waitForEvent('window')
-    await studio.getByRole('button', { name: 'Set up model', exact: true }).click()
-    settings = await reopenedSettings
-    await settings.getByRole('button', { name: 'Add model' }).click()
-    const form = settings.getByRole('dialog')
-    const baseUrl = 'http://127.0.0.1:' + (server.address() as AddressInfo).port + '/v1'
-    await form.getByLabel('API base URL').fill(baseUrl)
-    await form.getByLabel('Model ID').fill('test-model')
-    if (process.platform === 'win32') await form.getByLabel('API key', { exact: true }).fill('test-secret')
-    await form.getByRole('button', { name: 'Save', exact: true }).click()
-    const selected = studio.getByRole('combobox', { name: 'Model', exact: true }).locator('option:checked')
-    await expect(selected).toHaveText('test-model · ' + baseUrl)
-    const row = settings.getByRole('row', { name: /test-model/ })
-    await row.getByRole('button', { name: 'Edit' }).click()
-    await form.getByLabel('Display name (optional)').fill('My writing assistant')
-    await form.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(selected).toHaveText('My writing assistant')
-    await (await app.browserWindow(settings)).evaluate(win => win.close())
-    await studio.getByLabel('Message the theme assistant').fill('Increase the space above second-level headings')
-    await studio.getByRole('button', { name: 'Send', exact: true }).click()
-    await expect(preview.locator('h2')).toHaveCSS('margin-top', '47px')
-    await expect(preview.locator('h2')).toHaveCSS('background-color', 'rgb(31, 111, 235)')
-    await studio.getByRole('button', { name: 'CSS source' }).click()
-    const lines = studio.locator('.css-source .CodeMirror-code')
-    await expect(lines).toContainText(layout)
-    reply?.end(streamEdit(paragraph) + 'data: [DONE]\n\n')
-    await expect(preview.locator('.mu-paragraph').first()).toHaveCSS('padding-inline-start', '18px')
-    await studio.getByRole('button', { name: 'Undo last change' }).click()
-    await expect(preview.locator('h2')).not.toHaveCSS('margin-top', '47px')
-    await expect(preview.locator('h2')).toHaveCSS('background-color', 'rgb(17, 151, 125)')
-    await expect(lines).not.toContainText(layout)
-    const input = studio.getByRole('textbox', { name: 'CSS source' })
-    await input.focus()
-    await studio.keyboard.insertText(layout + '\n' + headingBackground)
-    await expect(preview.locator('h2')).toHaveCSS('margin-top', '47px')
-    await studio.keyboard.insertText('\np {')
-    await expect(studio.getByRole('alert')).toBeVisible()
-    await expect(studio.getByRole('button', { name: 'Save theme only' })).toBeDisabled()
-    await expect(studio.getByRole('button', { name: 'Save options' })).toBeDisabled()
-    await expect(preview.locator('h2')).toHaveCSS('margin-top', '47px')
-    await studio.keyboard.insertText(' margin: 1em; }')
-    await expect(studio.getByRole('alert')).toHaveCount(0)
-    await studio.getByRole('button', { name: 'Save options' }).click()
-    await studio.getByRole('button', { name: 'Save and apply' }).click()
-    await expect(studio.getByRole('button', { name: 'Save theme only' })).toBeDisabled()
-    await expect(page.locator('.mu-container h2')).toHaveCSS('margin-top', '47px')
-    await expect(page.locator('.mu-container h2')).toHaveCSS('background-color', 'rgb(31, 111, 235)')
-    expect(JSON.parse(body).model).toBe('test-model')
-    expect(body).not.toContain('PRIVATE_DOCUMENT_SENTINEL')
-    expect(body).not.toContain('test-secret')
-    if (process.platform === 'win32') expect(authorization).toBe('Bearer test-secret')
-
-    settings = await openSettings(app, page)
-    await settings.getByRole('button', { name: 'Edit current theme' }).click()
-    let reopened = studio
-    await reopened.getByLabel('Theme name').fill('Unpublished revision')
-    await (await app.browserWindow(reopened)).evaluate(win => win.close())
-    reopened = await openStudio(app, settings, true)
-    await expect(reopened.getByLabel('Theme name')).toHaveValue('Unpublished revision')
-    const saved = await settings.evaluate(() => window.electron.ipcRenderer.invoke('mt::preferences::get'))
-    expect(saved.localThemes?.[0].name).toBe('Cedar notes')
-    const directory = await app.evaluate(({ app }) => app.getPath('userData'))
-    const exported = join(directory, 'cedar.theme.json')
-    await app.evaluate(({ dialog }, pathname) => {
-      dialog.showSaveDialog = async() => ({ canceled: false, filePath: pathname })
-    }, exported)
-    await reopened.getByRole('button', { name: 'Theme files', exact: true }).click()
-    const themeFiles = reopened.getByRole('dialog', { name: 'Theme files', exact: true })
-    await expect(themeFiles.getByRole('button', { name: 'Import as a copy' })).toBeVisible()
-    await themeFiles.getByRole('button', { name: 'Export theme' }).click()
-    await expect.poll(async() => JSON.parse(await readFile(exported, 'utf8').catch(() => '{}')).css).toContain(layout)
-    await reopened.locator('input[type=file][accept=".json"]').setInputFiles(exported)
-    await expect(reopened.getByRole('combobox', { name: 'Base theme' })).toBeEnabled()
-    await reopened.getByRole('button', { name: 'Save options' }).click()
-    await reopened.getByRole('button', { name: 'Save and apply' }).click()
-    await expect(reopened.getByRole('button', { name: 'Save theme only' })).toBeDisabled()
-    const imported = await settings.evaluate(() => window.electron.ipcRenderer.invoke('mt::preferences::get'))
-    expect(imported.localThemes).toHaveLength(2)
-    expect(imported.theme).not.toBe(saved.theme)
-  } finally {
-    server.closeAllConnections()
-    server.close()
-    await app.close()
-  }
 })
