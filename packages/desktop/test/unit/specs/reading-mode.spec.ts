@@ -42,7 +42,7 @@ describe('per-tab reading state', () => {
     const preferences = usePreferencesStore()
     preferences.autoSave = true
     const save = vi.fn(async() => ({ status: 'failed' } as const))
-    setSessionActions({ save, checkpoint: vi.fn(), scheduleCheckpoint: vi.fn(), captureView: vi.fn(), create: vi.fn(), close: vi.fn(), saveAll: vi.fn() })
+    setSessionActions({ save, checkpoint: vi.fn(), scheduleCheckpoint: vi.fn(), captureView: vi.fn(), cancelViewRestore: vi.fn(), create: vi.fn(), close: vi.fn(), saveAll: vi.fn() })
     const tab = createDocumentState({
       pathname: '/notes/a.md',
       markdown: 'retained',

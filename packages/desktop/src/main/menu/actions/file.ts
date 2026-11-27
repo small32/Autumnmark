@@ -84,8 +84,8 @@ const getPdfPageOptions = (options?: PageOptions): Record<string, unknown> => {
   const { pageSize, pageSizeWidth, pageSizeHeight, isLandscape } = options
   if (pageSize === 'custom' && pageSizeWidth && pageSizeHeight) {
     return {
-      // Note: mm to microns
-      pageSize: { height: pageSizeHeight * 1000, width: pageSizeWidth * 1000 },
+      // printToPDF takes inches; the dialog uses millimetres.
+      pageSize: { height: pageSizeHeight / 25.4, width: pageSizeWidth / 25.4 },
       landscape: !!isLandscape
     }
   } else {
@@ -133,7 +133,6 @@ const handleResponseForExport = async(e: IpcMainEvent, payload: ExportPayload): 
         }
         Object.assign(options, getPdfPageOptions(pageOptions))
         const data = await win.webContents.printToPDF(options)
-        removePrintServiceFromWindow(win)
         await writeFile(filePath, data, extension, 'binary')
       } else {
         if (!content) {
@@ -156,6 +155,8 @@ const handleResponseForExport = async(e: IpcMainEvent, payload: ExportPayload): 
         type: 'error',
         message: ERROR_MSG
       })
+    } finally {
+      if (type === 'pdf') removePrintServiceFromWindow(win)
     }
   } else {
     if (type === 'pdf') {

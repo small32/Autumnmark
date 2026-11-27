@@ -85,11 +85,36 @@ describe('renderer i18n language loading', () => {
   it('loads an unavailable locale only once', async() => {
     const { setLanguage } = await import('../../../src/renderer/src/i18n')
 
-    setLanguage('zh-CN')
-    setLanguage('zh-CN')
+    await Promise.all([setLanguage('zh-CN'), setLanguage('zh-CN')])
 
     expect(win.i18nUtils!.loadTranslations).toHaveBeenCalledTimes(1)
     expect(win.i18nUtils!.loadTranslations).toHaveBeenCalledWith('zh-CN')
+  })
+
+  it('keeps the latest language and refreshes commands only for that request', async() => {
+    let finish!: (translation: Record<string, unknown>) => void
+    const translation = new Promise<Record<string, unknown>>((resolve) => {
+      finish = resolve
+    })
+    win.i18nUtils = { loadTranslations: vi.fn().mockReturnValue(translation) }
+
+    const { createPinia } = await import('pinia')
+    const { getCurrentLanguage } = await import('../../../src/renderer/src/i18n')
+    const { usePreferencesStore } = await import('../../../src/renderer/src/store/preferences')
+    const { default: bus } = await import('../../../src/renderer/src/bus')
+    const preferences = usePreferencesStore(createPinia())
+    const notify = vi.fn()
+    bus.on('language-changed', notify)
+    const first = preferences.SET_USER_PREFERENCE({ language: 'zh-CN' })
+    await preferences.SET_USER_PREFERENCE({ language: 'en' })
+    finish({ commands: { file: { quickOpen: '快速打开' } } })
+    await first
+    preferences.broadcastedPreferenceKeys = ['language']
+    await preferences.SET_USER_PREFERENCE({ language: 'zh-CN' }, { skipBroadcasted: true })
+
+    expect(getCurrentLanguage()).toBe('en')
+    expect(preferences.language).toBe('en')
+    expect(notify.mock.calls).toEqual([['en']])
   })
 
   it('fills missing Chinese UI strings when a running main process returns an older catalog', async() => {

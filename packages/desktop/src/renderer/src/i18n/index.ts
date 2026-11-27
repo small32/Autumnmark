@@ -63,6 +63,7 @@ export const t = (key: string, ...args: unknown[]): string => {
 // Cache in-flight translation loads so that concurrent setLanguage() calls
 // don't fire duplicate IPCs for the same locale.
 const inflightLoads = new Map<string, Promise<Record<string, unknown> | undefined>>()
+let languageRequest = 0
 
 // An open desktop process can serve an older catalog to a newly opened renderer.
 const bundledLocales = import.meta.glob<Record<string, unknown>>(
@@ -77,6 +78,7 @@ const hasMessages = (catalog: unknown, expected: unknown): boolean => {
 
 export const setLanguage = async(locale: string): Promise<void> => {
   if (!locale) return
+  const request = ++languageRequest
   const globalI18n = i18n.global
   if (!globalI18n.availableLocales.includes(locale)) {
     let pending = inflightLoads.get(locale)
@@ -97,10 +99,12 @@ export const setLanguage = async(locale: string): Promise<void> => {
       } else {
         globalI18n.setLocaleMessage(locale, translation)
       }
-      console.log(`🌐 Loaded and set new locale: ${locale}`)
+      console.log(`🌐 Loaded locale: ${locale}`)
     }
   }
+  if (request !== languageRequest) return
   globalI18n.locale.value = locale
+  bus.emit('language-changed', locale)
 }
 
 export const getCurrentLanguage = (): string => {
@@ -111,15 +115,8 @@ export { i18n }
 export default i18n
 
 if (window.electron && window.electron.ipcRenderer) {
-  // Command descriptions must refresh after lazy translations are available.
-  window.electron.ipcRenderer.on('language-changed', async(_event, newLocale) => {
-    await setLanguage(newLocale)
-    bus.emit('language-changed', newLocale)
-  })
+  window.electron.ipcRenderer.on('language-changed', (_event, locale) => setLanguage(locale))
 
   window.electron.ipcRenderer.send('mt::get-current-language')
-  window.electron.ipcRenderer.on('mt::current-language', async(_event, language) => {
-    await setLanguage(language)
-    bus.emit('language-changed', language)
-  })
+  window.electron.ipcRenderer.on('mt::current-language', (_event, locale) => setLanguage(locale))
 }

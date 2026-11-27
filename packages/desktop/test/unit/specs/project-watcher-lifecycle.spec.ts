@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { loadMarkdownFile } from 'main_renderer/filesystem/markdown'
 
 const mocks = vi.hoisted(() => ({
   instances: [] as Array<{ emit: (name: string, ...args: unknown[]) => void }>
@@ -165,5 +166,27 @@ describe('project watcher lifecycle (#2222)', () => {
     })).rejects.toThrow('Move failed')
     expect(send).not.toHaveBeenCalled()
     expect(observeFile).not.toHaveBeenCalled()
+  })
+
+  it('delivers a different disk hash in the first watcher event after a save', async() => {
+    vi.spyOn(fs, 'stat').mockResolvedValue({ mtimeMs: 1 } as never)
+    vi.mocked(loadMarkdownFile).mockResolvedValueOnce({
+      markdown: '# External edit',
+      rawBaseline: { exists: true, rawSha256: 'different', sizeBytes: 15, mtimeMs: 1 }
+    } as never)
+    const send = vi.fn()
+    const win = { id: 1, webContents: { send } }
+    const watcher = new Watcher({
+      getItem: () => [],
+      getAll: () => ({}),
+      getPreferredEol: () => 'lf'
+    } as never)
+    watcher.watch(win as never, '/project/extensionless', 'file')
+    watcher.recordFileSave(win.id, '/project/extensionless', 'last-save')
+    mocks.instances[0].emit('change', '/project/extensionless')
+    await vi.waitFor(() => expect(send).toHaveBeenCalledWith(
+      'mt::update-file',
+      expect.objectContaining({ type: 'change', change: expect.objectContaining({ pathname: '/project/extensionless' }) })
+    ))
   })
 })

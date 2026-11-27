@@ -42,33 +42,33 @@ export class CloseCoordinator {
     await this._requestClose(windowId)
   }
 
-  quit(): Promise<void> {
+  quit(): Promise<boolean> {
     return this._requestClose()
   }
 
-  private async _requestClose(windowId?: string): Promise<void> {
+  private async _requestClose(windowId?: string): Promise<boolean> {
     // A repeated request for the same target is idempotent, but a request for
     // another window must not be dropped: it waits for the running flow and
     // then closes its own window.
     const key = windowId ?? QUIT_KEY
-    if (this._pending.has(key)) return
+    if (this._pending.has(key)) return false
     this._pending.add(key)
     try {
       const run = this._chain.then(() => this._runClose(windowId))
       this._chain = run.then(() => {}, () => {})
-      await run
+      return await run
     } finally {
       this._pending.delete(key)
     }
   }
 
-  private async _runClose(windowId?: string): Promise<void> {
+  private async _runClose(windowId?: string): Promise<boolean> {
     try {
       const initial = this._ports.getSession()
       const windows = structuredClone(
         windowId ? initial.windows.filter((window) => window.id === windowId) : initial.windows
       )
-      if (windowId && windows.length === 0) return
+      if (windowId && windows.length === 0) return false
       const transactionId = createStateId()
       const prepared: PreparedWindow[] = []
       for (const window of windows) {
@@ -77,13 +77,13 @@ export class CloseCoordinator {
         const discarded = new Map<string, number>()
         if (dirty.length > 0) {
           const choice = await this._ports.choose(snapshot, transactionId)
-          if (choice === 'cancel') return
+          if (choice === 'cancel') return false
           if (choice === 'save') {
             const result = await this._ports.save(snapshot)
-            if (result !== 'saved') return
+            if (result !== 'saved') return false
             snapshot = await this._capture(window.id, transactionId)
             dirty = unsavedDocuments(snapshot)
-            if (dirty.length > 0) return
+            if (dirty.length > 0) return false
           } else {
             for (const document of dirty) {
               if (document.content.kind === 'recovery')
@@ -101,17 +101,19 @@ export class CloseCoordinator {
             document.content.kind === 'recovery' &&
             entry.discarded.get(document.id) !== document.content.contentRevision
         )
-        if (unexpected) return
+        if (unexpected) return false
         entry.snapshot = latest
       }
       const committed = await this._ports.commit(
         prepared.map((entry) => entry.snapshot),
         windowId
       )
-      if (!committed) return
+      if (!committed) return false
       for (const entry of prepared) await this._ports.destroy(entry.snapshot.id)
+      return true
     } catch (error) {
       if (!(error instanceof WindowCloseCanceled)) throw error
+      return false
     }
   }
 }

@@ -49,6 +49,7 @@ export interface IHtmlExportOptions {
     extraCSS?: string;
     inlineStyles?: boolean;
     dir?: string;
+    localDirectory?: string;
 }
 
 export class MarkdownToHtml {
@@ -187,7 +188,7 @@ export class MarkdownToHtml {
         return (await this.renderHtmlWithHeadings()).html;
     }
 
-    async renderHtmlWithHeadings(): Promise<IHtmlExport> {
+    async renderHtmlWithHeadings(localDirectory?: string): Promise<IHtmlExport> {
         const options: Partial<IMuyaOptions> = this._muya?.options ?? {};
         const footnote = options.footnote ?? false;
         let html = getHighlightHtml(this.markdown, {
@@ -209,7 +210,7 @@ export class MarkdownToHtml {
         if (footnote)
             html = transformFootnotes(html);
 
-        html = sanitizeExportHtml(html);
+        html = sanitizeExportHtml(html, localDirectory);
 
         const exportContainer = (this._exportContainer
             = document.createElement('div'));
@@ -265,7 +266,7 @@ export class MarkdownToHtml {
 
     /** Return the document and heading metadata from the same render pass. */
     async generateWithHeadings(options: IHtmlExportOptions = {}): Promise<IHtmlExport> {
-        const { html, headings } = await this.renderHtmlWithHeadings();
+        const { html, headings } = await this.renderHtmlWithHeadings(options.localDirectory);
         const { embedExportFonts } = await import('../utils/embedExportFonts');
 
         const { title = '', extraCSS = '', inlineStyles = true, dir } = options;

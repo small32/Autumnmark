@@ -30,35 +30,13 @@ function Write-UpdateLog([string]$message) {
   }
 }
 
-# Close the running application, then poll until it is really gone before
-# replacing any file. The app also calls app.quit() itself; stopping it here
-# makes the swap independent of that timing. Poll every 3 seconds, at most 5
-# times; only start the swap once nothing is still running from this folder.
+# The app owns shutdown and the user's save decisions. Do not modify the install
+# while any process is still running from it.
 function Get-InstalledProcesses {
   $prefix = $Target.TrimEnd('\') + '\'
   $found = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
     Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) })
   return $found
-}
-
-function Stop-RunningApp {
-  # 1. Ask the main process to exit first, then force it if needed.
-  $main = Get-Process -Id $ParentPid -ErrorAction SilentlyContinue
-  if ($main) {
-    try { $main.CloseMainWindow() | Out-Null } catch { }
-    Start-Sleep -Milliseconds 800
-    if (Get-Process -Id $ParentPid -ErrorAction SilentlyContinue) {
-      try { Stop-Process -Id $ParentPid -Force -ErrorAction Stop; Write-UpdateLog "force stopped parent process $ParentPid" } catch { }
-    }
-  }
-  # 2. Stop helper processes (GPU, renderer, crash handler) still running from
-  #    this install folder.
-  foreach ($proc in (Get-InstalledProcesses)) {
-    try {
-      Stop-Process -Id $proc.ProcessId -Force -ErrorAction Stop
-      Write-UpdateLog "stopped install process $($proc.ProcessId) ($($proc.Name))"
-    } catch { }
-  }
 }
 
 function Wait-ForProcessExit {
@@ -89,7 +67,6 @@ function Remove-OldBackups {
 }
 
 Write-UpdateLog "start (source=$Source, target=$Target, pid=$ParentPid)"
-Stop-RunningApp
 if (-not (Wait-ForProcessExit)) {
   Write-UpdateLog "application still running after $processCheckMax checks; aborting the update"
   if ($Cleanup) { try { Remove-Item -LiteralPath $Cleanup -Recurse -Force } catch { } }
@@ -109,11 +86,12 @@ if (-not (Test-Path -LiteralPath $Source)) {
 # an open directory handle no longer blocks the update.
 function Copy-Tree([string]$From, [string]$To) {
   $arguments = @($From, $To, '/E', '/R:2', '/W:1', '/NFL', '/NDL', '/NJH', '/NJS')
-  $copy = Start-Process -FilePath 'robocopy' -ArgumentList $arguments -Wait -PassThru -WindowStyle Hidden
+  & robocopy.exe @arguments | Out-Null
+  $copyCode = $LASTEXITCODE
   # robocopy exit codes 0-7 mean success (files copied / extra files present);
   # 8 and above are actual errors.
-  if ($copy.ExitCode -ge 8) { throw "robocopy exited with $($copy.ExitCode)" }
-  return $copy.ExitCode
+  if ($copyCode -ge 8) { throw "robocopy exited with $copyCode" }
+  return $copyCode
 }
 
 $backup = '{0}.backup-{1}' -f $Target, (Get-Date -Format 'yyyyMMddHHmmss')
@@ -126,6 +104,9 @@ if (Test-Path -LiteralPath $Target) {
     Write-UpdateLog "current build copied to $backup"
   } catch {
     Write-UpdateLog "backup copy failed: $_"
+    if (Test-Path -LiteralPath $Launch) {
+      Start-Process -FilePath $Launch -WorkingDirectory (Split-Path -Parent $Launch)
+    }
     exit 3
   }
 }
@@ -157,18 +138,21 @@ if ($copyCode -lt 0 -or $copyCode -ge 8) {
 
 Remove-OldBackups
 
-# The executable was renamed from autumnmark-editor.exe to AutumnMark+.exe, so
-# the recorded launch path can be gone after the swap. Fall back to the
-# newest executable in the folder instead of leaving the user with nothing.
+# The destination still contains files kept by /E. Choose the executable from
+# the staged release so a legacy binary cannot win over its replacement.
 function Resolve-LaunchPath {
-  if (Test-Path -LiteralPath $Launch) { return $Launch }
-  $candidate = Get-ChildItem -LiteralPath $Target -Filter '*.exe' -File -ErrorAction SilentlyContinue |
+  foreach ($name in @('AutumnMark+.exe', (Split-Path -Leaf $Launch))) {
+    if (Test-Path -LiteralPath (Join-Path $Source $name) -PathType Leaf) {
+      return (Join-Path $Target $name)
+    }
+  }
+  $candidate = Get-ChildItem -LiteralPath $Source -Filter '*.exe' -File -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notlike 'Uninstall*' } |
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
   if ($candidate) {
     Write-UpdateLog "launch path missing; falling back to $($candidate.Name)"
-    return $candidate.FullName
+    return (Join-Path $Target $candidate.Name)
   }
   Write-UpdateLog 'no executable found after the swap'
   return $null

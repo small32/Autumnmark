@@ -288,28 +288,22 @@ class EditorWindow extends BaseWindow {
 
   addToOpenedFiles(filePath: string): void {
     const { _openedFiles, browserWindow } = this
-    if (!_openedFiles.includes(filePath)) _openedFiles.push(filePath)
+    if (_openedFiles.includes(filePath)) return
+    _openedFiles.push(filePath)
     ipcMain.emit('watcher-watch-file', browserWindow, filePath)
   }
 
   changeOpenedFilePath(pathname: string, oldPathname: string): void {
-    const { _openedFiles, browserWindow } = this
-    const index = _openedFiles.findIndex((p) => p === oldPathname)
-    if (index === -1) {
-      _openedFiles.push(pathname)
-    } else {
-      _openedFiles[index] = pathname
-    }
-    ipcMain.emit('watcher-unwatch-file', browserWindow, oldPathname)
-    ipcMain.emit('watcher-watch-file', browserWindow, pathname)
+    if (pathname === oldPathname) return
+    this.removeFromOpenedFiles(oldPathname)
+    this.addToOpenedFiles(pathname)
   }
 
   removeFromOpenedFiles(pathname: string): void {
     const { _openedFiles, browserWindow } = this
-    const index = _openedFiles.findIndex((p) => p === pathname)
-    if (index !== -1) {
-      _openedFiles.splice(index, 1)
-    }
+    const index = _openedFiles.indexOf(pathname)
+    if (index === -1) return
+    _openedFiles.splice(index, 1)
     ipcMain.emit('watcher-unwatch-file', browserWindow, pathname)
   }
 

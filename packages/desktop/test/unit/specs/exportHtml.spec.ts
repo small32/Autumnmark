@@ -9,6 +9,7 @@ vi.hoisted(() => {
       path?: {
         sep: string
         join?: (...parts: string[]) => string
+        dirname?: (path: string) => string
         resolve?: (...parts: string[]) => string
       }
       fileUtils?: unknown
@@ -21,6 +22,7 @@ vi.hoisted(() => {
     sep: '/',
     join: (...parts: string[]) =>
       parts.join('/').replace(/\/\.\//g, '/').replace(/\/{3,}/g, '//'),
+    dirname: (path: string) => path.slice(0, path.lastIndexOf('/')),
     // Some transitive helpers still expect a minimal POSIX-ish `resolve`.
     resolve: (...parts: string[]) =>
       parts.join('/').replace(/\/\.\//g, '/').replace(/\/{2,}/g, '/')
@@ -318,6 +320,21 @@ describe('exportStyledHTML — relative image paths', () => {
 })
 
 describe('exportStyledHTML — relative link paths (#1688)', () => {
+  it('resolves links and images against the exported document after the active tab changes', async() => {
+    const originalDirectory = window.DIRNAME
+    const output = exportStyledHTML(NO_MUYA, '[doc](./notes.md)\n\n![img](./figure.png)', {
+      documentPath: '/source/topic.md'
+    })
+    window.DIRNAME = '/unrelated'
+    try {
+      const html = await output
+      expect(html).toContain('href="file:///source/notes.md"')
+      expect(html).toContain('src="file:///source/figure.png"')
+    } finally {
+      window.DIRNAME = originalDirectory
+    }
+  })
+
   it('rewrites a relative <a href> to an absolute file:// URL', async() => {
     // window.DIRNAME is stubbed to '/docs', so `./my_file.pdf` resolves against it.
     const out = await exportStyledHTML(NO_MUYA, '[doc](./my_file.pdf)', {})

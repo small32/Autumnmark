@@ -1,7 +1,7 @@
 import type { ProjectRootsSnapshot } from './project'
 
 import type { PreferenceUpdateResult, UserPreferences, UserPreferencesPatch } from './preferences'
-import type { DocumentViewState, DiskBaseline, SaveFormatState } from './files'
+import type { DocumentViewState, DiskBaseline, SaveFormatState, SidebarOpenOptions } from './files'
 /** UUID of a native editor window; independent of Electron process IDs. */
 export type WindowStateId = string
 /** UUID shared by windows belonging to one application launch. */
@@ -291,7 +291,7 @@ export interface ManagedDocumentPayload {
   markdown: string
   contentRevision: number
   selected: boolean
-  options?: { preview?: boolean; requestId?: number; anchor?: string }
+  options?: SidebarOpenOptions
   replacedDocumentIds?: DocumentId[]
 }
 

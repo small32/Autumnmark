@@ -1,4 +1,4 @@
-import type { Token, Tokens } from 'marked';
+import type { MarkedExtension, Token, Tokens } from 'marked';
 import { indentationWidth, removeIndent } from '../indentation';
 
 function countNewlines(source: string, start = 0, end = source.length): number {
@@ -49,6 +49,21 @@ export function restoreCodeTabs(tokens: Token[], source: string, original = sour
         offset = start + token.raw.length;
         line += lineCount;
     }
+}
+
+export function preserveCodeTabs(source: string): MarkedExtension {
+    if (!source.includes('\t'))
+        return {};
+
+    const markdown = source.replace(/\r\n?/g, '\n');
+    return {
+        hooks: {
+            processAllTokens(tokens) {
+                restoreCodeTabs(tokens, markdown);
+                return tokens;
+            },
+        },
+    };
 }
 
 function restoreListCode(token: Tokens.List, original: string[], parentColumn: number, startColumn: number): void {

@@ -1,7 +1,7 @@
 import type { UserPreferences } from '@shared/types/preferences'
 import type { LocalTheme } from '@shared/localTheme'
 import { defineStore } from 'pinia'
-import { getCurrentLanguage, setLanguage } from '../i18n'
+import { setLanguage } from '../i18n'
 import {
   renameHiddenSidebarPaths,
   sameHiddenSidebarPaths,
@@ -318,7 +318,7 @@ export const usePreferencesStore = defineStore('preferences', {
       })
 
       const lang = (preference as { language?: string }).language
-      if (lang && lang !== getCurrentLanguage()) {
+      if (typeof lang === 'string' && !skip?.has('language')) {
         return setLanguage(lang)
       }
     },

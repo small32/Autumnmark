@@ -107,7 +107,7 @@ if (!fs.existsSync(electronInstall)) {
   const isComplete = () => {
     if (!fs.existsSync(pathTxt)) return false
     const rel = fs.readFileSync(pathTxt, 'utf8').trim()
-    if (!fs.existsSync(path.join(desktopRoot, 'node_modules', 'electron', rel))) return false
+    if (rel !== platformBinary || !fs.existsSync(path.join(distDir, rel))) return false
     if (plat === 'darwin' || plat === 'mas') {
       return fs.existsSync(path.join(distDir, 'Electron.app', 'Contents', 'Frameworks'))
     }

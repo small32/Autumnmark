@@ -49,4 +49,23 @@ describe('code fence length (#1841)', () => {
         const md = new ExportMarkdown().generate(gen(input));
         expect(openingFence(md)).toBe('```js');
     });
+
+    it('separates a tilde-prefixed info string from the opening fence', () => {
+        const input = '~~~ ~foo\nline\n~~~\n\nAfter\n';
+        const saved = new ExportMarkdown().generate(gen(input));
+
+        expect(saved).toBe(input);
+        expect(gen(saved).map(block => block.name)).toEqual(['code-block', 'paragraph']);
+    });
+
+    it.each(['plantuml', 'math'])('keeps the closing fence outside the %s body', (language) => {
+        const parser = new MarkdownToState({ texMathGfm: true });
+        const input = `~~~~${language}\nBefore\n\`\`\`\nInside\n~~~~\n\nAfter\n`;
+        const parsed = parser.generate(input);
+        const saved = new ExportMarkdown().generate(parsed);
+
+        expect(parsed.map(block => block.name)).toEqual([language === 'math' ? 'math-block' : 'diagram', 'paragraph']);
+        expect(parser.generate(saved)).toEqual(parsed);
+        expect(saved).toContain('\n```\nInside\n````\n');
+    });
 });

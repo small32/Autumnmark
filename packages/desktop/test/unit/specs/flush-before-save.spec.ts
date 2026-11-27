@@ -32,6 +32,8 @@ vi.mock('@/services/notification', () => ({
 }))
 
 import { useEditorStore, setSessionActions, type SessionActions } from '@/store/editor'
+import { usePreferencesStore } from '@/store/preferences'
+import { createDocumentState } from '@/store/help'
 import bus from '@/bus'
 
 // A save command must flush before the session service captures the document (#3803).
@@ -85,6 +87,7 @@ describe('editor store — flush pending edits before saving (#3803)', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     detach?.()
     detach = undefined
     setSessionActions(null)
@@ -95,11 +98,69 @@ describe('editor store — flush pending edits before saving (#3803)', () => {
       save,
       checkpoint: vi.fn(), scheduleCheckpoint: vi.fn(),
       captureView: vi.fn(),
+      cancelViewRestore: vi.fn(),
       create: vi.fn(),
       close: vi.fn(),
       saveAll: vi.fn()
     })
   }
+
+  it('skips a queued automatic save when the preference is disabled before it runs', async() => {
+    vi.useFakeTimers()
+    const store = useEditorStore()
+    const preferences = usePreferencesStore()
+    seedCurrentFile(store)
+    const file = store.currentFile
+    if (!file) throw new Error('Test document is missing')
+    store.tabs = [file]
+    const save = vi.fn(async() => ({ status: 'failed' } as const))
+    installSave(save)
+    preferences.autoSave = true
+    store.HANDLE_AUTO_SAVE(file)
+
+    preferences.autoSave = false
+    await vi.advanceTimersByTimeAsync(preferences.autoSaveDelay)
+
+    expect(save).not.toHaveBeenCalled()
+  })
+
+  it('accepts an encoding and line-ending change with the same decoded Markdown', () => {
+    const store = useEditorStore()
+    const pathname = '/tmp/note.md'
+    store.tabs = [createDocumentState({ pathname, markdown: 'text\n' }, 'tab-1')]
+    const file = store.tabs[0]
+    store.currentFile = file
+    const on = vi.spyOn(window.electron.ipcRenderer, 'on')
+    store.LISTEN_FOR_FILE_CHANGE()
+    const listener = on.mock.calls.find(([channel]) => channel === 'mt::update-file')?.[1] as
+      | ((event: null, payload: object) => void)
+      | undefined
+    if (!listener) throw new Error('File watcher was not registered')
+
+    listener(null, {
+      type: 'change',
+      change: {
+        pathname,
+        data: {
+          markdown: 'text\n',
+          encoding: { encoding: 'utf8', isBom: true },
+          lineEnding: 'crlf',
+          adjustLineEndingOnSave: true,
+          rawBaseline: { exists: true, rawSha256: 'updated' }
+        }
+      }
+    })
+
+    expect(file).toMatchObject({
+      markdown: 'text\n',
+      encoding: { encoding: 'utf8', isBom: true },
+      lineEnding: 'crlf',
+      adjustLineEndingOnSave: true,
+      acceptedDiskSha256: 'updated',
+      isSaved: true,
+      diskConflict: false
+    })
+  })
 
   it.each([false, true])('flushes the latest text before session save (Save As: %s)', (saveAs) => {
     const store = useEditorStore()

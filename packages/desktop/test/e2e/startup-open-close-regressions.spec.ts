@@ -125,6 +125,51 @@ test('Save As writes the exact extensionless dialog path without overwriting its
   await expect(restored.page.getByRole('textbox', { name: 'Document', exact: true })).toContainText(
     'Saved again without extension'
   )
+  writeFileSync(destination, 'External edit without extension')
+  await expect(restored.page.getByRole('textbox', { name: 'Document', exact: true })).toContainText(
+    'External edit without extension'
+  )
+})
+
+test('Save As cannot replace a file already open in another tab', async() => {
+  const source = join(directory, 'first.md')
+  const destination = join(directory, 'second.md')
+  writeFileSync(source, 'Original first document')
+  writeFileSync(destination, 'Original second document')
+  const { app, page } = await launch([source, destination])
+  await expect(page.getByRole('textbox', { name: 'Document', exact: true })).toContainText(
+    'Original first document'
+  )
+  await app.evaluate(({ dialog }, pathname) => {
+    dialog.showSaveDialog = async() => ({ canceled: false, filePath: pathname })
+  }, destination)
+  await sendIpcToRenderer(app, 'mt::editor-ask-file-save-as')
+  await expect(page.getByText('A document is already open at the destination path.', { exact: false }).first())
+    .toBeVisible()
+  expect(readFileSync(destination, 'utf8')).toBe('Original second document')
+  expect(state().session.windows[0].documents.map(document => document.title)).toEqual(['first.md', 'second.md'])
+})
+
+test('rename is blocked when the document is also open in another window', async() => {
+  const source = join(directory, 'original.md')
+  const destination = join(directory, 'renamed.md')
+  writeFileSync(source, 'Shared document')
+  const { app, page } = await launch([source])
+  const opened = app.waitForEvent('window')
+  await app.evaluate(({ app }, pathname) => {
+    const argv = ['marktext', '--new-window', pathname]
+    app.emit('second-instance', {}, argv, '/', { argv })
+  }, source)
+  const secondWindow = await opened
+  await expect(secondWindow.getByRole('textbox', { name: 'Document', exact: true })).toContainText('Shared document')
+  const id = state().session.windows[0].documents[0].id
+  await page.evaluate(({ id, source, destination }) => {
+    window.electron.ipcRenderer.send('mt::rename', { id, pathname: source, newPathname: destination })
+  }, { id, source, destination })
+  await expect(page.getByText('Close this file and any documents inside this folder', { exact: false }))
+    .toBeVisible()
+  expect(readFileSync(source, 'utf8')).toBe('Shared document')
+  expect(existsSync(destination)).toBe(false)
 })
 
 for (const newWindows of [false, true]) {

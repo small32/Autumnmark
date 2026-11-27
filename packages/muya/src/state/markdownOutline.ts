@@ -1,12 +1,16 @@
+import type { Tokens } from 'marked';
 import type { ILexOption } from '../utils/marked/types';
 import type { ITocItem } from './getTOC';
+import type { IHtmlHeading } from './headings';
 import type { TState } from './types';
 import { parseFenceLine } from '../utils';
 import { contentTabHeading, contentTabsMarker, findContentTabGroups } from '../utils/contentTabs';
 import { foldBlockMarker } from '../utils/foldBlocks';
 import { lexSourceBlocks } from '../utils/marked/lexBlock';
 import { DEFAULT_OPTIONS } from '../utils/marked/options';
+import { uniqueHeadingSlug } from '../utils/slug';
 import { headingLabel } from './getTOC';
+import { htmlHeadings } from './headings';
 
 interface ISectionBlock<H> {
     offset: number;
@@ -65,6 +69,47 @@ function isUnclosedFence(raw: string): boolean {
     return !close.test(raw);
 }
 
+interface IMarkdownHeading {
+    token: Tokens.Heading;
+    text: string;
+    profile: 'atx-heading' | 'setext-heading';
+}
+
+function outlineHeadingEntries(tokens: ReturnType<typeof lexSourceBlocks>['tokens']) {
+    const entries: (IHtmlHeading | IMarkdownHeading)[] = [];
+    const visit = (children: typeof tokens) => {
+        const tabBlocks = children.map(token => ({
+            marker: token.type === 'html' ? contentTabsMarker(token.raw) : undefined,
+            heading: token.type === 'heading' ? contentTabHeading(token.raw.replace(/\n+$/, '')) : undefined,
+        }));
+        const panels = new Set(findContentTabGroups(tabBlocks).flatMap(group => group.headings));
+        for (const [index, token] of children.entries()) {
+            if (token.type === 'heading') {
+                const raw = token.raw.replace(/\n+$/, '');
+                const atx = /^ {0,3}#{1,6}(?:[ \t]|$)/.test(raw);
+                const text = atx ? raw : raw.slice(0, raw.lastIndexOf('\n'));
+                entries.push({
+                    token: token as Tokens.Heading,
+                    text: panels.has(index) ? contentTabHeading(text)!.source : text,
+                    profile: atx ? 'atx-heading' : 'setext-heading',
+                });
+            }
+            else if (token.type === 'html') {
+                entries.push(...htmlHeadings(token.raw));
+            }
+            else if (token.type === 'list') {
+                for (const item of (token as Tokens.List).items)
+                    visit(item.tokens);
+            }
+            else if ((token.type === 'blockquote' || token.type === 'multilineBlockquote') && 'tokens' in token && Array.isArray(token.tokens)) {
+                visit(token.tokens);
+            }
+        }
+    };
+    visit(tokens);
+    return entries;
+}
+
 /** Source editor offsets refer to LF-normalized Markdown. Only root headings appear in the sidebar. */
 export function getMarkdownOutline(markdown: string, preferences: ILexOption = {}) {
     const options = { ...DEFAULT_OPTIONS };
@@ -73,32 +118,27 @@ export function getMarkdownOutline(markdown: string, preferences: ILexOption = {
     const { tokens, lexer } = lexSourceBlocks(markdown, options);
     const labels = new Map(Object.entries(lexer.tokens.links).map(([key, { href, title }]) =>
         [key, { href, title: title ?? '' }]));
-    const tabBlocks = tokens.map(token => ({
-        marker: token.type === 'html' ? contentTabsMarker(token.raw) : undefined,
-        heading: token.type === 'heading' ? contentTabHeading(token.raw.trimEnd()) : undefined,
-    }));
-    const panels = new Set(findContentTabGroups(tabBlocks).flatMap(group => group.headings));
-    const seen = new Set<string>();
+    const headings = new Map<Tokens.Heading, ReturnType<typeof headingLabel>>();
+    const entries = outlineHeadingEntries(tokens);
+    const seen = new Set(entries.flatMap(entry => 'id' in entry && entry.id ? [entry.id] : []));
+    for (const entry of entries) {
+        if ('token' in entry)
+            headings.set(entry.token, headingLabel(entry.text, { profile: entry.profile, labels, options }, seen));
+        else if (!entry.id)
+            uniqueHeadingSlug(entry.text, seen);
+    }
     const blocks: ISectionBlock<ITocItem>[] = [];
     let at = 0;
-    for (const [index, token] of tokens.entries()) {
+    for (const token of tokens) {
         const offset = markdown.indexOf(token.raw, at);
         if (offset < 0)
             continue;
         at = offset + token.raw.length;
         const block: ISectionBlock<ITocItem> = { offset, blank: token.type === 'space', html: token.type === 'html' ? token.raw : undefined };
         if (token.type === 'heading') {
-            const raw = token.raw.replace(/\n+$/, '');
-            const atx = /^ {0,3}#{1,6}(?:[ \t]|$)/.test(raw);
-            const text = atx ? raw : raw.slice(0, raw.lastIndexOf('\n'));
-            const label = headingLabel(panels.has(index) ? contentTabHeading(text)!.source : text, {
-                profile: atx ? 'atx-heading' : 'setext-heading',
-                labels,
-                options,
-            }, seen);
             block.heading = {
                 lvl: token.depth,
-                ...label,
+                ...headings.get(token as Tokens.Heading)!,
                 slug: `source-${offset}`,
             };
         }

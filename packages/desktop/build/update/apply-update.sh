@@ -46,10 +46,8 @@ if [ -n "$PID" ]; then
   waited=0
   while kill -0 "$PID" 2>/dev/null; do
     if [ "$waited" -ge "$WAIT_SECONDS" ]; then
-      log "old process $PID still alive after ${WAIT_SECONDS}s; terminating"
-      kill -9 "$PID" 2>/dev/null || true
-      sleep 2
-      break
+      log "old process $PID still alive after ${WAIT_SECONDS}s; aborting the update"
+      exit 5
     fi
     sleep 1
     waited=$((waited + 1))
@@ -74,6 +72,9 @@ if [ -e "$TARGET" ]; then
     log "current build moved to $BACKUP"
   else
     log "cannot move the current build aside (permission denied?)"
+    if [ -e "$LAUNCH" ]; then
+      open "$LAUNCH" || true
+    fi
     exit 3
   fi
 fi

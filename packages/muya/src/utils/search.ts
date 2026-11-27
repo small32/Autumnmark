@@ -1,5 +1,6 @@
 import type { IMatch, ISearchOption } from '../search/types';
 import { graphemeClusters } from '.';
+import { findEmbeddedMedia } from './embeddedImage';
 
 export interface IStringMatch {
     match: string;
@@ -130,6 +131,45 @@ export function matchString(text: string, value: string, options: ISearchOption)
     const regexp = createSearchRegExp(regStr, flag, !!isRegexp);
 
     return regexp ? alignToGraphemeClusters(text, execAll(regexp, text), !!isRegexp) : [];
+}
+
+export function matchVisibleText(text: string, value: string, options: ISearchOption): IStringMatch[] {
+    if (!/data:(?:image|video)\//i.test(text))
+        return matchString(text, value, options);
+
+    const parts: string[] = [];
+    const mediaOffsets: { index: number; removed: number }[] = [];
+    let end = 0;
+    let removed = 0;
+    for (const { src, srcStart } of findEmbeddedMedia(text)) {
+        if (!/^data:/i.test(src))
+            continue;
+        const index = srcStart - removed;
+        removed += src.length - 1;
+        mediaOffsets.push({ index, removed });
+        parts.push(text.slice(end, srcStart), '\uFFFC');
+        end = srcStart + src.length;
+    }
+    if (!mediaOffsets.length)
+        return matchString(text, value, options);
+    parts.push(text.slice(end));
+
+    // Keep an inline object in the search projection so regex anchors still refer to the whole block.
+    let media = 0;
+    const matches = [];
+    for (const match of matchString(parts.join(''), value, options)) {
+        const { index } = match;
+        while (media < mediaOffsets.length && mediaOffsets[media].index < index)
+            media++;
+        const previous = mediaOffsets[media - 1];
+        const next = mediaOffsets[media];
+        if (next && next.index < index + Math.max(1, match.match.length))
+            continue;
+        if (!match.match.length && previous?.index === index - 1)
+            continue;
+        matches.push({ ...match, index: index + (previous?.removed ?? 0) });
+    }
+    return matches;
 }
 
 // Resolve $nn as group nn, or group n plus a literal digit when nn does not exist.

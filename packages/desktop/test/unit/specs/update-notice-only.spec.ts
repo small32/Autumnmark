@@ -1,25 +1,47 @@
 import { EventEmitter } from 'node:events'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { ipcMain, type BrowserWindow } from 'electron'
 import type * as DesktopUpdates from '../../../src/main/updates'
+import type * as InPlaceUpdate from '../../../src/main/inPlaceUpdate'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Portable ZIPs cannot install updates, but they must still learn that a newer
 // release exists.
-const { isUpdatable, netFetch } = vi.hoisted(() => ({
+const { isUpdatable, netFetch, updater } = vi.hoisted(() => ({
   isUpdatable: vi.fn(),
-  netFetch: vi.fn()
+  netFetch: vi.fn(),
+  updater: {
+    createUpdateAttemptDirectory: vi.fn(),
+    resolveReleaseAssets: vi.fn(),
+    downloadFile: vi.fn(),
+    verifyChecksum: vi.fn(),
+    extractArchive: vi.fn(),
+    resolveInstallTarget: vi.fn(),
+    resolveApplyScript: vi.fn(),
+    launchApplyScript: vi.fn()
+  }
+}))
+vi.mock('../../../src/main/inPlaceUpdate', async(importOriginal) => ({
+  ...await importOriginal<typeof InPlaceUpdate>(),
+  ...updater
 }))
 vi.mock('electron', async() => {
   const { EventEmitter } = await import('node:events')
   return {
-    app: Object.assign(new EventEmitter(), { getVersion: () => '0.1.3' }),
+    app: Object.assign(new EventEmitter(), { getVersion: () => '0.1.3', getPath: () => tmpdir() }),
     ipcMain: new EventEmitter(),
     BrowserWindow: {},
     net: { fetch: netFetch }
   }
 })
-vi.mock('electron-log', () => ({ default: { warn: vi.fn() } }))
-vi.mock('../../../src/main/utils/isUpdatable', () => ({ isUpdatable, canCheckForUpdates: () => true }))
+vi.mock('electron-log', () => ({ default: { warn: vi.fn(), info: vi.fn() } }))
+vi.mock('../../../src/main/utils/isUpdatable', () => ({
+  isUpdatable,
+  canCheckForUpdates: () => true,
+  canInstallInPlace: () => true
+}))
 
 const send = vi.fn()
 const sender = Object.assign(new EventEmitter(), { send })
@@ -149,5 +171,48 @@ describe('release-only update checks', () => {
       // A manual check reports the version without an unsolicited notice.
       expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version: '0.2.0' })
     })
+  })
+
+  it('starts the staged installer only after clean shutdown is accepted', async() => {
+    const directory = await mkdtemp(join(tmpdir(), 'autumnmark-update-cancel-'))
+    const version = '0.2.0'
+    const ready = { phase: 'ready', version }
+    try {
+      const script = join(directory, 'apply-update.ps1')
+      await writeFile(script, '')
+      updater.createUpdateAttemptDirectory.mockResolvedValue(directory)
+      updater.resolveReleaseAssets.mockReturnValue([
+        { name: 'archive.zip', url: 'archive' }, { name: 'SHA256SUMS.txt', url: 'checksums' }
+      ])
+      updater.downloadFile.mockImplementation(async(url, destination) => {
+        await writeFile(destination, url === 'checksums' ? 'a'.repeat(64) + '  archive.zip\n' : '')
+      })
+      updater.resolveInstallTarget.mockReturnValue({ mode: 'dir', target: directory, launch: script })
+      updater.resolveApplyScript.mockResolvedValue(script)
+      updater.launchApplyScript.mockRejectedValueOnce(new Error('Could not launch'))
+      updater.launchApplyScript.mockResolvedValueOnce({ elevated: false })
+      const quit = vi.fn(async(install: () => Promise<void>) => {
+        await install()
+        return true
+      }).mockResolvedValueOnce(false)
+      netFetch.mockImplementation(async() => release('v' + version))
+      updates.startAutomaticUpdateChecks(() => win, null, quit)
+      await vi.waitFor(() => expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'available', version }, true))
+      ipcMain.emit('mt::update-download', { sender }, version)
+      await vi.waitFor(() => expect(send).toHaveBeenLastCalledWith('mt::update-state', ready, true))
+
+      ipcMain.emit('mt::update-install', { sender }, version)
+      await vi.waitFor(() => expect(send).toHaveBeenLastCalledWith('mt::update-state', ready))
+      expect(quit).toHaveBeenCalledOnce()
+      expect(updater.launchApplyScript).not.toHaveBeenCalled()
+
+      ipcMain.emit('mt::update-install', { sender }, version)
+      await vi.waitFor(() => expect(send).toHaveBeenLastCalledWith('mt::update-state', { phase: 'error', stage: 'install', version }))
+      ipcMain.emit('mt::update-install', { sender }, version)
+      await vi.waitFor(() => expect(updater.launchApplyScript).toHaveBeenCalledTimes(2))
+      expect(quit).toHaveBeenCalledTimes(3)
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
   })
 })

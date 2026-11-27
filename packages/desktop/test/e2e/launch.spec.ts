@@ -17,8 +17,7 @@ test.describe('Check Launch AutumnMark+', () => {
   })
 
   test('Empty AutumnMark+', async() => {
-    const title = process.platform === 'darwin' ? 'Untitled-1' : 'Untitled-1 - AutumnMark+'
-    await expect(page).toHaveTitle(title)
+    await expect(page).toHaveTitle('Untitled-1 - AutumnMark+')
   })
 
   test('uses the new native application name', async() => {

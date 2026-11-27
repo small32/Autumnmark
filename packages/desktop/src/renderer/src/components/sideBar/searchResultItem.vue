@@ -65,7 +65,6 @@ import { ref, computed } from 'vue'
 import { useProjectStore } from '@/store/project'
 import { useEditorStore } from '@/store/editor'
 import { storeToRefs } from 'pinia'
-import bus from '../../bus'
 import { useI18n } from 'vue-i18n'
 import { ArrowRight } from '@element-plus/icons-vue'
 import type { SearchResult, SearchMatch } from './types'
@@ -83,7 +82,7 @@ const showSearchMatches = ref(props.searchResult.matches.length <= 20)
 const allMatchesShown = ref(props.searchResult.matches.length <= 10)
 const shownMatches = ref(10)
 
-const { tabs, currentFile } = storeToRefs(editorStore)
+const { tabs } = storeToRefs(editorStore)
 
 const getMatches = computed<SearchMatch[]>(() => {
   if (props.searchResult.matches.length === 0 || allMatchesShown.value) {
@@ -132,7 +131,6 @@ const handleSearchResultClick = (searchMatch: SearchMatch): void => {
     window.fileUtils.isSamePathSync(file.pathname, filePath)
   )
   const cursor = {
-    isCollapsed: range[0][0] !== range[1][0],
     anchor: {
       line: range[0][0],
       ch: range[0][1]
@@ -144,19 +142,7 @@ const handleSearchResultClick = (searchMatch: SearchMatch): void => {
   }
 
   if (openedTab) {
-    openedTab.cursor = cursor
-    if (currentFile.value !== openedTab) {
-      editorStore.UPDATE_CURRENT_FILE(openedTab)
-    } else {
-      const { id, markdown, history } = currentFile.value
-      bus.emit('file-changed', {
-        id,
-        markdown,
-        cursor: currentFile.value.cursor,
-        renderCursor: true,
-        history
-      })
-    }
+    void editorStore.REVEAL_SEARCH_RESULT(openedTab, cursor)
   } else {
     window.electron.ipcRenderer.send('mt::open-file', filePath, {
       cursor

@@ -15,7 +15,7 @@ export interface PasteOptions {
 }
 
 export const paste = async({ src, dest, type }: PasteOptions): Promise<void> => {
-  return type === 'cut' ? window.fileUtils.move(src, dest) : window.fileUtils.copy(src, dest)
+  return type === 'cut' ? window.fileUtils.move(src, dest) : window.fileUtils.copy(src, dest, false)
 }
 
 export const rename = async(src: string, dest: string): Promise<void> => {

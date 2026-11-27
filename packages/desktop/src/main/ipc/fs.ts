@@ -1,12 +1,13 @@
 import fs from 'fs-extra'
-import { type Stats } from 'fs'
+import { constants, type Stats } from 'fs'
+import path from 'node:path'
 import { ipcMain, type WebContents } from 'electron'
 import {
   isFile as commonIsFile,
   isDirectory as commonIsDirectory,
   isExecutableFile
 } from 'common/filesystem'
-import { hasMarkdownExtension } from 'common/filesystem/paths'
+import { hasMarkdownExtension, isChildOfDirectory } from 'common/filesystem/paths'
 import type { SerializedStat } from '@shared/types/files'
 import type { SidebarMoveRequest, SidebarMoveResult } from '@shared/types/project'
 import { copyFileWithContentHash } from '../filesystem'
@@ -38,6 +39,30 @@ const toBuffer = (data: unknown): unknown => {
     return Buffer.from((data as { data: number[] }).data)
   }
   return data
+}
+
+async function copyNewItem(src: string, dest: string): Promise<void> {
+  const source = await fs.lstat(src)
+  if (source.isDirectory()) {
+    const [sourcePath, destinationParent] = await Promise.all([
+      fs.realpath(src), fs.realpath(path.dirname(dest))
+    ])
+    if (!path.relative(sourcePath, destinationParent) || isChildOfDirectory(sourcePath, destinationParent))
+      throw new Error('Cannot copy a folder into itself.')
+
+    // Claim the directory exclusively before writing children; a recursive copy can merge it.
+    await fs.mkdir(dest)
+    for (const name of await fs.readdir(src)) {
+      await copyNewItem(path.join(src, name), path.join(dest, name))
+    }
+    await fs.chmod(dest, source.mode)
+  } else if (source.isSymbolicLink()) {
+    await fs.symlink(await fs.readlink(src), dest)
+  } else if (source.isFile()) {
+    await fs.copyFile(src, dest, constants.COPYFILE_EXCL)
+  } else {
+    throw new Error(`Cannot copy "${src}".`)
+  }
 }
 
 export interface FileOperations {
@@ -85,7 +110,20 @@ export const registerFsHandlers = (operations?: FileOperations): void => {
   ipcMain.handle('mt::fs::is-file', (_e, p: string) => commonIsFile(p))
   ipcMain.handle('mt::fs::is-directory', (_e, p: string) => commonIsDirectory(p))
   ipcMain.handle('mt::fs::empty-dir', (_e, p: string) => fs.emptyDir(p))
-  ipcMain.handle('mt::fs::copy', (_e, src: string, dest: string) => fs.copy(src, dest))
+  ipcMain.handle('mt::fs::copy', async(_e, src: string, dest: string, overwrite = true) => {
+    if (overwrite) {
+      await fs.copy(src, dest)
+      return
+    }
+    try {
+      await copyNewItem(src, dest)
+    } catch (error) {
+      const fsError = error as NodeJS.ErrnoException
+      if (fsError.code === 'EEXIST')
+        throw new Error(`An item already exists at "${fsError.path ?? dest}".`, { cause: error })
+      throw error
+    }
+  })
   ipcMain.handle('mt::fs::copy-with-content-hash', (_e, src: string, outputDir: string) =>
     copyFileWithContentHash(src, outputDir)
   )

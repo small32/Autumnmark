@@ -449,7 +449,8 @@ export default class ExportMarkdown {
             const fence = fenceChar.repeat(
                 this._codeFenceLength(text, meta.fenceLength, fenceChar),
             );
-            result.push(`${indent}${lang ? `${fence}${lang}\n` : `${fence}\n`}`);
+            const separator = lang.startsWith(fenceChar) ? ' ' : '';
+            result.push(`${indent}${fence}${separator}${lang}\n`);
             textList.forEach((text) => {
                 result.push(`${indent}${text}\n`);
             });
@@ -498,12 +499,13 @@ export default class ExportMarkdown {
             meta: { mathStyle },
         } = state;
         const lines = text.split('\n');
-        result.push(indent + (mathStyle === '' ? '$$\n' : '```math\n'));
+        const fence = mathStyle === '' ? '$$' : '`'.repeat(this._codeFenceLength(text, undefined, '`'));
+        result.push(`${indent}${fence}${mathStyle === '' ? '' : 'math'}\n`);
 
         for (const line of lines)
             result.push(`${indent}${line}\n`);
 
-        result.push(indent + (mathStyle === '' ? '$$\n' : '```\n'));
+        result.push(`${indent}${fence}\n`);
 
         return result.join('');
     }
@@ -515,12 +517,13 @@ export default class ExportMarkdown {
             meta: { type },
         } = state;
         const lines = text.split('\n');
-        result.push(`${indent}\`\`\`${type}\n`);
+        const fence = '`'.repeat(this._codeFenceLength(text, undefined, '`'));
+        result.push(`${indent}${fence}${type}\n`);
 
         for (const line of lines)
             result.push(`${indent}${line}\n`);
 
-        result.push(`${indent}\`\`\`\n`);
+        result.push(`${indent}${fence}\n`);
 
         return result.join('');
     }

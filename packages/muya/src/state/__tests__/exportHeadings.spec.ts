@@ -2,7 +2,9 @@
 
 import { describe, expect, it } from 'vitest';
 import { EXPORT_DOMPURIFY_CONFIG } from '../../config';
+import { Muya } from '../../muya';
 import { sanitize } from '../../utils';
+import { getMarkdownOutline } from '../markdownOutline';
 import { MarkdownToHtml } from '../markdownToHtml';
 
 describe('export heading metadata', () => {
@@ -61,5 +63,25 @@ describe('export heading metadata', () => {
         expect(headings.map(heading => heading.slug)).toEqual(['new']);
         expect(html).toContain('<h2 id="new">New</h2>');
         expect(html).not.toContain('<h2 id="old">');
+    });
+
+    it('gives outline anchors the same IDs as HTML after nested and explicit headings', async () => {
+        const markdown = '> ## Duplicate\n\n- ## Duplicate\n\n## Duplicate\n\n<h2 id="duplicate">Reserved</h2>\n';
+        const host = document.body.appendChild(document.createElement('div'));
+        const muya = new Muya(host, { markdown });
+        try {
+            muya.init({ focus: false });
+            const live = muya.getTOC();
+            const source = getMarkdownOutline(markdown).headings;
+            const { headings } = await new MarkdownToHtml(markdown, muya).renderHtmlWithHeadings();
+
+            expect(headings.map(heading => heading.slug)).toEqual(['duplicate-1', 'duplicate-2', 'duplicate-3', 'duplicate']);
+            expect(live.map(heading => heading.anchor)).toEqual(['duplicate-3']);
+            expect(source.map(heading => heading.anchor)).toEqual(['duplicate-3']);
+        }
+        finally {
+            muya.destroy();
+            muya.domNode.remove();
+        }
     });
 });

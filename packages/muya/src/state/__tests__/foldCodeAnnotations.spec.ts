@@ -154,4 +154,12 @@ describe('code fence annotations', () => {
         expect(render('```text\nordinary\n```').querySelector('figure')).toBeNull();
         expect(render('```mermaid title="Diagram" {1}\nflowchart TD\n```').querySelector('code.language-mermaid')).not.toBeNull();
     });
+
+    it('preserves tabs in code nested inside a list in rendered HTML and rich clipboard output', () => {
+        const markdown = '- Example\n  ```makefile title="Makefile" {2}\n  target:\n  \t@echo ok\n  ```';
+        for (const renderHtml of [renderToStaticHTML, getClipBoardHtml]) {
+            const code = render(markdown, renderHtml).querySelector('pre > code');
+            expect(code?.textContent).toBe('target:\n\t@echo ok\n');
+        }
+    });
 });
