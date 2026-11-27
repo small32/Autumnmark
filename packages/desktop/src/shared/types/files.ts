@@ -100,6 +100,7 @@ export interface FileChangeDetail {
 export interface TabOptions {
   readOnly?: boolean
   selected?: boolean
+  cursor?: SourceSelection
   /** Link fragment to reveal once the tab is active, e.g. `setup` from `other.md#setup`. */
   anchor?: string
   [key: string]: unknown

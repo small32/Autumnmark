@@ -1,4 +1,4 @@
-// @vitest-environment happy-dom
+// @vitest-environment jsdom
 
 import { describe, expect, it } from 'vitest';
 import { MarkdownToHtml } from '../markdownToHtml';
@@ -50,5 +50,14 @@ describe('footnote post-processing in MarkdownToHtml export', () => {
         expect(out).toMatch(/<li id="fn-2">[\s\S]*Second note\./);
         expect(out).toMatch(/<a href="#fnref-1" class="footnote-backref">↩<\/a>/);
         expect(out).not.toContain('footnote-block');
+    });
+
+    it('keeps blocks after a nested div in the footnote', async () => {
+        const out = await renderExport('See[^n].\n\n[^n]: <div>One</div>\n\n    Two\n\nAfter\n');
+        const doc = new DOMParser().parseFromString(out, 'text/html');
+
+        expect(doc.querySelector('#fn-1')?.textContent).toContain('One');
+        expect(doc.querySelector('#fn-1 p')?.textContent).toContain('Two');
+        expect([...doc.querySelectorAll('article > p')].map(element => element.textContent)).toEqual(['See1.', 'After']);
     });
 });

@@ -28,6 +28,7 @@ let startupCheckDone = false
 let dismissedNoticeGeneration = 0
 let getActiveWindow: (() => BrowserWindow | null) | undefined
 let readPreferences: (() => PreferenceReader | null) | null = null
+let quitForUpdate: ((launchInstaller: () => Promise<void>) => Promise<boolean>) | undefined
 let downloadAbort: AbortController | null = null
 interface StagedUpdate {
   version: string
@@ -188,6 +189,9 @@ const downloadRelease = async(version: string): Promise<void> => {
 
 const applyUpdate = async(version: string): Promise<void> => {
   if (!staged || staged.version !== version) throw new Error('The update archive is not staged')
+  const quit = quitForUpdate
+  if (!quit) throw new Error('The application cannot quit for an update')
+  publish({ phase: 'installing', version })
   const install = resolveInstallTarget()
   const bundle = install.mode === 'app' ? await stagedBundlePath(staged.staging) : null
   const scriptSource = await resolveApplyScript(staged.staging, bundle)
@@ -208,13 +212,13 @@ const applyUpdate = async(version: string): Promise<void> => {
   const logPath = path.join(app.getPath('logs'), 'update.log')
   const mode: ApplyMode = install.mode
 
-  publish({ phase: 'installing', version })
-  const { elevated } = await launchApplyScript({
-    script, source, target: install.target, launch: install.launch, mode, cleanup, logPath
+  const closing = await quit(async() => {
+    const { elevated } = await launchApplyScript({
+      script, source, target: install.target, launch: install.launch, mode, cleanup, logPath
+    })
+    log.info(`Update ${version} handed to ${path.basename(script)} (elevated: ${elevated})`)
   })
-  log.info(`Update ${version} handed to ${path.basename(script)} (elevated: ${elevated})`)
-  // Let the renderer paint the installing state before the process goes away.
-  setTimeout(() => app.quit(), 800)
+  if (!closing) publish({ phase: 'ready', version })
 }
 
 const runCheck = async(automatic: boolean, getWindow: () => BrowserWindow | null): Promise<void> => {
@@ -279,7 +283,8 @@ ipcMain.on('mt::update-cancel', () => {
 
 ipcMain.on('mt::update-install', (_event, version: string) => {
   if (!onlineUpdatesEnabled()) return
-  if (state.phase !== 'ready' || state.version !== version) return
+  if (state.phase !== 'ready' && (state.phase !== 'error' || state.stage !== 'install')) return
+  if (state.version !== version) return
   void applyUpdate(version).catch(error => reportFailure('install', version, error))
 })
 
@@ -318,10 +323,12 @@ ipcMain.on('mt::check-for-update', ({ sender }) => {
 
 export const startAutomaticUpdateChecks = (
   getWindow: () => BrowserWindow | null,
-  getPreferences?: (() => PreferenceReader | null) | null
+  getPreferences?: (() => PreferenceReader | null) | null,
+  requestQuit?: (launchInstaller: () => Promise<void>) => Promise<boolean>
 ): void => {
   getActiveWindow = getWindow
   readPreferences = getPreferences ?? null
+  quitForUpdate = requestQuit
   // Only one silent check on startup; further checks are explicitly requested
   // from settings or through the update menu.
   if (startupCheckDone || !canCheckForUpdates()) return

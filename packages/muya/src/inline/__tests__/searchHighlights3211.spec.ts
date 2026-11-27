@@ -15,6 +15,23 @@ function allTokens(tokens: Token[]): Token[] {
 }
 
 describe('search highlights in large paragraphs (#3211)', () => {
+    it('replaces text before and after an embedded image without editing its URL', () => {
+        const image = '![pixel](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jHKkAAAAASUVORK5CYII=)';
+        const host = document.body.appendChild(document.createElement('div'));
+        const muya = new Muya(host, { markdown: `AAA ${image} AAA` });
+        try {
+            muya.init({ focus: false });
+            expect(muya.search('AAA').matches).toHaveLength(2);
+            muya.replace('BBB', { isSingle: false, isRegexp: false });
+            muya.flush();
+            expect(muya.getMarkdown()).toBe(`BBB ${image} BBB\n`);
+        }
+        finally {
+            muya.destroy();
+            muya.domNode.remove();
+        }
+    });
+
     // Shared CI runners need headroom for the deliberately large DOM fixture;
     // the separate range-access budget detects performance regressions without timing noise.
     it('renders, navigates, replaces and clears matches in a 1500-line document', async () => {

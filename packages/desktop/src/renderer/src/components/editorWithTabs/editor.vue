@@ -1384,18 +1384,22 @@ const handleExport = async (options: unknown) => {
   }
 
   const muya = editor.value
-  if (!muya) return
+  const file = currentFile.value
+  if (!muya || !file) return
 
   editorStore.flushActiveEditor()
-  const extraCss = await getCssForOptions(opts as unknown as PdfCssOptions)
+  const document = { filename: file.filename, pathname: file.pathname, title: editorStore.documentTitle }
+  const dir = props.textDirection
   const tocOptions = {
     tocTitle: opts.tocTitle,
     tocIncludeTopHeading: opts.tocIncludeTopHeading
   }
   // The hidden WYSIWYG engine keeps its pre-source-mode document until the handoff.
-  const text = sourceCode.value ? (editorStore.currentFile?.markdown ?? '') : muya.getMarkdown()
-  const videos = currentFile.value && documentVideos(currentFile.value.id)
-  const markdown = videos ? (type === 'styledHtml' ? videos.expand(text) : videos.externalText(text)) : text
+  const text = sourceCode.value ? file.markdown : muya.getMarkdown()
+  const videos = documentVideos(file.id)
+  const markdown = type === 'styledHtml' ? videos.expand(text) : videos.externalText(text)
+  const extraCss = await getCssForOptions(opts as unknown as PdfCssOptions)
+  const exportOptions = { documentPath: document.pathname, extraCss, tocOptions, dir }
   const header = (opts.header ?? null) as HeaderFooterPart | null
   const footer = (opts.footer ?? null) as HeaderFooterPart | null
 
@@ -1403,13 +1407,11 @@ const handleExport = async (options: unknown) => {
     case 'styledHtml': {
       try {
         const content = await exportStyledHTML(muya, markdown, {
+          ...exportOptions,
           title: htmlTitle || '',
-          printOptimization: false,
-          extraCss,
-          tocOptions,
-          dir: props.textDirection
+          printOptimization: false
         })
-        editorStore.EXPORT({ type, content })
+        editorStore.EXPORT({ type, content }, document)
       } catch (err) {
         log.error('Failed to export document:', err)
         notice.notify({
@@ -1433,17 +1435,15 @@ const handleExport = async (options: unknown) => {
         }
 
         const html = await exportStyledHTML(muya, markdown, {
+          ...exportOptions,
           title: '',
           printOptimization: true,
-          extraCss,
-          tocOptions,
           header,
           footer,
-          headerFooterStyled: headerFooterStyled as boolean | undefined,
-          dir: props.textDirection
+          headerFooterStyled: headerFooterStyled as boolean | undefined
         })
-        await printer!.renderMarkdown(html, props.textDirection)
-        editorStore.EXPORT({ type, pageOptions })
+        await printer!.renderMarkdown(html, dir)
+        editorStore.EXPORT({ type, pageOptions }, document)
       } catch (err) {
         log.error('Failed to export document:', err)
         notice.notify({
@@ -1459,16 +1459,14 @@ const handleExport = async (options: unknown) => {
       // NOTE: Print doesn't support page size or orientation.
       try {
         const html = await exportStyledHTML(muya, markdown, {
+          ...exportOptions,
           title: '',
           printOptimization: true,
-          extraCss,
-          tocOptions,
           header,
           footer,
-          headerFooterStyled: headerFooterStyled as boolean | undefined,
-          dir: props.textDirection
+          headerFooterStyled: headerFooterStyled as boolean | undefined
         })
-        await printer!.renderMarkdown(html, props.textDirection)
+        await printer!.renderMarkdown(html, dir)
         editorStore.PRINT_RESPONSE()
       } catch (err) {
         log.error('Failed to export document:', err)

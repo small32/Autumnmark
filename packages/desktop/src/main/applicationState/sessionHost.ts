@@ -97,6 +97,7 @@ export class SessionHost {
   private _startQueue: Promise<void> = Promise.resolve()
   private readonly _windowOperations = new Map<string, Promise<unknown>>()
   private readonly _checkpointQueues = new Map<string, Promise<WindowSnapshot>>()
+  private readonly _saveDestinations = new Set<string>()
   private readonly _previewRequests = new Map<string, number>()
   private readonly _previews = new Map<string, string>()
   private readonly _untitledNumbers = new Map<string, number>()
@@ -145,21 +146,30 @@ export class SessionHost {
     app.on('before-quit', (event) => {
       if (this._quitAllowed || !this._service) return
       event.preventDefault()
-      if (this._quitting) return
-      this._quitting = true
-      void this._coordinator
-        .quit()
-        .then(() => {
-          if (this._owner().getState().session.lifecycle === SessionLifecycle.CLOSED && this._editors.size === 0) {
-            this._quitAllowed = true
-            app.quit()
-          }
-        })
-        .catch((error) => this.report(error))
-        .finally(() => {
-          this._quitting = false
-        })
+      void this.quit().catch(error => this.report(error))
     })
+  }
+
+  get quitting(): boolean {
+    return this._quitting || this._quitAllowed
+  }
+
+  async quit(beforeExit?: () => Promise<void>): Promise<boolean> {
+    if (this.quitting) return false
+    this._quitting = true
+    try {
+      if (this._service) {
+        const closed = await this._coordinator.quit()
+        if (!closed || this._owner().getState().session.lifecycle !== SessionLifecycle.CLOSED ||
+            this._editors.size > 0) return false
+      }
+      if (beforeExit) await beforeExit()
+      this._quitAllowed = true
+      app.quit()
+      return true
+    } finally {
+      this._quitting = false
+    }
   }
 
   private _owner(): CheckpointService {
@@ -271,7 +281,7 @@ export class SessionHost {
     forceNewWindow: boolean
   ): Promise<void> {
     // macOS can activate during launch or after the last window closed with the app still running.
-    if (this._service && this._editors.size > 0) return
+    if (this.quitting || (this._service && this._editors.size > 0)) return
     const previous = this._service?.getState() ?? await this._loaded
     const preferences = this._accessor.preferences.getAll()
     this._startupWarning = undefined
@@ -338,6 +348,7 @@ export class SessionHost {
       }
     }
     if (!prepared.length) prepared.push(await this.prepareNewWindow(null, [], []))
+    if (this.quitting) return
     const runtime: ApplicationState = {
       ...previous,
       session: {
@@ -1031,6 +1042,8 @@ export class SessionHost {
       ?.documents.find((document) => document.id === documentId)
     if (!document || (document.readOnly && !allowReadOnly)) return { status: 'failed' }
     let previousPath = ''
+    let reservedDestination: string | undefined
+    let savedDiskSha256: string | undefined
     let savedMarkdown = ''
     let savedFormat = document.saveFormat
     const sender = this._native(windowId).webContents
@@ -1052,6 +1065,11 @@ export class SessionHost {
           })
           if (choice.canceled || !choice.filePath) return null
           destination = choice.filePath
+          const target = createFileLocation(destination).canonicalPath
+          if ([...this._saveDestinations].some(pathname => path.relative(pathname, target) === ''))
+            throw new Error(t('sideBar.move.destinationOpen'))
+          this._saveDestinations.add(target)
+          reservedDestination = target
         } else {
           const current = await this._diskBaseline(destination)
           const baseline = capture.baseline
@@ -1073,6 +1091,10 @@ export class SessionHost {
           }
         }
         const written = await documentWrites.write(sender.id, documentId, epoch, async() => {
+          if (reservedDestination) {
+            const alreadyOpen = await this.isDocumentOpen(destination, documentId)
+            if (alreadyOpen) throw new Error(t('sideBar.move.destinationOpen'))
+          }
           await writeMarkdownFile(destination, capture.markdown, capture.snapshot.saveFormat)
           return true
         })
@@ -1080,6 +1102,7 @@ export class SessionHost {
         savedMarkdown = capture.markdown
         savedFormat = capture.snapshot.saveFormat
         const baseline = await this._diskBaseline(destination)
+        if (baseline.exists) savedDiskSha256 = baseline.rawSha256
         const snapshot: DocumentSnapshot = {
           ...capture.snapshot,
           title: path.basename(destination),
@@ -1104,11 +1127,13 @@ export class SessionHost {
       )
       if (saved.resource.kind === 'file') {
         const editor = this._editors.get(windowId)
-        if (previousPath && previousPath !== saved.resource.location.path)
+        if (previousPath && previousPath !== saved.resource.location.path &&
+            !this._hasOpenPath(windowId, previousPath))
           editor?.changeOpenedFilePath(saved.resource.location.path, previousPath)
         else editor?.addToOpenedFiles(saved.resource.location.path)
         this._accessor.menu.addRecentlyUsedDocument(saved.resource.location.path)
-        ipcMain.emit('window-file-saved', this._native(windowId).id, saved.resource.location.path)
+        if (savedDiskSha256)
+          ipcMain.emit('window-file-saved', this._native(windowId).id, saved.resource.location.path, savedDiskSha256)
       }
       const response: Extract<ManagedSaveResult, { status: 'saved' }> = {
         status: 'saved',
@@ -1128,6 +1153,7 @@ export class SessionHost {
       this.report(error, windowId)
       return { status: 'failed' }
     } finally {
+      if (reservedDestination) this._saveDestinations.delete(reservedDestination)
       if (allowReadOnly && document.readOnly) {
         const current = this._owner()
           .getWindow(windowId)
@@ -1137,20 +1163,49 @@ export class SessionHost {
     }
   }
 
-  async isDocumentOpen(pathname: string): Promise<boolean> {
+  private _hasOpenPath(windowId: string, pathname: string): boolean {
+    return this._owner().getWindow(windowId)?.documents.some(document =>
+      document.resource.kind === 'file' && document.resource.location.path === pathname
+    ) ?? false
+  }
+
+  async isDocumentOpen(pathname: string, exceptDocumentId?: string): Promise<boolean> {
     const location = createFileLocation(pathname)
-    const windows = this._owner().getState().session.windows
-    if (windows.some(win => !!findFileTab(win, location))) return true
-    const info = await stat(pathname, { bigint: true })
+    const openDocuments = () => this._owner().getState().session.windows
+      .flatMap(window => window.documents)
+      .filter(document => document.id !== exceptDocumentId)
+    if (openDocuments().some(({ resource }) =>
+      resource.kind === 'file' && path.relative(resource.location.canonicalPath, location.canonicalPath) === ''
+    )) return true
+    const info = await stat(pathname, { bigint: true }).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== 'ENOENT') throw error
+    })
+    if (!info) return false
     if (!info.ino || info.nlink < 2n) return false
-    for (const win of windows) {
-      for (const { resource } of win.documents) {
-        if (resource.kind !== 'file') continue
-        const other = await stat(resource.location.path, { bigint: true }).catch(() => null)
-        if (other && info.dev === other.dev && info.ino === other.ino) return true
-      }
+    for (const { resource } of openDocuments()) {
+      if (resource.kind !== 'file') continue
+      const other = await stat(resource.location.path, { bigint: true }).catch(() => null)
+      if (other && info.dev === other.dev && info.ino === other.ino) return true
     }
     return false
+  }
+
+  private _assertMoveAvailable(windowId: string, source: string, destination: string): void {
+    for (const win of this._owner().getState().session.windows) {
+      for (const { resource } of win.documents) {
+        if (resource.kind !== 'file') continue
+        const pathname = resource.location.canonicalPath
+        if (containsPath(source, pathname)) {
+          if (win.id !== windowId) throw new Error(t('sideBar.move.openElsewhere'))
+        } else if (containsPath(destination, pathname)) {
+          throw new Error(t('sideBar.move.destinationOpen'))
+        }
+      }
+    }
+    for (const pathname of this._saveDestinations) {
+      if (containsPath(source, pathname) || containsPath(destination, pathname))
+        throw new Error(t('sideBar.move.destinationOpen'))
+    }
   }
 
   moveSidebarItem(windowId: string, request: SidebarMoveRequest): Promise<SidebarMoveResult> {
@@ -1163,16 +1218,7 @@ export class SessionHost {
           if (root.status !== 'ready' || !this._editors.get(windowId)?.projectRoots.roots.includes(root)) {
             throw new Error(t('sideBar.move.invalidTarget'))
           }
-          for (const win of this._owner().getState().session.windows) {
-            for (const document of win.documents) {
-              if (document.resource.kind !== 'file') continue
-              const pathname = document.resource.location.canonicalPath
-              if (win.id !== windowId && containsPath(source, pathname)) {
-                throw new Error(t('sideBar.move.openElsewhere'))
-              }
-              if (containsPath(destination, pathname)) throw new Error(t('sideBar.move.destinationOpen'))
-            }
-          }
+          this._assertMoveAvailable(windowId, source, destination)
         },
         move: (_source, destination, write) => this._moveResourceNow(windowId, {
           source: createFileLocation(request.source),
@@ -1200,6 +1246,10 @@ export class SessionHost {
     relocation: ResourceMove,
     move: () => Promise<void>
   ): Promise<void> {
+    const checkAvailable = () => this._assertMoveAvailable(
+      windowId, relocation.source.canonicalPath, relocation.destination.canonicalPath
+    )
+    checkAvailable()
     const affected =
       this._owner()
         .getWindow(windowId)
@@ -1227,6 +1277,7 @@ export class SessionHost {
           ? [document.resource.location.path, document.resource.location.canonicalPath]
           : [])
         await this._accessor.windowManager.withIgnoredFileDeletions(this._native(windowId), oldPaths, async() => {
+          checkAvailable()
           await move()
           await this._owner().settlePendingSaves(affected.map(({ document }) => document.id))
           for (const { document, destination } of affected) {
@@ -1267,6 +1318,7 @@ export class SessionHost {
     const source = document.resource.location.path
     const target = path.resolve(destination)
     if (source === target) return
+    this._assertMoveAvailable(windowId, document.resource.location.canonicalPath, createFileLocation(target).canonicalPath)
     const existing = await this._diskBaseline(target)
     if (existing.exists) {
       const choice = await dialog.showMessageBox(this._native(windowId), {
@@ -1310,7 +1362,7 @@ export class SessionHost {
       (this._statuses.get(windowId) ?? []).filter((status) => !ids.has(status.documentId))
     )
     for (const document of documents) {
-      if (document.resource.kind === 'file')
+      if (document.resource.kind === 'file' && !this._hasOpenPath(windowId, document.resource.location.path))
         this._editors.get(windowId)?.removeFromOpenedFiles(document.resource.location.path)
     }
     if (notify) this._native(windowId).webContents.send('mt::state::documents-ended', [...ids])
@@ -1348,6 +1400,9 @@ export class SessionHost {
         this.report(new Error('Deleted file recovery was not persisted'), windowId)
     } else if (payload.change.data) {
       const raw = payload.change.data
+      this._statuses.set(windowId, (this._statuses.get(windowId) ?? []).map(status =>
+        status.documentId === document.id ? { ...status, diskMissing: false } : status
+      ))
       const saved: DocumentSnapshot = {
         ...document,
         resource: {

@@ -123,7 +123,7 @@ describe('close preparation and commit ordering', () => {
 
   it('does not discard or destroy earlier windows when a later window cancels', async() => {
     const { ports, coordinator, session, events } = setup(['discard', 'cancel'])
-    await coordinator.quit()
+    await expect(coordinator.quit()).resolves.toBe(false)
     expect(events.some((event) => event.startsWith('discard:'))).toBe(false)
     expect(ports.commit).not.toHaveBeenCalled()
     expect(ports.destroy).not.toHaveBeenCalled()
@@ -132,7 +132,7 @@ describe('close preparation and commit ordering', () => {
 
   it('commits the complete final session before destroying any window', async() => {
     const { coordinator, session, events } = setup(['save', 'discard'])
-    await coordinator.quit()
+    await expect(coordinator.quit()).resolves.toBe(true)
     expect(session().lifecycle).toBe('closed')
     expect(session().windows.map((window) => window.id)).toEqual(['a', 'b'])
     expect(session().windows[0].documents).toMatchObject([{ content: { kind: 'disk' } }])

@@ -112,7 +112,7 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::fonts::list': { args: []; ret: string[] }
   'mt::fs-trash-item': { args: [pathname: string]; ret: boolean }
   'mt::project-move-item': { args: [request: SidebarMoveRequest]; ret: SidebarMoveResult }
-  'mt::fs::copy': { args: [src: string, dest: string]; ret: void }
+  'mt::fs::copy': { args: [src: string, dest: string, overwrite?: boolean]; ret: void }
   'mt::fs::copy-with-content-hash': { args: [src: string, outputDir: string]; ret: string }
   'mt::fs::empty-dir': { args: [path: string]; ret: void }
   'mt::fs::ensure-dir': { args: [path: string]; ret: void }
@@ -249,7 +249,7 @@ export interface IpcSendChannels {
   'window-add-file-path': [windowId: number, filePath: string]
   'window-change-file-path': [windowId: number, oldPath: string, newPath: string]
   'window-close-by-id': [windowId: number]
-  'window-file-saved': [windowId: number, tabId: string]
+  'window-file-saved': [windowId: number, pathname: string, rawSha256: string]
   'window-reload-by-id': [windowId: number]
   'window-toggle-always-on-top': [windowId: number]
 }

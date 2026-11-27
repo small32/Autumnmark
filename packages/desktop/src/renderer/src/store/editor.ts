@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { toRaw } from 'vue'
+import { nextTick, toRaw } from 'vue'
 import { adjustTrailingNewlines } from '@/util/markdown'
 import { documentVideos, releaseDocumentVideos } from '@/util/videoAttachments'
 import { prepareReading, applyReadOnly } from '../services/documentMode'
@@ -22,13 +22,14 @@ import { useProjectStore } from './project'
 import { t } from '../i18n'
 import { scheduleWindowCheckpoint } from './checkpoint'
 import type { PersistResult } from '@shared/types/applicationState'
-import type { IFileState, FileNotification, FileWordCount, LineEnding, PageOptions, TabOptions } from '@shared/types/files'
+import type { IFileState, FileNotification, FileWordCount, LineEnding, PageOptions, SourceSelection, TabOptions } from '@shared/types/files'
 import type { SaveDocumentResult } from '@shared/types/ipc'
 
 export interface SessionActions {
   checkpoint(transactionId?: string): Promise<PersistResult>
   scheduleCheckpoint(): void
   captureView(): void
+  cancelViewRestore(): void
   save(id: string, saveAs?: boolean): Promise<SaveDocumentResult>
   create(markdown: string, selected: boolean, title?: string): Promise<void>
   close(ids: string[]): Promise<void>
@@ -85,6 +86,12 @@ interface ExportPayload {
   type: string
   content?: string
   pageOptions?: PageOptions
+}
+
+interface ExportDocument {
+  filename: string
+  pathname: string
+  title: string
 }
 
 interface AutoSavePayload {
@@ -237,6 +244,19 @@ export const useEditorStore = defineStore('editor', {
       } finally {
         tab.modeChanging = false
       }
+    },
+
+    async REVEAL_SEARCH_RESULT(file: IFileState, cursor: SourceSelection): Promise<void> {
+      this.UPDATE_CURRENT_FILE(file)
+      // Tab activation restores the previous view on the next Vue update. The
+      // requested match takes precedence over that remembered selection.
+      await nextTick()
+      if (this.currentFile?.id !== file.id) return
+      getSessionActions()?.cancelViewRestore()
+      // The activation's initial scroll is queued for the next frame.
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+      if (this.currentFile?.id !== file.id) return
+      bus.emit('file-changed', { id: file.id, cursor, muyaIndexCursor: cursor })
     },
 
     LISTEN_FOR_READING_MODE(): void {
@@ -399,7 +419,7 @@ export const useEditorStore = defineStore('editor', {
         })
       }
 
-      if (currentFile && pathname === currentFile.pathname) {
+      if (currentFile?.id === tab.id) {
         this.currentFile = tab
         const { id, cursor, history, scrollTop, muyaIndexCursor } = tab // Should not use blocks history as this is loaded from disk
         bus.emit('file-changed', {
@@ -1009,6 +1029,7 @@ export const useEditorStore = defineStore('editor', {
       if (focus === true) bus.emit('editor-focus')
       else if (focus === false) bus.emit('SIDEBAR::focus-tree')
       if (options.anchor) this.SCROLL_TO_ANCHOR(options.anchor)
+      if (options.cursor) void this.REVEAL_SEARCH_RESULT(next, options.cursor)
     },
 
     FOCUS_FILE(pathname: string): void {
@@ -1173,7 +1194,7 @@ export const useEditorStore = defineStore('editor', {
         autoSaveTimers.delete(id)
 
         const tab = this.tabs.find((t) => t.id === id)
-        if (tab && !tab.isSaved && !tab.readOnly && !tab.modeChanging && !tab.diskConflict) {
+        if (preferencesStore.autoSave && tab && !tab.isSaved && !tab.readOnly && !tab.modeChanging && !tab.diskConflict) {
           const session = getSessionActions()
           if (session) void session.save(id).catch(console.error)
         }
@@ -1222,16 +1243,16 @@ export const useEditorStore = defineStore('editor', {
       )
     },
 
-    EXPORT({ type, content, pageOptions }: ExportPayload): void {
-      if (this.currentFile === null) return
-
-      const { filename, pathname } = this.currentFile
+    EXPORT({ type, content, pageOptions }: ExportPayload, document?: ExportDocument): void {
+      if (!document && this.currentFile) {
+        const { filename, pathname } = this.currentFile
+        document = { filename, pathname, title: this.documentTitle }
+      }
+      if (!document) return
       window.electron.ipcRenderer.send('mt::response-export', {
         type: type as ExportPayload['type'] as never,
-        title: this.documentTitle,
         content: content ?? '',
-        filename,
-        pathname,
+        ...document,
         pageOptions: pageOptions ?? {}
       })
     },
@@ -1298,7 +1319,7 @@ export const useEditorStore = defineStore('editor', {
       if (lineEnding !== oldLineEnding) {
         this.currentFile.lineEnding = lineEnding
         this.currentFile.adjustLineEndingOnSave = lineEnding !== 'lf'
-        this.currentFile.isSaved = true
+        this.currentFile.isSaved = false
         this.UPDATE_LINE_ENDING_MENU()
         scheduleWindowCheckpoint()
       }
@@ -1321,7 +1342,7 @@ export const useEditorStore = defineStore('editor', {
         if (encoding !== encodingName) {
           this.currentFile.encoding.encoding = encodingName as string
           this.currentFile.encoding.isBom = false
-          this.currentFile.isSaved = true
+          this.currentFile.isSaved = false
           scheduleWindowCheckpoint()
         }
       })
@@ -1334,7 +1355,7 @@ export const useEditorStore = defineStore('editor', {
         const { trimTrailingNewline } = this.currentFile
         if (trimTrailingNewline !== value) {
           this.currentFile.trimTrailingNewline = value as number
-          this.currentFile.isSaved = true
+          this.currentFile.isSaved = false
           scheduleWindowCheckpoint()
         }
       })
@@ -1347,7 +1368,7 @@ export const useEditorStore = defineStore('editor', {
         const { pathname } = change
         const tab = tabs.find((t) => window.fileUtils.isSamePathSync(t.pathname, pathname))
         if (tab) {
-          const { id, isSaved, filename } = tab
+          const { id, filename } = tab
           switch (type) {
             case 'unlink': {
               tab.diskMissing = true
@@ -1364,17 +1385,31 @@ export const useEditorStore = defineStore('editor', {
             }
             case 'add':
             case 'change': {
-              const wasMissing = tab.diskMissing
+              const diskChange = change as unknown as FileChangePayload
+              const disk = diskChange.data
+              if (!disk) return
+              if (this.currentFile?.id === id) this.flushActiveEditor()
               tab.diskMissing = false
-              // Only the file's metadata changed on disk (e.g. a git checkout
-              // that left the content byte-identical) — there is nothing to
-              // reload and no reason to warn the user (#1861).
-              const newMarkdown = (change as unknown as FileChangePayload).data?.markdown
-              if (typeof newMarkdown === 'string' && newMarkdown === documentVideos(id).expand(tab.markdown)) {
-                if (wasMissing)
-                  tab.notifications = tab.notifications.filter(
-                    (item) => item.exclusiveType !== 'file_changed'
-                  )
+              const diskFormat = {
+                encoding: disk.encoding ?? tab.encoding,
+                lineEnding: disk.lineEnding ?? tab.lineEnding,
+                adjustLineEndingOnSave: disk.adjustLineEndingOnSave ?? tab.adjustLineEndingOnSave,
+                trimTrailingNewline: disk.trimTrailingNewline ?? tab.trimTrailingNewline
+              }
+              const sameMarkdown = disk.markdown === documentVideos(id).expand(tab.markdown)
+              const sameFormat =
+                isEqual(diskFormat.encoding, tab.encoding) &&
+                diskFormat.lineEnding === tab.lineEnding &&
+                diskFormat.adjustLineEndingOnSave === tab.adjustLineEndingOnSave &&
+                diskFormat.trimTrailingNewline === tab.trimTrailingNewline
+              if (sameMarkdown && (sameFormat || tab.isSaved)) {
+                // A format-only change leaves the editor and its undo history intact.
+                Object.assign(tab, diskFormat)
+                tab.acceptedDiskSha256 = disk.rawBaseline?.rawSha256
+                tab.diskConflict = false
+                tab.notifications = tab.notifications.filter(item => item.exclusiveType !== 'file_changed')
+                if (!sameFormat && this.currentFile?.id === id) this.UPDATE_LINE_ENDING_MENU()
+                scheduleWindowCheckpoint()
                 break
               }
 
@@ -1382,14 +1417,14 @@ export const useEditorStore = defineStore('editor', {
               // needs no confirmation (#3652). Deliberately independent of
               // autoSave: that writes our buffer back to disk and would
               // overwrite whichever editor produced this change.
-              if (isSaved) {
+              if (tab.isSaved) {
                 if (autoSaveTimers.has(id)) {
                   const timer = autoSaveTimers.get(id)
                   if (timer) clearTimeout(timer)
                   autoSaveTimers.delete(id)
                 }
 
-                this.loadChange(change as unknown as FileChangePayload)
+                this.loadChange(diskChange)
                 return
               }
 
@@ -1401,7 +1436,7 @@ export const useEditorStore = defineStore('editor', {
                 exclusiveType: 'file_changed',
                 action: (status) => {
                   if (status) {
-                    this.loadChange(change as unknown as FileChangePayload)
+                    this.loadChange(diskChange)
                   }
                 }
               })

@@ -65,7 +65,10 @@ export function resolveVideoSource(src: string): string {
 
 // Resolve local exported image paths to absolute file URLs so exports retain images
 // outside the source folder (#230, #678). Leave non-image and remote URLs unchanged.
-export function resolveExportImageSrc(src: string): string {
+export function resolveExportImageSrc(
+    src: string,
+    dirname = typeof window !== 'undefined' ? window.DIRNAME : undefined,
+): string {
     if (!src || URL_SCHEME_REG.test(src) || !IMAGE_EXT_REG.test(src))
         return src;
 
@@ -74,7 +77,6 @@ export function resolveExportImageSrc(src: string): string {
     if (ABSOLUTE_LOCAL_REG.test(path))
         return localPathToFileUrl(path);
 
-    const dirname = typeof window !== 'undefined' ? window.DIRNAME : undefined;
     if (!dirname)
         return src;
 

@@ -1,19 +1,16 @@
+import { parseFragment } from 'parse5';
+
 // Convert extension markers to numbered references and footnotes with backrefs.
 // Both export paths must run this before DOMPurify strips data-identifier.
 
-const FOOTNOTE_DEF_RE = /<div class="footnote-block" data-identifier="([^"]*)">([\s\S]*?)<\/div>\s*/g;
+const FOOTNOTE_DEF_OPEN_RE = /^<div class="footnote-block" data-identifier="([^"]*)">$/;
 
 // The parser already resolves escapes and code spans; only surviving markers are references.
 const FOOTNOTE_REF_RE = /<span class="footnote-ref" data-identifier="([^"]*)"><\/span>/g;
 
 export function transformFootnotes(html: string): string {
-    const definitions = new Map<string, string>();
-    let body = html.replace(FOOTNOTE_DEF_RE, (_, id: string, inner: string) => {
-        // The first definition wins for duplicate identifiers.
-        if (!definitions.has(id))
-            definitions.set(id, inner);
-        return '';
-    });
+    const { definitions, documentBody } = extractDefinitions(html);
+    let body = documentBody;
 
     if (definitions.size === 0)
         return unmarkReferences(html);
@@ -51,6 +48,45 @@ export function transformFootnotes(html: string): string {
 
     const section = `\n<section class="footnotes">\n<ol>\n${items.join('\n')}\n</ol>\n</section>\n`;
     return `${body.replace(/\s+$/, '')}\n${section}`;
+}
+
+function extractDefinitions(html: string) {
+    const definitions = new Map<string, string>();
+    if (!html.includes('class="footnote-block"'))
+        return { definitions, documentBody: html };
+
+    // Use the parsed elements to find matching closing tags, then splice the original HTML.
+    const fragment = parseFragment(html, { sourceCodeLocationInfo: true });
+    const nodes = [...fragment.childNodes];
+    const ranges: { id: string; start: number; end: number; inner: string }[] = [];
+    for (let index = 0; index < nodes.length; index++) {
+        const node = nodes[index];
+        if ('tagName' in node && node.tagName === 'div') {
+            const location = node.sourceCodeLocation;
+            const start = location?.startTag;
+            const end = location?.endTag;
+            const match = start && end && FOOTNOTE_DEF_OPEN_RE.exec(html.slice(start.startOffset, start.endOffset));
+            if (start && end && match) {
+                ranges.push({ id: match[1], start: start.startOffset, end: end.endOffset, inner: html.slice(start.endOffset, end.startOffset) });
+                continue;
+            }
+        }
+        if ('childNodes' in node) {
+            for (const child of node.childNodes)
+                nodes.push(child);
+        }
+    }
+
+    const parts: string[] = [];
+    let previous = 0;
+    for (const { id, start, end, inner } of ranges.sort((a, b) => a.start - b.start)) {
+        if (!definitions.has(id))
+            definitions.set(id, inner);
+        parts.push(html.slice(previous, start));
+        previous = end + (/^\s*/.exec(html.slice(end))?.[0].length ?? 0);
+    }
+    parts.push(html.slice(previous));
+    return { definitions, documentBody: parts.join('') };
 }
 
 // Identifiers arrive entity-escaped; keep them escaped when restoring literal [^id] text.

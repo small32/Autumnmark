@@ -73,12 +73,21 @@ describe('editor window file bookkeeping', () => {
     const editor = new EditorWindow(makeAccessor() as unknown as Accessor)
     editor.addToOpenedFiles('/project/old.md')
     editor.addToOpenedFiles('/project/old.md')
+    expect(ipcMain.emit).toHaveBeenCalledExactlyOnceWith('watcher-watch-file', null, '/project/old.md')
     editor.changeOpenedFilePath('/project/new.md', '/project/old.md')
 
     expect(editor.getCandidateScores(['/project/old.md', '/project/new.md']))
       .toEqual([{ id: null, score: 1 }, { id: null, score: -1 }])
 
     editor.removeFromOpenedFiles('/project/new.md')
+    editor.removeFromOpenedFiles('/project/new.md')
+    expect(vi.mocked(ipcMain.emit).mock.calls.map(([channel, , pathname]) => [channel, pathname]))
+      .toEqual([
+        ['watcher-watch-file', '/project/old.md'],
+        ['watcher-unwatch-file', '/project/old.md'],
+        ['watcher-watch-file', '/project/new.md'],
+        ['watcher-unwatch-file', '/project/new.md']
+      ])
     expect(editor.getCandidateScores(['/project/old.md', '/project/new.md']))
       .toEqual([{ id: null, score: 0 }, { id: null, score: 0 }])
   })

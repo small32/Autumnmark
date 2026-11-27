@@ -1,3 +1,4 @@
+import log from 'electron-log'
 import WindowManager from '../app/windowManager'
 import Preference from '../preferences'
 import DataCenter from '../dataCenter'
@@ -9,6 +10,7 @@ import type { AppEnvironment } from './env'
 import type AppPaths from './paths'
 import type EditorWindow from '../windows/editor'
 import { SessionHost } from '../applicationState/sessionHost'
+import { t } from '../i18n'
 
 class Accessor {
   public env: AppEnvironment
@@ -55,11 +57,19 @@ class Accessor {
       const host = this.sessionHost
       const id = editor?.sessionStateId
       if (!host || !id) return undefined
+      const reportMoveError = (error: unknown): void => {
+        log.warn('Document move failed', error)
+        if (!sender.isDestroyed()) {
+          sender.send('mt::show-notification', {
+            title: t('sideBar.move.title'),
+            type: 'error',
+            message: error instanceof Error ? error.message : String(error)
+          })
+        }
+      }
       return {
-        rename: (documentId, pathname) => host.renameDocument(id, documentId, pathname)
-          .catch(error => host.report(error, id)),
-        move: documentId => host.moveDocument(id, documentId)
-          .catch(error => host.report(error, id))
+        rename: (documentId, pathname) => host.renameDocument(id, documentId, pathname).catch(reportMoveError),
+        move: documentId => host.moveDocument(id, documentId).catch(reportMoveError)
       }
     })
 

@@ -32,13 +32,6 @@ type WatchType = 'dir' | 'file'
 export const isUncPath = (pathname: string): boolean =>
   /^(?:\\\\|\/\/)[^\\/]+[\\/][^\\/]+/.test(pathname)
 
-interface IgnoreEntry {
-  windowId: number
-  pathname: string
-  duration: number
-  start: Date
-}
-
 interface WatcherEntry {
   win: BrowserWindow
   watcher: FSWatcher
@@ -100,7 +93,7 @@ const add = async(
     mtimeMs,
     isMarkdown
   }
-  if (isMarkdown) {
+  if (isMarkdown || type === 'file') {
     // HACK: But this should be removed completely in #1034/#1035.
     try {
       const data = await loadMarkdownFile(
@@ -164,34 +157,29 @@ const change = async(
     return
   }
 
-  const isMarkdown = hasMarkdownExtension(pathname)
-  if (isMarkdown) {
-    try {
-      const [data, stats] = await Promise.all([
-        loadMarkdownFile(
-          pathname,
-          endOfLine,
-          autoGuessEncoding,
-          trimTrailingNewline,
-          autoNormalizeLineEndings
-        ),
-        fsPromises.stat(pathname)
-      ])
-      const file = { pathname, data, mtimeMs: stats.mtimeMs }
-      if (!isLatestRead(win, pathname, type, sequence)) return
-      emit('mt::update-file', {
-        type: 'change',
-        change: file
-      })
-    } catch (err) {
-      if (type === 'file') {
-        emit('mt::show-notification', {
-          title: 'Watcher I/O error',
-          type: 'error',
-          message: err instanceof Error ? err.message : String(err)
-        })
-      }
-    }
+  try {
+    const [data, stats] = await Promise.all([
+      loadMarkdownFile(
+        pathname,
+        endOfLine,
+        autoGuessEncoding,
+        trimTrailingNewline,
+        autoNormalizeLineEndings
+      ),
+      fsPromises.stat(pathname)
+    ])
+    const file = { pathname, data, mtimeMs: stats.mtimeMs }
+    if (!isLatestRead(win, pathname, type, sequence)) return
+    emit('mt::update-file', {
+      type: 'change',
+      change: file
+    })
+  } catch (err) {
+    emit('mt::show-notification', {
+      title: 'Watcher I/O error',
+      type: 'error',
+      message: err instanceof Error ? err.message : String(err)
+    })
   }
 }
 
@@ -227,7 +215,7 @@ const unlinkDir = (win: BrowserWindow, pathname: string, type: WatchType, emit: 
 
 class Watcher {
   private _preferences: Preference
-  private _ignoreChangeEvents: IgnoreEntry[]
+  private readonly _savedHashes = new Map<number, Map<string, string>>()
   private readonly _fileDeletionBarriers = new Set<{ windowId: number; pathnames: readonly string[] }>()
   watchers: Record<string, WatcherEntry>
 
@@ -236,7 +224,6 @@ class Watcher {
     private readonly _onFileChange?: (win: BrowserWindow, change: FileWatchChange) => void
   ) {
     this._preferences = preferences
-    this._ignoreChangeEvents = []
     this.watchers = {}
   }
 
@@ -281,7 +268,7 @@ class Watcher {
     const id = getUniqueId()
 
     const watcher = chokidar.watch(watchPath, {
-      ignored: (pathname: string, fileInfo?: { isDirectory: () => boolean }) => {
+      ignored: type === 'file' ? undefined : (pathname: string, fileInfo?: { isDirectory: () => boolean }) => {
         if (!fileInfo) {
           return /(?:^|[/\\])(?:node_modules|(?:.+\.asar))/.test(pathname)
         }
@@ -342,6 +329,7 @@ class Watcher {
           )
         )
         if (movingDeletion) return
+        if (this._isOwnSave(win.id, event)) return
         this._onFileChange?.(win, event)
       }
       win.webContents.send(channel, channel === 'mt::update-object-tree' && context
@@ -357,7 +345,7 @@ class Watcher {
     let enospcReached = false
 
     const handleFileEvent = async(pathname: string, event: 'add' | 'change'): Promise<void> => {
-      if (disposed || await this._shouldIgnoreEvent(win.id, pathname, type, usePolling)) return
+      if (disposed) return
       const { autoGuessEncoding = true, trimTrailingNewline = 2, autoNormalizeLineEndings = false } = this._preferences.getAll()
       await (event === 'add' ? add : change)(win, pathname, type,
         this._preferences.getPreferredEol() as LineEnding,
@@ -430,6 +418,7 @@ class Watcher {
   }
 
   unwatch(win: BrowserWindow, watchPath: string, type: WatchType = 'dir'): void {
+    if (type === 'file') this._savedHashes.get(win.id)?.delete(watchPath)
     for (const id of Object.keys(this.watchers)) {
       const w = this.watchers[id]
       if (w.win === win && w.pathname === watchPath && w.type === type) {
@@ -440,6 +429,7 @@ class Watcher {
   }
 
   unwatchByWindowId(windowId: number): void {
+    this._savedHashes.delete(windowId)
     for (const entry of Object.values(this.watchers)) {
       if (entry.win.id === windowId) entry.close()
     }
@@ -448,66 +438,25 @@ class Watcher {
   close(): void {
     Object.keys(this.watchers).forEach((id) => this.watchers[id].close())
     this.watchers = {}
-    this._ignoreChangeEvents = []
+    this._savedHashes.clear()
   }
 
-  /**
-   * Ignore the next changed event within a certain time for the current file
-   * and window. Only valid for files and "add"/"change" events.
-   */
-  ignoreChangedEvent(
-    windowId: number,
-    pathname: string,
-    duration: number = WATCHER_STABILITY_THRESHOLD + WATCHER_STABILITY_POLL_INTERVAL * 2
-  ): void {
-    this._ignoreChangeEvents.push({ windowId, pathname, duration, start: new Date() })
-  }
-
-  /**
-   * Check whether we should ignore the current event because the file may be
-   * changed from MarkText itself.
-   */
-  async _shouldIgnoreEvent(
-    winId: number,
-    pathname: string,
-    type: WatchType,
-    usePolling: boolean
-  ): Promise<boolean> {
-    if (type === 'file') {
-      const { _ignoreChangeEvents } = this
-      const currentTime = new Date()
-      for (let i = 0; i < _ignoreChangeEvents.length; ++i) {
-        const { windowId, pathname: pathToIgnore, start, duration } = _ignoreChangeEvents[i]
-        if (windowId === winId && pathToIgnore === pathname) {
-          _ignoreChangeEvents.splice(i, 1)
-          --i
-
-          // Modification origin is the editor and we should ignore the event.
-          if (currentTime.getTime() - start.getTime() < duration) {
-            return true
-          }
-
-          // Try to catch cloud drives that emit the change event not
-          // immediately or re-sync the change (GH#3044).
-          if (!usePolling) {
-            try {
-              const fileInfo = await fsPromises.stat(pathname)
-              if (fileInfo.mtime.getTime() - start.getTime() < duration) {
-                if (globalThis.MARKTEXT_DEBUG_VERBOSE >= 3) {
-                  console.log(
-                    `Ignoring file event after "stat": current="${currentTime.toISOString()}", start="${start.toISOString()}", file="${fileInfo.mtime.toISOString()}".`
-                  )
-                }
-                return true
-              }
-            } catch (error) {
-              console.error('Failed to "stat" file to determine modification time:', error)
-            }
-          }
-        }
-      }
+  recordFileSave(windowId: number, pathname: string, rawSha256: string): void {
+    let hashes = this._savedHashes.get(windowId)
+    if (!hashes) {
+      hashes = new Map()
+      this._savedHashes.set(windowId, hashes)
     }
-    return false
+    hashes.set(pathname, rawSha256)
+  }
+
+  private _isOwnSave(windowId: number, { change }: FileWatchChange): boolean {
+    const hashes = this._savedHashes.get(windowId)
+    const savedHash = hashes?.get(change.pathname)
+    hashes?.delete(change.pathname)
+    const baseline = change.data?.rawBaseline
+    // A single stabilized event can include both our write and an external edit.
+    return savedHash !== undefined && baseline?.exists === true && baseline.rawSha256 === savedHash
   }
 }
 

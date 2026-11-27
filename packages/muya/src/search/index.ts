@@ -8,7 +8,7 @@ import { revealBlock, unfoldAllSections } from '../block/folding';
 import { DEFAULT_SEARCH_OPTIONS } from '../config';
 import { comparePaths, contentPath, resolveContent, resolveEndpoint } from '../selection/state';
 import { SelectionDirection, SelectionType } from '../selection/types';
-import { buildRegexValue, matchString } from '../utils/search';
+import { buildRegexValue, matchVisibleText } from '../utils/search';
 
 type SearchPosition = Pick<IAnchorFocusInfo, 'block' | 'offset'>;
 
@@ -375,18 +375,9 @@ export class Search {
                 if (block.isContent()) {
                     const { text } = block;
                     if (text && typeof text === 'string') {
-                        const strMatches = matchString(text, query, this._options);
-                        matches.push(
-                            ...strMatches.map(({ index, match, subMatches }) => {
-                                return {
-                                    block,
-                                    start: index,
-                                    end: index + match.length,
-                                    match,
-                                    subMatches,
-                                };
-                            }),
-                        );
+                        for (const { index, match, subMatches } of matchVisibleText(text, query, this._options)) {
+                            matches.push({ block, start: index, end: index + match.length, match, subMatches });
+                        }
                     }
                 }
             });

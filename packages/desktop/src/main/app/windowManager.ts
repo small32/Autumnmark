@@ -2,10 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import type { BrowserWindow as IBrowserWindow } from 'electron'
 import log from 'electron-log'
 import { TypedEmitter } from '@shared/types/typedEmitter'
-import Watcher, {
-  WATCHER_STABILITY_THRESHOLD,
-  WATCHER_STABILITY_POLL_INTERVAL
-} from '../filesystem/watcher'
+import Watcher from '../filesystem/watcher'
 import { onInternalChannel } from '../utils/internalIpc'
 import type BaseWindow from '../windows/base'
 import type Preference from '../preferences'
@@ -403,10 +400,8 @@ class WindowManager extends TypedEmitter<WindowManagerEvents> {
       }
     )
 
-    onInternalChannel('window-file-saved', (windowId: number, pathname: string) => {
-      // A changed event is emitted earliest after the stability threshold.
-      const duration = WATCHER_STABILITY_THRESHOLD + WATCHER_STABILITY_POLL_INTERVAL * 2
-      this._watcher.ignoreChangedEvent(windowId, pathname, duration)
+    onInternalChannel('window-file-saved', (windowId: number, pathname: string, rawSha256: string) => {
+      this._watcher.recordFileSave(windowId, pathname, rawSha256)
     })
 
     onInternalChannel('window-close-by-id', (id: number) => {

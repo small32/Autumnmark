@@ -10,8 +10,7 @@ type Props = {
   onClose: () => void
 }
 
-type GroupedHit = { hit: SearchHit; index: number }
-type HitGroup = { key: string; label: string; hits: GroupedHit[] }
+type HitGroup = { key: string; label: string; tab: IndexedPage['tab']; hits: SearchHit[] }
 
 export default function CommandPalette({ open, onClose }: Props) {
   const router = useRouter()
@@ -24,10 +23,23 @@ export default function CommandPalette({ open, onClose }: Props) {
 
   useEffect(() => {
     if (!open) return
-    loadIndex().then(setIndex).catch((err) => setError((err as Error).message))
+    const previousFocus = document.activeElement
+    let active = true
+    setError(null)
     setQuery('')
     setSelected(0)
-    queueMicrotask(() => inputRef.current?.focus())
+    inputRef.current?.focus()
+    loadIndex()
+      .then((data) => {
+        if (active) setIndex(data)
+      })
+      .catch((err: Error) => {
+        if (active) setError(err.message)
+      })
+    return () => {
+      active = false
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus()
+    }
   }, [open])
 
   const hits: SearchHit[] = useMemo(() => {
@@ -43,10 +55,8 @@ export default function CommandPalette({ open, onClose }: Props) {
   }, [index, query])
 
   const groups = useMemo(() => groupHits(hits), [hits])
-
-  useEffect(() => {
-    setSelected(0)
-  }, [query])
+  const visibleHits = useMemo(() => groups.flatMap((group) => group.hits), [groups])
+  const selectedHit = visibleHits[selected]
 
   const navigateTo = useCallback(
     (hit: SearchHit) => {
@@ -68,7 +78,7 @@ export default function CommandPalette({ open, onClose }: Props) {
       }
       if (ev.key === 'ArrowDown') {
         ev.preventDefault()
-        setSelected((s) => Math.min(s + 1, hits.length - 1))
+        setSelected((s) => Math.min(s + 1, Math.max(0, visibleHits.length - 1)))
         return
       }
       if (ev.key === 'ArrowUp') {
@@ -78,25 +88,21 @@ export default function CommandPalette({ open, onClose }: Props) {
       }
       if (ev.key === 'Enter') {
         ev.preventDefault()
-        setSelected((s) => {
-          const hit = hits[s]
-          if (hit) navigateTo(hit)
-          return s
-        })
+        if (selectedHit) navigateTo(selectedHit)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose, navigateTo, hits])
+  }, [open, onClose, navigateTo, selectedHit, visibleHits.length])
 
   useEffect(() => {
     if (!open) return
     const el = listRef.current?.querySelector('.kbar-item.sel') as HTMLElement | null
     el?.scrollIntoView({ block: 'nearest' })
-  }, [selected, open])
+  }, [selectedHit, open])
 
   return (
-    <div className={'kbar-scrim' + (open ? ' open' : '')} onClick={onClose} aria-hidden={!open}>
+    <div className={'kbar-scrim' + (open ? ' open' : '')} onClick={onClose} inert={!open}>
       <div
         className="kbar"
         role="dialog"
@@ -111,7 +117,10 @@ export default function CommandPalette({ open, onClose }: Props) {
             type="text"
             placeholder="Search documentation…"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setSelected(0)
+            }}
           />
           <span className="esc">esc</span>
         </div>
@@ -124,12 +133,12 @@ export default function CommandPalette({ open, onClose }: Props) {
           {groups.map((group) => (
             <div key={group.key}>
               <div className="kbar-sec">{group.label}</div>
-              {group.hits.map(({ hit, index: idx }) => (
+              {group.hits.map((hit) => (
                 <ResultItem
                   key={hit.page.slug}
                   hit={hit}
-                  selected={idx === selected}
-                  onHover={() => setSelected(idx)}
+                  selected={hit === selectedHit}
+                  onHover={() => setSelected(visibleHits.indexOf(hit))}
                   onClick={() => navigateTo(hit)}
                 />
               ))}
@@ -157,22 +166,19 @@ export default function CommandPalette({ open, onClose }: Props) {
 }
 
 function groupHits(hits: SearchHit[]): HitGroup[] {
-  const order: Record<string, number> = { user: 0, dev: 1 }
+  const order: Record<IndexedPage['tab'], number> = { user: 0, dev: 1 }
   const map = new Map<string, HitGroup>()
-  hits.forEach((hit, index) => {
-    const key = `${hit.page.tab}::${hit.page.group}`
+  for (const hit of hits) {
+    const { tab, tabLabel, group } = hit.page
+    const key = `${tab}::${group}`
     let bucket = map.get(key)
     if (!bucket) {
-      bucket = { key, label: `${hit.page.tabLabel} · ${hit.page.group}`, hits: [] }
+      bucket = { key, label: `${tabLabel} · ${group}`, tab, hits: [] }
       map.set(key, bucket)
     }
-    bucket.hits.push({ hit, index })
-  })
-  return Array.from(map.values()).sort((a, b) => {
-    const ta = a.key.split('::')[0]
-    const tb = b.key.split('::')[0]
-    return (order[ta] ?? 9) - (order[tb] ?? 9)
-  })
+    bucket.hits.push(hit)
+  }
+  return Array.from(map.values()).sort((a, b) => order[a.tab] - order[b.tab])
 }
 
 function ResultItem({

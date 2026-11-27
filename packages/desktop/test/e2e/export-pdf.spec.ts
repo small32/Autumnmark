@@ -124,7 +124,7 @@ test.describe('PDF export to a real file (item 231)', () => {
   let page: Page
 
   test.beforeAll(async() => {
-    const launched = await launchWithMarkdown(PDF_DOC)
+    const launched = await launchWithMarkdown(PDF_DOC, { preferences: { language: 'en' } })
     app = launched.app
     page = launched.page
     await waitForMenuReady(app)
@@ -217,5 +217,30 @@ test.describe('PDF export to a real file (item 231)', () => {
       .toBe(true)
 
     fs.rmSync(out, { force: true })
+  })
+
+  test('exports custom millimetre dimensions as a PDF of the requested size', async() => {
+    const out = '/tmp/marktext-e2e-custom-size-' + Date.now() + '.pdf'
+    try {
+      await stubSaveDialog(app, out)
+      await sendIpcToRenderer(app, 'mt::show-export-dialog', 'pdf')
+      const settings = page.locator('.print-settings-dialog')
+      await settings.locator('.el-select').first().click()
+      await page.getByText('Custom', { exact: true }).click()
+      const [width, height] = await settings.locator('input[role="spinbutton"]:visible').all()
+      await width.fill('180')
+      await width.press('Tab')
+      await height.fill('240')
+      await height.press('Tab')
+      await settings.locator('.button-primary').click()
+
+      const pdf = await pollForPdfFile(out)
+      const pageSize = /\/MediaBox\s*\[0 0 ([\d.]+) ([\d.]+)\]/.exec(pdf.toString('latin1'))
+      expect(pageSize).not.toBeNull()
+      expect(Math.abs(Number(pageSize?.[1]) - 180 / 25.4 * 72)).toBeLessThan(2)
+      expect(Math.abs(Number(pageSize?.[2]) - 240 / 25.4 * 72)).toBeLessThan(2)
+    } finally {
+      fs.rmSync(out, { force: true })
+    }
   })
 })

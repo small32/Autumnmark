@@ -301,4 +301,16 @@ describe('useEditorStore EXPORT (title derivation from listToc)', () => {
 
     expect(sendSpy).not.toHaveBeenCalled()
   })
+
+  it('sends the document captured at the start of an asynchronous export', () => {
+    const store = useEditorStore()
+    setCurrentFile(store)
+    store.listToc = [{ lvl: 1, content: 'Different tab' }]
+    const send = vi.spyOn(window.electron.ipcRenderer, 'send')
+
+    const original = { filename: 'draft.md', pathname: '/other/draft.md', title: 'Original title' }
+    store.EXPORT({ type: 'styledHtml', content: '<h1>Original title</h1>' }, original)
+
+    expect(send).toHaveBeenCalledWith('mt::response-export', expect.objectContaining(original))
+  })
 })

@@ -142,6 +142,7 @@ class WindowSession {
       captureView: () => {
         void this._captureActiveView().catch((error) => this._failure(error))
       },
+      cancelViewRestore: interacted,
       save: (id, saveAs = false) => this._save(id, saveAs),
       create: async(markdown, selected, title = '') => {
         if (!this._context) return
@@ -156,9 +157,11 @@ class WindowSession {
       close: (ids) => this._close(ids),
       saveAll: async(closeTabs) => {
         if (closeTabs) await this._close(this._editor.tabs.map((file) => file.id))
-        else
+        else {
+          this._editor.flushActiveEditor()
           for (const file of this._editor.tabs.filter((file) => !file.readOnly && !file.isSaved))
             await this._save(file.id)
+        }
       }
     })
     onDocumentViewChange(() => {
@@ -360,6 +363,8 @@ class WindowSession {
       nameInput.setSelectionRange(selection[0], selection[1])
     }
     if (options.anchor) this._editor.SCROLL_TO_ANCHOR(options.anchor)
+    if (payload.selected && !renaming && options.cursor)
+      void this._editor.REVEAL_SEARCH_RESULT(file, options.cursor)
     this._schedule()
   }
 

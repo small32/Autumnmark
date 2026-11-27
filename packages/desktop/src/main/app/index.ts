@@ -256,7 +256,15 @@ class App {
 
     startAutomaticUpdateChecks(
       () => this._windowManager.getActiveEditor()?.browserWindow ?? null,
-      () => this._accessor.preferences
+      () => this._accessor.preferences,
+      async(launchInstaller) => {
+        try {
+          return await this._accessor.sessionHost.quit(launchInstaller)
+        } catch (error) {
+          this._startEditorWindows([])
+          throw error
+        }
+      }
     )
 
     //   try {
@@ -300,7 +308,8 @@ class App {
     options: Partial<BrowserWindowConstructorOptions> = {},
     fileOptions: Record<string, FileOpenOptions> = {},
     preparedSession?: PreparedSessionWindow
-  ): EditorWindow {
+  ): void {
+    if (this._accessor.sessionHost.quitting) return
     const editor = new EditorWindow(this._accessor, preparedSession)
     const nativeWindow = editor.createWindow(
       rootDirectory,
@@ -313,7 +322,6 @@ class App {
     if (this._windowManager.windowCount === 1) {
       this._accessor.menu.setActiveWindow(nativeWindow.id)
     }
-    return editor
   }
 
   private _prepareSettingsWindow(owner: BrowserWindow): void {
@@ -354,6 +362,7 @@ class App {
 
   /** CLI --new-window groups the explicit targets in one fresh window. */
   private _openPathList(pathsToOpen: PathInfo[], forceNewWindow: boolean = false): void {
+    if (this._accessor.sessionHost.quitting) return
     const { _windowManager } = this
     const openFilesInNewWindow = this._accessor.preferences.getItem<boolean>('openFilesInNewWindow')
 

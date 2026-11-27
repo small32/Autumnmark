@@ -199,6 +199,15 @@ const needsElevation = async(directory: string): Promise<boolean> => {
 
 const shellQuote = (value: string): string => `'${value.replace(/'/g, `'\\''`)}'`
 
+const spawnDetached = async(command: string, args: string[]): Promise<void> => {
+  const child = spawn(command, args, { detached: true, stdio: 'ignore' })
+  await new Promise<void>((resolve, reject) => {
+    child.once('error', reject)
+    child.once('spawn', resolve)
+  })
+  child.unref()
+}
+
 export interface ApplyRequest {
   script: string
   source: string
@@ -230,10 +239,8 @@ export const launchApplyScript = async(request: ApplyRequest): Promise<{ elevate
     // `Start-Process` hands the script to Windows itself, so it survives the
     // app quitting even though the launcher is not detached.
     const start = elevated ? '-Verb RunAs' : '-WindowStyle Hidden'
-    const launcher = `Start-Process -FilePath 'powershell.exe' -ArgumentList '${quoteForPowerShell(inner)}' ${start}`
-    const child = spawn('powershell', ['-NoProfile', '-NonInteractive', '-Command', launcher],
-      { stdio: 'ignore', windowsHide: true })
-    child.unref()
+    const launcher = `Start-Process -FilePath 'powershell.exe' -ArgumentList '${quoteForPowerShell(inner)}' ${start} -ErrorAction Stop`
+    await run('powershell', ['-NoProfile', '-NonInteractive', '-Command', launcher])
     return { elevated }
   }
 
@@ -247,13 +254,11 @@ export const launchApplyScript = async(request: ApplyRequest): Promise<{ elevate
     '--cleanup', request.cleanup
   ]
   if (elevated) {
-    const command = `/bin/bash ${[request.script, ...args].map(shellQuote).join(' ')}`
-    const child = spawn('osascript', ['-e', `do shell script ${JSON.stringify(command)} with administrator privileges`],
-      { detached: true, stdio: 'ignore' })
-    child.unref()
+    // Return the authorization result while the helper waits for the caller to exit.
+    const command = `/usr/bin/nohup /bin/bash ${[request.script, ...args].map(shellQuote).join(' ')} </dev/null >/dev/null 2>&1 &`
+    await run('osascript', ['-e', `do shell script ${JSON.stringify(command)} with administrator privileges`])
     return { elevated }
   }
-  const child = spawn('/bin/bash', [request.script, ...args], { detached: true, stdio: 'ignore' })
-  child.unref()
+  await spawnDetached('/bin/bash', [request.script, ...args])
   return { elevated }
 }

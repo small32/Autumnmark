@@ -21,6 +21,7 @@ import superSubScriptExtension from './extensions/superSubscript';
 import tableLayoutExtension from './extensions/tableLayout';
 import fm, { frontMatterRender } from './frontMatter';
 import { DEFAULT_OPTIONS } from './options';
+import { preserveCodeTabs } from './restoreCodeTabs';
 import walkTokens from './walkTokens';
 
 const DIAGRAM_TYPE = [
@@ -133,6 +134,7 @@ export function getHighlightHtml(src: string, options: ILexOption = {}) {
         }
     }
 
+    marked.use(preserveCodeTabs(src));
     html += marked.parse(src);
 
     return html;

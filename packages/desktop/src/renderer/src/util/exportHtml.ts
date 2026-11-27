@@ -139,9 +139,9 @@ const ANCHOR_HREF_REG = /(<a\b[^>]*?\shref=")([^"]*)(")/gi
  * the source folder (#1688). Remote URLs, `mailto:`/`data:` schemes and in-page
  * fragment anchors are left untouched.
  */
-const rewriteAnchorHrefs = (html: string): string =>
+const rewriteAnchorHrefs = (html: string, localDirectory: string): string =>
   html.replace(ANCHOR_HREF_REG, (match, pre: string, href: string, post: string) => {
-    const resolved = resolveLocalLinkHref(href)
+    const resolved = resolveLocalLinkHref(href, localDirectory)
     return resolved === href ? match : `${pre}${resolved}${post}`
   })
 
@@ -165,6 +165,9 @@ export const exportStyledHTML = async(
   options: ExportStyledHtmlOptions = {}
 ): Promise<string> => {
   const { title = '', tocOptions, header, footer, headerFooterStyled, dir } = options
+  const localDirectory = options.documentPath === undefined
+    ? window.DIRNAME ?? ''
+    : options.documentPath ? window.path.dirname(options.documentPath) : ''
   let { extraCss = '' } = options
 
   const appendHeaderFooter = !!header || !!footer
@@ -177,7 +180,8 @@ export const exportStyledHTML = async(
   const { html: fullDoc, headings } = await new MarkdownToHtml(markdown, muya).generateWithHeadings({
     title,
     extraCSS: extraCss,
-    dir
+    dir,
+    localDirectory
   })
 
   const toc = tocOptions ? getHtmlToc(headings, tocOptions) : ''
@@ -187,7 +191,7 @@ export const exportStyledHTML = async(
   // The engine already resolved local images to file:// URLs while sanitizing.
   // Do the same for relative local links so they still resolve after the
   // document is moved out of the source folder (#1688).
-  article = rewriteAnchorHrefs(article)
+  article = rewriteAnchorHrefs(article, localDirectory)
 
   article = injectHtmlToc(article, toc)
 
