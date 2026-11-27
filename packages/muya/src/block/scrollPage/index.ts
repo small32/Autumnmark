@@ -4,11 +4,12 @@ import type { Nullable } from '../../types';
 import type Content from '../base/content';
 import type TreeNode from '../base/treeNode';
 import type { IConstructor, TBlockPath } from '../types';
-import { BLOCK_DOM_PROPERTY } from '../../config';
+import { BLOCK_DOM_PROPERTY, CLASS_NAMES } from '../../config';
 import { ChangeSource } from '../../types';
 import { isHTMLElement, isMouseEvent } from '../../utils';
 import logger from '../../utils/logger';
 import Parent from '../base/parent';
+import { refreshFoldVisibility } from '../folding';
 
 const debug = logger('scrollpage:');
 
@@ -86,17 +87,21 @@ export class ScrollPage extends Parent {
 
     updateState(state: TState[]) {
         const { muya } = this;
+        const blocks = state.map(block => ScrollPage.loadBlock(block.name).create(muya, block));
         muya.editor.contentTabs.dispose();
         muya.editor.foldBlocks.dispose();
         muya.ui.hideAllFloatTools();
-        this.empty();
-        // Native editing can leave DOM nodes between blocks that the block tree does not own.
-        this.domNode!.replaceChildren();
-        this.append(
-            ...state.map((block) => {
-                return ScrollPage.loadBlock(block.name).create(muya, block);
-            }),
-        );
+        for (const child of [...this.children.iterator()]) {
+            this.children.remove(child);
+            child.parent = null;
+            child.domNode?.classList.remove(CLASS_NAMES.MU_FOLDED_CONTENT);
+        }
+        for (const block of blocks)
+            block.parent = this;
+        this.children.append(...blocks);
+        // Atomic swap avoids a zero-child layout clamp while still removing stray native DOM nodes.
+        this.domNode!.replaceChildren(...blocks.map(block => block.domNode!));
+        refreshFoldVisibility(this);
         muya.editor.refreshBlockViews();
     }
 

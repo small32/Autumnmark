@@ -234,8 +234,8 @@ class ParagraphContent extends Format {
         this.inlineEngine.patch(this, cursor, highlights);
         const { label } = this.inlineEngine.getLabelInfo(this);
 
-        if (this.scrollPage && label)
-            this.scrollPage.updateRefLinkAndImage(label);
+        if (label && this.outMostBlock)
+            this.scrollPage?.updateRefLinkAndImage(label);
     }
 
     override backspaceHandler(event: Event) {

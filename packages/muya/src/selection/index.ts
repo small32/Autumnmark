@@ -173,8 +173,10 @@ class Selection {
     }
 
     getImageSelection(): IImageSelection | null {
-        const selection = this.getSelection();
-        return selection?.kind === SelectionType.IMAGE ? selection : null;
+        if (this._state?.kind !== SelectionType.IMAGE)
+            return null;
+        const state = copySelectionState(this._state) as Extract<TSelectionState, { kind: SelectionType.IMAGE }>;
+        return this._resolveImage(state);
     }
 
     setSelection(state: TSelectionState | null, { preventScroll = false } = {}): boolean {
